@@ -1,0 +1,1124 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="apidoc,文档生成," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="apidoc是一个轻量级的在线REST接口文档生成系统，支持多种主流语言，包括Java、C、C#、PHP和Javascript等。使用者仅需要按照要求书写相关注释，就可以生成可读性好、界面美观的在线接口文档。本文主要包含以下内容：
+
+介绍apidoc的基本概念
+安装、使用和简单配置
+一些特殊参数的含义及其使用
+介绍一些使用经验">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用apidocJs快速生成在线文档">
+<meta property="og:url" content="http://hinylover.space/2016/03/31/create-online-document-use-apidoc/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="apidoc是一个轻量级的在线REST接口文档生成系统，支持多种主流语言，包括Java、C、C#、PHP和Javascript等。使用者仅需要按照要求书写相关注释，就可以生成可读性好、界面美观的在线接口文档。本文主要包含以下内容：
+
+介绍apidoc的基本概念
+安装、使用和简单配置
+一些特殊参数的含义及其使用
+介绍一些使用经验">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocdemo-sample.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocdownload-node-package.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocnode-install-check.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocnpm-check.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-install.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-install-complete.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-install-check.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-src-struct.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoccd-into-apidoc-dir.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-demo1-generate.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-demo1-generate-target.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-demo1-website.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoc%40api.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoc%40apiParam.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoc%40apiSampleRequest.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocmarkdown-support.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocparam-object.png">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.526Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用apidocJs快速生成在线文档">
+<meta name="twitter:description" content="apidoc是一个轻量级的在线REST接口文档生成系统，支持多种主流语言，包括Java、C、C#、PHP和Javascript等。使用者仅需要按照要求书写相关注释，就可以生成可读性好、界面美观的在线接口文档。本文主要包含以下内容：
+
+介绍apidoc的基本概念
+安装、使用和简单配置
+一些特殊参数的含义及其使用
+介绍一些使用经验">
+<meta name="twitter:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocdemo-sample.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 使用apidocJs快速生成在线文档 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用apidocJs快速生成在线文档
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-03-31T20:33:56+08:00" content="2016-03-31">
+              2016-03-31
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/教程/" itemprop="url" rel="index">
+                    <span itemprop="name">教程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/31/create-online-document-use-apidoc/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/31/create-online-document-use-apidoc/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>apidoc是一个轻量级的在线REST接口文档生成系统，支持多种主流语言，包括Java、C、C#、PHP和Javascript等。使用者仅需要按照要求书写相关注释，就可以生成可读性好、界面美观的在线接口文档。本文主要包含以下内容：</p>
+<ol>
+<li>介绍apidoc的基本概念</li>
+<li>安装、使用和简单配置</li>
+<li>一些特殊参数的含义及其使用</li>
+<li>介绍一些使用经验</li>
+</ol>
+<a id="more"></a>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><h4 id="apidoc能做什么"><a href="#apidoc能做什么" class="headerlink" title="apidoc能做什么"></a>apidoc能做什么</h4><p>apidoc是一个轻量级的在线REST接口文档生成系统，可以根据其特定的规则的代码注释来生成静态网页。首先看下它生成的文档界面和风格。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocdemo-sample.png" alt=""></p>
+<h4 id="支持"><a href="#支持" class="headerlink" title="支持"></a>支持</h4><p>apidoc支持多种主流的编码语言，包括Java、C、C#、PHP和Javascript。一般情况下，语言会有多种注释方法，例如就Java中有普通风格的多行注释和Javadoc风格的注释。apidoc并不支持所有的注释，譬如Java仅中支持Javadoc风格的注释。首先要说明的是，apidoc并不具备语义识别能力，它不会发现代码中是否有BUG，它仅仅通过文件后缀来判断语言类型。下面是一些不同语言注释示例：</p>
+<p><strong> Java、Javascript、PHP </strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id Request User information</div><div class="line"> * <span class="doctag">@apiName</span> GetUser</div><div class="line"> * <span class="doctag">@apiGroup</span> User</div><div class="line"> *</div><div class="line"> * <span class="doctag">@apiParam</span> &#123;Number&#125; id Users unique ID.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@apiSuccess</span> &#123;String&#125; firstname Firstname of the User.</div><div class="line"> * <span class="doctag">@apiSuccess</span> &#123;String&#125; lastname  Lastname of the User.</div><div class="line"> */</div></pre></td></tr></table></figure>
+<p><strong> Python </strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="string">"""</span></div><div class="line">@api &#123;get&#125; /user/:id Request User information</div><div class="line">@apiName GetUser</div><div class="line">@apiGroup User</div><div class="line"></div><div class="line">@apiParam &#123;Number&#125; id Users unique ID.</div><div class="line"></div><div class="line">@apiSuccess &#123;String&#125; firstname Firstname of the User.</div><div class="line">@apiSuccess &#123;String&#125; lastname  Lastname of the User.</div><div class="line">"""</div></pre></td></tr></table></figure>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>apidoc是基于nodeJs平台，在安装apidoc之前，需要先安装nodeJs。关于nodeJs的安装，一搜一大把，不过为了文章的完整性，还是首先介绍一下Windows平台下nodeJs的安装。</p>
+<!-- node -->
+<h4 id="nodeJs安装"><a href="#nodeJs安装" class="headerlink" title="nodeJs安装"></a>nodeJs安装</h4><p>首先，去<a href="https://nodejs.org/en/download/" target="_blank" rel="external">node.js官网</a>上下载最新的安装包，请下载自己对应系统的安装包。譬如笔者的操作系统是64位Windows操作系统，就下载下图所示的node安装包。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocdownload-node-package.png" alt="download-node-package"></p>
+<p>下载完毕后，按照一般的软件安装步骤安装即可。由于笔者的计算机已经安装过了，在这里就不过细演示了。</p>
+<p>按理来说，按照安装步骤安装完毕后，node环境也已经配置好了，现在来验证一下node是否已正确安装配置。</p>
+<p>首先，打开Window Shell窗口。使用<code>win+R</code>快捷键打开运行窗口，在文本框中输入<code>cmd</code>并回车打开Windows Shell。</p>
+<p>然后，在控制台输入<code>node</code>命令进入node控制台。</p>
+<p>最后，运行一个Hello World程序。在node控制台中输入<code>console.info(“hello world”);</code>，如果输出如下图所示的结果，则表示node安装配置成功。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocnode-install-check.png" alt="node-install-check"></p>
+<p>除了node之外，npm（node package manager，node安装包管理器）也是很重要的，可以通过它来便捷地下载和安装node应用。在Windows Shell中输入<code>npm</code>命令，如果出现如下图所示的信息，则表示npm也正确安装完毕。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocnpm-check.png" alt="npm-check"></p>
+<h4 id="apidoc安装"><a href="#apidoc安装" class="headerlink" title="apidoc安装"></a>apidoc安装</h4><p>apidoc可以利用npm来快速安装。</p>
+<p>1、进入Windows Shell，输入<code>mpm install apidoc -g</code>进行apidoc的安装，如下图。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-install.png" alt="apidoc-install"></p>
+<p>等待一定时间（根据自身的网速）的下载和安装之后，如果出现下图所示的信息，则表示apidoc安装成功。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-install-complete.png" alt="apidoc-install-complete"></p>
+<p>2、在Windows Shell中输入<code>apidoc -v</code>命令，如果出现如下图所示的界面，则表示apidoc已安装成功。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-install-check.png" alt="apidoc-install-check"></p>
+<h3 id="初步使用"><a href="#初步使用" class="headerlink" title="初步使用"></a>初步使用</h3><p>下面通过一些简单的demo来介绍如何利用apidoc生成一份在线接口文档。</p>
+<h4 id="命令行"><a href="#命令行" class="headerlink" title="命令行"></a>命令行</h4><p>在正式开始之前，先介绍一下apidoc中的重要命令和参数。apidoc的命令格式如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">apidoc</span> 参数</div></pre></td></tr></table></figure>
+<p>一些重要的参数如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">参数</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">-f</td>
+<td style="text-align:left">选择要解析的文件，支持正则表达式。-f参数可以使用多次，多个表达式可以对应不同的-f。如：<code>apidoc -f “.<em>\.js$” -f “.</em>\.ts$”</code></td>
+</tr>
+<tr>
+<td style="text-align:center">-i</td>
+<td style="text-align:left">选择源代码所在的位置。如：<code>apidoc -i myapp/</code></td>
+</tr>
+<tr>
+<td style="text-align:center">-o</td>
+<td style="text-align:left">选择生成的目标文件所在的位置。如：<code>apidoc -o apidoc/</code></td>
+</tr>
+<tr>
+<td style="text-align:center">-t</td>
+<td style="text-align:left">为生成文件选择模板，可以创建和使用自定义的模板。（笔者注：目前为止，笔者还没有使用过这个参数）</td>
+</tr>
+<tr>
+<td style="text-align:center">-h</td>
+<td style="text-align:left">跟绝大多数命令一样，这个参数可以打印出帮助文档</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apidoc -i src/ -o apidoc/ # 可以通过搜索src目录中的文件快速的生成文档文件，并将这些文件放在apidoc目录下。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apidoc -h # 显示帮助信息</div></pre></td></tr></table></figure>
+<h4 id="使用apidoc"><a href="#使用apidoc" class="headerlink" title="使用apidoc"></a>使用apidoc</h4><p>一个典型的文件目录结果如下图所示。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-src-struct.png" alt="apidoc-src-struct"></p>
+<p>其中：</p>
+<ol>
+<li>apidoc.json：apidoc的项目级配置文件，它必须位于整个工程目录顶层。</li>
+<li>Demo1.java：用于演示的demo源文件，它可以位于整个工程目录的顶层目录及其子目录下。apidoc会搜索整个工程目录选择所有可能的源文件。</li>
+</ol>
+<p>apidoc.json和Demo1.java中包含的代码分别如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="string">"name"</span>: <span class="string">"demo"</span>, </div><div class="line">  <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,</div><div class="line">  <span class="string">"description"</span>: <span class="string">"这是一个简单的apidoc的demo"</span>,</div><div class="line">  <span class="string">"title"</span>: <span class="string">"demo"</span>,</div><div class="line">  <span class="string">"url"</span> : <span class="string">"https://api.github.com/v1"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id Request User information</div><div class="line"> * <span class="doctag">@apiName</span> GetUser</div><div class="line"> * <span class="doctag">@apiGroup</span> User</div><div class="line"> *</div><div class="line"> * <span class="doctag">@apiParam</span> &#123;Number&#125; id Users unique ID.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@apiSuccess</span> &#123;String&#125; firstname Firstname of the User.</div><div class="line"> * <span class="doctag">@apiSuccess</span> &#123;String&#125; lastname  Lastname of the User.</div><div class="line"> */</div></pre></td></tr></table></figure>
+<p>下面通过这个demo来介绍如何生成文档文件。</p>
+<p>首先，在Windows Shell中进入apidoc工程目录的上层目录。例如笔者的apidoc的工程位于<code>E:\workspaces\sublime\apidoc</code>路径下。在这个目录中创建名为<code>src</code>的工程目录，将apidoc.json和Demo1.java文件置于src目录下。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoccd-into-apidoc-dir.png" alt="cd-into-apidoc-dir"></p>
+<p>然后，在Windows Shell中输入<code>apidoc -i src/ -o apidoc/</code>命令，如果出现如下图所示的<code>Done</code>结果，则表明文档已经生成，位于同级目录的apidoc（与-o apidoc对应）目录下。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-demo1-generate.png" alt="apidoc-demo1-generate"></p>
+<p>最后，打开apidoc目录，可以看到如下图所示的静态Web文件。双击<code>index.html</code>就可以在浏览器中打开生成在线接口文档网站。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-demo1-generate-target.png" alt="apidoc-demo1-generate-target"><br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-demo1-website.png" alt="apidoc-demo1-website"></p>
+<p>这样我们就成功地生成了一份在线接口文档了，接下来就只要部署到任意Web容器（Apache、Tomcat等）就可以将接口文档对外发布了，So easy！</p>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>apidoc.json文件是项目级的配置文件，接下来简单地介绍一下其中常用的配置项。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置名</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">name</td>
+<td style="text-align:left">工程名。如果该字段不存在，则apidoc会尝试通过package.json（apidoc顶层配置文件）来生成</td>
+</tr>
+<tr>
+<td style="text-align:center">version</td>
+<td style="text-align:left">工程文档的版本号。如果该字段不存在，则apidoc会尝试通过package.json（apidoc顶层配置文件）来生成</td>
+</tr>
+<tr>
+<td style="text-align:center">description</td>
+<td style="text-align:left">工程详细描述。如果该字段不存在，则apidoc会尝试通过package.json（apidoc顶层配置文件）来生成</td>
+</tr>
+<tr>
+<td style="text-align:center">title</td>
+<td style="text-align:left">文档标题，显示在文档界面的最上方</td>
+</tr>
+<tr>
+<td style="text-align:center">url</td>
+<td style="text-align:left">整个api url的前缀，接下来的所有接口url都会加上这个前缀</td>
+</tr>
+<tr>
+<td style="text-align:center">sampleUrl</td>
+<td style="text-align:left">api示例的url前缀。如果设置了这个值，则界面中显示请求表单，可以用于测试接口</td>
+</tr>
+<tr>
+<td style="text-align:center">header</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:center">title</td>
+<td style="text-align:left">文档头（header）的连接锚点名</td>
+</tr>
+<tr>
+<td style="text-align:center">filename</td>
+<td style="text-align:left">文档头所使用的文件</td>
+</tr>
+<tr>
+<td style="text-align:center">footer</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:center">title</td>
+<td style="text-align:left">文档尾（footer）的连接锚点名</td>
+</tr>
+<tr>
+<td style="text-align:center">filename</td>
+<td style="text-align:left">文档尾所使用的文件</td>
+</tr>
+<tr>
+<td style="text-align:center">order</td>
+<td style="text-align:left">接口的排列顺序list，如果不指定，则由apidoc自行确定</td>
+</tr>
+</tbody>
+</table>
+<p>一个比较完整的配置文件如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">"name"</span>: <span class="string">"demo"</span>,</div><div class="line">    <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,</div><div class="line">    <span class="string">"description"</span>: <span class="string">"这是一个简单的apidoc的demo"</span>,</div><div class="line">    <span class="string">"title"</span>: <span class="string">"demo"</span>,</div><div class="line">    <span class="string">"url"</span>: <span class="string">"https://api.github.com/v1"</span>,</div><div class="line">    <span class="string">"sampleUrl"</span>: <span class="string">"https://api.github.com/v1/test"</span>,</div><div class="line">    <span class="string">"header"</span>: &#123;</div><div class="line">        <span class="string">"title"</span>: <span class="string">"header"</span>,</div><div class="line">        <span class="string">"filename"</span>: <span class="string">"header.md"</span></div><div class="line">    &#125;,</div><div class="line">    <span class="string">"footer"</span>: &#123;</div><div class="line">        <span class="string">"title"</span>: <span class="string">"footer"</span>,</div><div class="line">        <span class="string">"filename"</span>: <span class="string">"footer.md"</span></div><div class="line">    &#125;,</div><div class="line">    <span class="string">"order"</span>: [</div><div class="line">        <span class="string">"Error"</span>,</div><div class="line">        <span class="string">"Define"</span>,</div><div class="line">        <span class="string">"PostTitleAndError"</span>,</div><div class="line">        <span class="string">"PostError"</span></div><div class="line">    ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>更多的配置项请参考<a href="http://apidocjs.com/#configuration" target="_blank" rel="external">apidoc官方文档站点</a>。</p>
+<h3 id="Params"><a href="#Params" class="headerlink" title="Params"></a>Params</h3><p>apidoc中最核心的东西就是参数（params）的书写，本节介绍apidoc中一些重要的params。</p>
+<h4 id="api"><a href="#api" class="headerlink" title="@api"></a>@api</h4><p><code>@api</code>定义一个特定的接口。如果一个注释块既不包含<code>@apiDefine</code>又没有包含<code>@api</code>参数，则apidoc会直接忽略这个注释块。这个参数在界面上表示一个接口区域块如下:</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoc%40api.png" alt="@api"></p>
+<p><code>@api</code>的书写格式为：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@<span class="keyword">api</span> &#123;<span class="selector-tag">method</span>&#125; <span class="selector-tag">path</span> <span class="selector-attr">[title]</span></div></pre></td></tr></table></figure>
+<p>注意，[xxx]表示一个可选的参数，下同。</p>
+<p>下表介绍了<code>@api</code>中的参数含义。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">参数</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">method</td>
+<td style="text-align:left">请求的HTTP方法名，包括<code>DELETE</code>, <code>GET, <code>POST</code>, <code>PUT</code>，更多方法详见<a href="http://hinylover.space/2016/01/19/http-learn-booknote-2/#HTTP_u65B9_u6CD5">http-learn-url</a></code></td>
+</tr>
+<tr>
+<td style="text-align:center">path</td>
+<td style="text-align:left">请求的url path（不包括前缀）</td>
+</tr>
+<tr>
+<td style="text-align:center">title</td>
+<td style="text-align:left">接口名，用于接口索引。这个配置项会显示在导航菜单中。</td>
+</tr>
+</tbody>
+</table>
+<p>更多的配置项请参考<a href="http://apidocjs.com/#params" target="_blank" rel="external">apidoc官方文档站点</a>。</p>
+<h4 id="apiDefine"><a href="#apiDefine" class="headerlink" title="@apiDefine"></a>@apiDefine</h4><p><code>@apiDefine</code>表示定义一个变量，该变量可以指代任意值（字符串、参数块），这个参数并且写在独立的代码块中。可以使用<code>@apiUse</code>来使用其定义的变量。</p>
+<p><code>@apiDefine</code>的书写格式为：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiDefine name <span class="string">[title]</span> <span class="string">[description]</span></div></pre></td></tr></table></figure>
+<p>下表介绍了<code>@apiDefine</code>中的参数含义。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">参数</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">name</td>
+<td style="text-align:left">值或者块的名字，可以看做就是变量名</td>
+</tr>
+<tr>
+<td style="text-align:center">title</td>
+<td style="text-align:left">标题，一般用于@apiParam (name)参数，显示请求参数所在组的名称</td>
+</tr>
+<tr>
+<td style="text-align:center">description</td>
+<td style="text-align:left">该变量的描述。</td>
+</tr>
+</tbody>
+</table>
+<p>下面的代码定义一个错误块，然后在接口定义中引用使用这个错误块。多个不同接口可以引用同样的@apiDefine块，这也变成语言的变量功能一直。可以消除重复代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@apiDefine</span> MyError</div><div class="line"> * <span class="doctag">@apiError</span> UserNotFound The &lt;code&gt;id&lt;/code&gt; of the User was not found.</div><div class="line"> */</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id</div><div class="line"> * <span class="doctag">@apiUse</span> MyError</div><div class="line"> */</div></pre></td></tr></table></figure>
+<h4 id="apiDescription"><a href="#apiDescription" class="headerlink" title="@apiDescription"></a>@apiDescription</h4><p>用于<code>@api</code>代码块中，用于详尽地描述接口的功能。</p>
+<p><code>@apiDescription</code>的书写格式为：</p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiDescription <span class="keyword">text</span></div></pre></td></tr></table></figure>
+<p>text就是具体的描述内容，可以直接使用Markdown语法，这极大地丰富了其表现形式。</p>
+<h4 id="apiGroup"><a href="#apiGroup" class="headerlink" title="@apiGroup"></a>@apiGroup</h4><p>表示接口所属的组，最直接的体现就是在侧边导航中将接口分在对用的组中。</p>
+<p><code>@apiGroup</code>的书写格式为：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiGroup <span class="built_in">name</span></div></pre></td></tr></table></figure>
+<p>name表示组名，可以是任意字符串。值得注意的是，name不支持中文，一旦输入中文，apidoc就会忽略这些中文字符。如果需要在界面中显示中文接口组名，只需要使用<code>@apiDefine</code>定义一个中文字符串，然后name用变量名替换即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@apiDefine</span> group 测试</div><div class="line"> */</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id Request User information</div><div class="line"> * <span class="doctag">@apiName</span> GetUser</div><div class="line"> * <span class="doctag">@apiGroup</span> group</div><div class="line"> */</div></pre></td></tr></table></figure>
+<h4 id="apiName"><a href="#apiName" class="headerlink" title="@apiName"></a>@apiName</h4><p>表示接口的名字，应该在每个@api块中使用。可以生成一个Web锚点，快速定位接口位置。可以看到锚点（url的#后面的字符串）通常由groupName-apiName构成。</p>
+<p><code>@apiName</code>的书写格式为：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiName <span class="built_in">name</span></div></pre></td></tr></table></figure>
+<h4 id="apiUse"><a href="#apiUse" class="headerlink" title="@apiUse"></a>@apiUse</h4><p>表示引用一个@apiDefine定义的值或块，相当于直接替换变量的值。</p>
+<p><code>@apiUse</code>的书写格式为：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiUse <span class="built_in">name</span></div></pre></td></tr></table></figure>
+<p>name是一个已定义的@apiDefine中的name，如果输入的name不存在，则会抛出类似下面的异常信息。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123; <span class="attribute">File</span>: <span class="string">'src\\Demo1.java'</span>,</div><div class="line">  <span class="attribute">Block</span>: <span class="number">4</span>,</div><div class="line">  <span class="attribute">Element</span>: <span class="string">'@apiUse'</span>,</div><div class="line">  <span class="attribute">Groupname</span>: <span class="string">'test'</span>,</div><div class="line">  <span class="attribute">Definition</span>: <span class="string">'@apiUse group'</span>,</div><div class="line">  <span class="attribute">Example</span>: <span class="string">'@apiDefine MyValidGroup Some title\n@apiUse MyValidGroup'</span> &#125;</div></pre></td></tr></table></figure>
+<p>下面是一个示例：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @apiDefine test</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;Number&#125; <span class="keyword">id</span> <span class="keyword">Users</span> <span class="keyword">unique</span> <span class="keyword">ID</span>.</div><div class="line"> */</div><div class="line"></div><div class="line">/**</div><div class="line"> * @apiUse test</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;Number&#125; <span class="keyword">name</span> <span class="keyword">name</span>.</div><div class="line"> */</div></pre></td></tr></table></figure>
+<h4 id="apiParam"><a href="#apiParam" class="headerlink" title="@apiParam"></a>@apiParam</h4><p>表示一个请求参数。</p>
+<p><code>@apiParam</code>的书写格式为：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiParam <span class="string">[(group)]</span> <span class="string">[&#123;type&#125;]</span> <span class="string">[field=defaultValue]</span> <span class="string">[description]</span></div></pre></td></tr></table></figure>
+<p>下表介绍了<code>@apiParam</code>中的参数含义。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">参数</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">(group)</td>
+<td style="text-align:left">参数所在的组，可以使用<code>@apiDefine</code>定义的值</td>
+</tr>
+<tr>
+<td style="text-align:center">{type}</td>
+<td style="text-align:left">参数的类型。例如 {Boolean}, {Number}, {String}, {Object}, {String[]} (array of strings), ..</td>
+</tr>
+<tr>
+<td style="text-align:center">field</td>
+<td style="text-align:left">请求参数名。</td>
+</tr>
+<tr>
+<td style="text-align:center">[field]</td>
+<td style="text-align:left">表示这个参数是个可选参数，非必传参数。</td>
+</tr>
+<tr>
+<td style="text-align:center">=defaultValue</td>
+<td style="text-align:left">表示这个参数的默认值。</td>
+</tr>
+<tr>
+<td style="text-align:center">description</td>
+<td style="text-align:left">这个请求参数的描述，支持Markdown语法。</td>
+</tr>
+</tbody>
+</table>
+<p>下面是一个简单的示例：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @<span class="keyword">api</span> &#123;get&#125; /user/:id</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;Number&#125; <span class="keyword">id</span> <span class="keyword">Users</span> <span class="keyword">unique</span> <span class="keyword">ID</span>.</div><div class="line"> */</div><div class="line"></div><div class="line">/**</div><div class="line"> * @<span class="keyword">api</span> &#123;post&#125; /user/</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;String&#125; [firstname]  用户名（非必填）.</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;String&#125; <span class="keyword">lastname</span>     用户姓（必填）.</div><div class="line"> */</div></pre></td></tr></table></figure>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoc%40apiParam.png" alt="@apiParam"></p>
+<h4 id="apiSuccess"><a href="#apiSuccess" class="headerlink" title="@apiSuccess"></a>@apiSuccess</h4><p>表示请求成功时的一个返回字段。</p>
+<p><code>@apiSuccess</code>的书写格式为：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiSuccess <span class="string">[(group)]</span> <span class="string">[&#123;type&#125;]</span> field <span class="string">[description]</span></div></pre></td></tr></table></figure>
+<p>@apiSuccess的参数含义与@apiParam一致，这里就不再做说明了。</p>
+<h4 id="apiError"><a href="#apiError" class="headerlink" title="@apiError"></a>@apiError</h4><p>表示请求失败时的一个返回字段。</p>
+<p><code>@apiError</code>的书写格式为：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiError <span class="string">[(group)]</span> <span class="string">[&#123;type&#125;]</span> field <span class="string">[description]</span></div></pre></td></tr></table></figure>
+<p>与apiSuccess的参数含义完全一致。</p>
+<h4 id="apiParamExample"><a href="#apiParamExample" class="headerlink" title="@apiParamExample"></a>@apiParamExample</h4><p>表示一个请求范例。</p>
+<p><code>@apiParamExample</code>的书写格式为：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@<span class="keyword">apiParamExample</span> [&#123;<span class="selector-tag">type</span>&#125;] <span class="selector-attr">[title]</span> <span class="selector-tag">example</span></div></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">参数</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">{type}</td>
+<td style="text-align:left">表示请求数据的格式</td>
+</tr>
+<tr>
+<td style="text-align:center">title</td>
+<td style="text-align:left">显示在界面上的示例标题</td>
+</tr>
+<tr>
+<td style="text-align:center">example</td>
+<td style="text-align:left">示例实体</td>
+</tr>
+</tbody>
+</table>
+<p>下面是一个简单的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id</div><div class="line"> * <span class="doctag">@apiParamExample</span> &#123;json&#125; Request-Example:</div><div class="line"> *     &#123;</div><div class="line"> *       "id": 4711</div><div class="line"> *     &#125;</div><div class="line"> */</div></pre></td></tr></table></figure>
+<h4 id="apiSuccessExample"><a href="#apiSuccessExample" class="headerlink" title="@apiSuccessExample"></a>@apiSuccessExample</h4><p>表示一个响应范例。其书写格式和参数含义与@apiParamExample完全一样。</p>
+<h4 id="apiSampleRequest"><a href="#apiSampleRequest" class="headerlink" title="@apiSampleRequest"></a>@apiSampleRequest</h4><p>表示一个接口测试块，可以根据定义的请求参数来生成一个表单，用来进行接口测试。</p>
+<p><code>@apiSampleRequest</code>的书写格式为：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@apiSampleRequest</span> url</div></pre></td></tr></table></figure>
+<p>url可以与配置文件（apidoc.json）中的sampleUrl以及@api定义的path连接成一个完整的测试url。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id</div><div class="line"> * <span class="doctag">@apiParam</span> &#123;Number&#125; id Users unique ID.</div><div class="line"> * <span class="doctag">@apiSampleRequest</span> /test</div><div class="line"> */</div></pre></td></tr></table></figure>
+<p>生成的界面截图如下：</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoc%40apiSampleRequest.png" alt="@apiSampleRequest"></p>
+<h3 id="一些实际经验"><a href="#一些实际经验" class="headerlink" title="一些实际经验"></a>一些实际经验</h3><p>下面介绍一下在实际使用过程发现的东西。</p>
+<h4 id="绝大部分地方可使用Markdown语法"><a href="#绝大部分地方可使用Markdown语法" class="headerlink" title="绝大部分地方可使用Markdown语法"></a>绝大部分地方可使用Markdown语法</h4><p>在几乎所有的描述类字段处都可以使用符合Markdown语法的文本，可以使得文档形式更加美观。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id</div><div class="line"> * <span class="doctag">@apiParam</span> &#123;String&#125; rule </div><div class="line"> *</div><div class="line"> * - 规则1：不能使用小数</div><div class="line"> * - 规则2：不能相加</div><div class="line"> */</div></pre></td></tr></table></figure>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocmarkdown-support.png" alt="markdown-support"></p>
+<h4 id="对象类型的参数"><a href="#对象类型的参数" class="headerlink" title="对象类型的参数"></a>对象类型的参数</h4><p>如果请求的参数是一个对象，那此时因为如果书写呢？比如需要Post一个Person对象，Person中包括name、age字段，那么可以这样书写。</p>
+<figure class="highlight julia"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * <span class="meta">@api</span> &#123;post&#125; /user</div><div class="line"> * <span class="meta">@apiName</span> obj</div><div class="line"> * <span class="meta">@apiParam</span> &#123;Object&#125; person </div><div class="line"> * <span class="meta">@apiParam</span> &#123;<span class="built_in">String</span>&#125; person.name  姓名 </div><div class="line"> * <span class="meta">@apiParam</span> &#123;<span class="built_in">Integer</span>&#125; person.age 年龄 </div><div class="line"> */</div></pre></td></tr></table></figure>
+<p>从下图中可以看到name和age字段的前面有些缩进，而且字段显示名为name和age。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocparam-object.png" alt="param-object"></p>
+<hr>
+<p>本文由<a href="http://hinylover.space">xialei</a>原创，转载请说明出处<a href="http://hinylover.space/2016/03/31/create-online-document-use-apidoc/">http://hinylover.space/2016/03/31/create-online-document-use-apidoc/</a>。</p>
+<hr>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/apidoc/" rel="tag">#apidoc</a>
+          
+            <a href="/tags/文档生成/" rel="tag">#文档生成</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/23/springmvc-mybatis-createproject-demo-1/" rel="next" title="使用springmvc+mybatis创建Web应用（一）—— 相关概念，工具，搭建Web应用">
+                <i class="fa fa-chevron-left"></i> 使用springmvc+mybatis创建Web应用（一）—— 相关概念，工具，搭建Web应用
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/11/springmvc-mybatis-createproject-demo-2/" rel="prev" title="使用springmvc+mybatis创建Web应用（二）—— 数据库、配置和测试">
+                使用springmvc+mybatis创建Web应用（二）—— 数据库、配置和测试 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/03/31/create-online-document-use-apidoc/"
+     data-title="使用apidocJs快速生成在线文档"
+     data-content=""
+     data-url="http://hinylover.space/2016/03/31/create-online-document-use-apidoc/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/03/31/create-online-document-use-apidoc/"
+           data-title="使用apidocJs快速生成在线文档" data-url="http://hinylover.space/2016/03/31/create-online-document-use-apidoc/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#apidoc能做什么"><span class="nav-number">1.1.</span> <span class="nav-text">apidoc能做什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#支持"><span class="nav-number">1.2.</span> <span class="nav-text">支持</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#nodeJs安装"><span class="nav-number">2.1.</span> <span class="nav-text">nodeJs安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apidoc安装"><span class="nav-number">2.2.</span> <span class="nav-text">apidoc安装</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初步使用"><span class="nav-number">3.</span> <span class="nav-text">初步使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#命令行"><span class="nav-number">3.1.</span> <span class="nav-text">命令行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用apidoc"><span class="nav-number">3.2.</span> <span class="nav-text">使用apidoc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置"><span class="nav-number">4.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Params"><span class="nav-number">5.</span> <span class="nav-text">Params</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#api"><span class="nav-number">5.1.</span> <span class="nav-text">@api</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiDefine"><span class="nav-number">5.2.</span> <span class="nav-text">@apiDefine</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiDescription"><span class="nav-number">5.3.</span> <span class="nav-text">@apiDescription</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiGroup"><span class="nav-number">5.4.</span> <span class="nav-text">@apiGroup</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiName"><span class="nav-number">5.5.</span> <span class="nav-text">@apiName</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiUse"><span class="nav-number">5.6.</span> <span class="nav-text">@apiUse</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiParam"><span class="nav-number">5.7.</span> <span class="nav-text">@apiParam</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiSuccess"><span class="nav-number">5.8.</span> <span class="nav-text">@apiSuccess</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiError"><span class="nav-number">5.9.</span> <span class="nav-text">@apiError</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiParamExample"><span class="nav-number">5.10.</span> <span class="nav-text">@apiParamExample</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiSuccessExample"><span class="nav-number">5.11.</span> <span class="nav-text">@apiSuccessExample</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apiSampleRequest"><span class="nav-number">5.12.</span> <span class="nav-text">@apiSampleRequest</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一些实际经验"><span class="nav-number">6.</span> <span class="nav-text">一些实际经验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#绝大部分地方可使用Markdown语法"><span class="nav-number">6.1.</span> <span class="nav-text">绝大部分地方可使用Markdown语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对象类型的参数"><span class="nav-number">6.2.</span> <span class="nav-text">对象类型的参数</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="教程,系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="Elasticsearch（简称ES）是一个基于Apache Lucene(TM)的开源搜索引擎，无论在开源还是专有领域，Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引擎库。
+Elasticsearch简介Elasticsearch是什么Elasticsearch是一个基于Apache Lucene(TM)的开源搜索引擎，无论在开源还是专有领域，Lucene可以被认为是迄今为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实时搜索引擎Elasticsearch（1）——基础概念、安装和运行">
+<meta property="og:url" content="http://hinylover.space/2015/08/15/elasticsearch-1/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="Elasticsearch（简称ES）是一个基于Apache Lucene(TM)的开源搜索引擎，无论在开源还是专有领域，Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引擎库。
+Elasticsearch简介Elasticsearch是什么Elasticsearch是一个基于Apache Lucene(TM)的开源搜索引擎，无论在开源还是专有领域，Lucene可以被认为是迄今为">
+<meta property="og:image" content="http://img.blog.csdn.net/20150812211536186">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="实时搜索引擎Elasticsearch（1）——基础概念、安装和运行">
+<meta name="twitter:description" content="Elasticsearch（简称ES）是一个基于Apache Lucene(TM)的开源搜索引擎，无论在开源还是专有领域，Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引擎库。
+Elasticsearch简介Elasticsearch是什么Elasticsearch是一个基于Apache Lucene(TM)的开源搜索引擎，无论在开源还是专有领域，Lucene可以被认为是迄今为">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20150812211536186">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 实时搜索引擎Elasticsearch（1）——基础概念、安装和运行 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                实时搜索引擎Elasticsearch（1）——基础概念、安装和运行
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-08-15T21:08:09+08:00" content="2015-08-15">
+              2015-08-15
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index">
+                    <span itemprop="name">elasticsearch</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/08/15/elasticsearch-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/15/elasticsearch-1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p><strong>Elasticsearch</strong>（简称ES）是一个基于Apache Lucene(TM)的开源搜索引擎，无论在开源还是专有领域，Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引擎库。</p>
+<h3 id="Elasticsearch简介"><a href="#Elasticsearch简介" class="headerlink" title="Elasticsearch简介"></a><strong>Elasticsearch简介</strong></h3><h4 id="Elasticsearch是什么"><a href="#Elasticsearch是什么" class="headerlink" title="Elasticsearch是什么"></a><strong>Elasticsearch是什么</strong></h4><p>Elasticsearch是一个基于Apache Lucene(TM)的开源搜索引擎，无论在开源还是专有领域，Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引擎库。<br>但是，Lucene只是一个库。想要发挥其强大的作用，你需使用Java并要将其集成到你的应用中。Lucene非常复杂，你需要深入的了解检索相关知识来理解它是如何工作的。<br>Elasticsearch也是使用Java编写并使用Lucene来建立索引并实现搜索功能，但是它的目的是通过简单连贯的RESTful API让全文搜索变得简单并隐藏Lucene的复杂性。<br>不过，Elasticsearch不仅仅是Lucene和全文搜索引擎，它还提供：</p>
+<ul>
+<li>分布式的实时文件存储，每个字段都被索引并可被搜索</li>
+<li>实时分析的分布式搜索引擎</li>
+<li>可以扩展到上百台服务器，处理PB级结构化或非结构化数据</li>
+</ul>
+<a id="more"></a>
+<p>而且，所有的这些功能被集成到一台服务器，你的应用可以通过简单的RESTful API、各种语言的客户端甚至命令行与之交互。上手Elasticsearch非常简单，它提供了许多合理的缺省值，并对初学者隐藏了复杂的搜索引擎理论。它开箱即用（安装即可使用），只需很少的学习既可在生产环境中使用。Elasticsearch在Apache 2 license下许可使用，可以免费下载、使用和修改。<br>随着知识的积累，你可以根据不同的问题领域定制Elasticsearch的高级特性，这一切都是可配置的，并且配置非常灵活。</p>
+<p>以上内容来自 <a href="http://baike.baidu.com/link?url=8rIWfQSAzwZGn1HTjaaH4VLwqXzsplGUAqnWC9ux_8ktsh_wL3hMRN7uQX4Hu1C0ugVEUnyRTZv62dKMrxKnWq" target="_blank">[百度百科]</a></p>
+<h4 id="Elasticsearch中涉及到的重要概念"><a href="#Elasticsearch中涉及到的重要概念" class="headerlink" title="Elasticsearch中涉及到的重要概念"></a><strong>Elasticsearch中涉及到的重要概念</strong></h4><p>Elasticsearch有几个核心概念。从一开始理解这些概念会对整个学习过程有莫大的帮助。</p>
+<p><strong>（1） 接近实时（NRT）</strong><br>Elasticsearch是一个接近实时的搜索平台。这意味着，从索引一个文档直到这个文档能够被搜索到有一个轻微的延迟（通常是1秒）。</p>
+<p><strong>（2） 集群（cluster）</strong><br>一个集群就是由一个或多个节点组织在一起，它们共同持有你整个的数据，并一起提供索引和搜索功能。一个集群由一个唯一的名字标识，这个名字默认就是“elasticsearch”。这个名字是重要的，因为一个节点只能通过指定某个集群的名字，来加入这个集群。在产品环境中显式地设定这个名字是一个好习惯，但是使用默认值来进行测试/开发也是不错的。     </p>
+<p><strong>（3） 节点（node）</strong><br>一个节点是你集群中的一个服务器，作为集群的一部分，它存储你的数据，参与集群的索引和搜索功能。和集群类似，一个节点也是由一个名字来标识的，默认情况下，这个名字是一个随机的漫威漫画角色的名字，这个名字会在启动的时候赋予节点。这个名字对于管理工作来说挺重要的，因为在这个管理过程中，你会去确定网络中的哪些服务器对应于Elasticsearch集群中的哪些节点。</p>
+<p>一个节点可以通过配置集群名称的方式来加入一个指定的集群。默认情况下，每个节点都会被安排加入到一个叫做“elasticsearch”的集群中，这意味着，如果你在你的网络中启动了若干个节点，并假定它们能够相互发现彼此，它们将会自动地形成并加入到一个叫做“elasticsearch”的集群中。</p>
+<p>在一个集群里，只要你想，可以拥有任意多个节点。而且，如果当前你的网络中没有运行任何Elasticsearch节点，这时启动一个节点，会默认创建并加入一个叫做“elasticsearch”的集群。</p>
+<p><strong>（4） 索引（index）</strong><br>一个索引就是一个拥有几分相似特征的文档的集合。比如说，你可以有一个客户数据的索引，另一个产品目录的索引，还有一个订单数据的索引。一个索引由一个名字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。索引类似于关系型数据库中Database的概念。在一个集群中，如果你想，可以定义任意多的索引。</p>
+<p><strong>（5） 类型（type）</strong><br>在一个索引中，你可以定义一种或多种类型。一个类型是你的索引的一个逻辑上的分类/分区，其语义完全由你来定。通常，会为具有一组共同字段的文档定义一个类型。比如说，我们假设你运营一个博客平台并且将你所有的数据存储到一个索引中。在这个索引中，你可以为用户数据定义一个类型，为博客数据定义另一个类型，当然，也可以为评论数据定义另一个类型。类型类似于关系型数据库中Table的概念。    </p>
+<p><strong>（6）文档（document）</strong><br>一个文档是一个可被索引的基础信息单元。比如，你可以拥有某一个客户的文档，某一个产品的一个文档，当然，也可以拥有某个订单的一个文档。文档以JSON（Javascript Object Notation）格式来表示，而JSON是一个到处存在的互联网数据交互格式。<br>在一个index/type里面，只要你想，你可以存储任意多的文档。注意，尽管一个文档，物理上存在于一个索引之中，文档必须被索引/赋予一个索引的type。文档类似于关系型数据库中Record的概念。实际上一个文档除了用户定义的数据外，还包括<code>_index</code>、<code>_type</code>和<code>_id</code>字段。</p>
+<p><strong>（7） 分片和复制（shards &amp; replicas）</strong><br>一个索引可以存储超出单个结点硬件限制的大量数据。比如，一个具有10亿文档的索引占据1TB的磁盘空间，而任一节点都没有这样大的磁盘空间；或者单个节点处理搜索请求，响应太慢。</p>
+<p>为了解决这个问题，Elasticsearch提供了将索引划分成多份的能力，这些份就叫做分片。当你创建一个索引的时候，你可以指定你想要的分片的数量。每个分片本身也是一个功能完善并且独立的“索引”，这个“索引”可以被放置到集群中的任何节点上。<br>分片之所以重要，主要有两方面的原因：</p>
+<ul>
+<li>允许你水平分割/扩展你的内容容量</li>
+<li>允许你在分片（潜在地，位于多个节点上）之上进行分布式的、并行的操作，进而提高性能/吞吐量</li>
+</ul>
+<p>至于一个分片怎样分布，它的文档怎样聚合回搜索请求，是完全由Elasticsearch管理的，对于作为用户的你来说，这些都是透明的。</p>
+<p>在一个网络/云的环境里，失败随时都可能发生，在某个分片/节点不知怎么的就处于离线状态，或者由于任何原因消失了。这种情况下，有一个故障转移机制是非常有用并且是强烈推荐的。为此目的，Elasticsearch允许你创建分片的一份或多份拷贝，这些拷贝叫做复制分片，或者直接叫复制。复制之所以重要，主要有两方面的原因：</p>
+<ul>
+<li>在分片/节点失败的情况下，提供了高可用性。因为这个原因，注意到复制分片从不与原/主要（original/primary）分片置于同一节点上是非常重要的。</li>
+<li>扩展你的搜索量/吞吐量，因为搜索可以在所有的复制上并行运行</li>
+</ul>
+<p>总之，每个索引可以被分成多个分片。一个索引也可以被复制0次（意思是没有复制）或多次。一旦复制了，每个索引就有了主分片（作为复制源的原来的分片）和复制分片（主分片的拷贝）之别。<strong>分片和复制的数量可以在索引创建的时候指定。在索引创建之后，你可以在任何时候动态地改变复制数量，但是不能改变分片的数量</strong>。</p>
+<p>默认情况下，Elasticsearch中的每个索引被分片5个主分片和1个复制，这意味着，如果你的集群中至少有两个节点，你的索引将会有5个主分片和另外5个复制分片（1个完全拷贝），这样的话每个索引总共就有10个分片。一个索引的多个分片可以存放在集群中的一台主机上，也可以存放在多台主机上，这取决于你的集群机器数量。主分片和复制分片的具体位置是由ES内在的策略所决定的。</p>
+<p>以上部分内容转自<a href="http://blog.csdn.net/cnweike/article/details/33736429" target="_blank" rel="external">Elasticsearch基础教程</a>，并对其进行了补充。</p>
+<h3 id="Elasticsearch安装与配置"><a href="#Elasticsearch安装与配置" class="headerlink" title="Elasticsearch安装与配置"></a><strong>Elasticsearch安装与配置</strong></h3><h4 id="安装与运行"><a href="#安装与运行" class="headerlink" title="安装与运行"></a><strong>安装与运行</strong></h4><p>(1) 从<a href="https://www.elastic.co/downloads/elasticsearch%20%E5%AE%98%E7%BD%91%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80" target="_blank" rel="external">这里</a>下载Elasticsearch安装包。一共提供4种格式的安装包（ZIP、TAR.GZ、DEB和RPM），可以根据自己所使用的系统平台选择相应格式的安装包进行下载。（建议使用Linux系统，本人在2台windows机器上尝试启动过，一台机器上无法正常启动，另外一台可以）</p>
+<p>(2) 对下载的安装包进行解压缩即可完成安装操作。下面以在Ubuntu操作系统下使用TAR.GZ格式的1.5.0版本的安装包为例进行安装。在Linux shell中输入下面的命令解压缩。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tar –vxf elasticsearch-1.5.0.tar.gz</div></pre></td></tr></table></figure>
+<p>安装成功，下面运行ES。</p>
+<pre><code>注意：Elasticsearch需要Java虚拟机的支持，在运行之前保证机器上安装了JDK，并且JDK版本不能低于1.7_55。
+</code></pre><p>(3) 现在可以直接使用默认配置启动Elasticsearch了。<br>假设安装包解压后的目录路径为【/home/elasticsearch/elasticsearch-1.5.0】，下面军用$ES_HOME来表示这个路径。执行下面的命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd /home/elasticsearch/elasticsearch-1.5.0/bin/</div><div class="line">chmod +x * </div><div class="line">./elasticsearch</div></pre></td></tr></table></figure>
+<p>如果出现如图所示的界面（最后打印出started），则说明Elasticsearch启动成功。<br><img src="http://img.blog.csdn.net/20150812211536186" alt="启动成功界面"></p>
+<p>下面来验证一下是否真的启动成功。打开浏览器，访问网址 <a href="http://host:9200（这里的host是ES的安装主机地址，如果安装在本机，就是http://127.0.0.1:9200）。如果显示下面的信息，则表示ES安装成功。" target="_blank" rel="external">http://host:9200（这里的host是ES的安装主机地址，如果安装在本机，就是http://127.0.0.1:9200）。如果显示下面的信息，则表示ES安装成功。</a><br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"status"</span> : <span class="number">200</span>,</div><div class="line">  <span class="attr">"name"</span> : <span class="string">"Captain Zero"</span>,</div><div class="line">  <span class="attr">"cluster_name"</span> : <span class="string">"elasticsearch"</span>,</div><div class="line">  <span class="attr">"version"</span> : &#123;</div><div class="line">    <span class="attr">"number"</span> : <span class="string">"1.5.0"</span>,</div><div class="line">    <span class="attr">"build_hash"</span> : <span class="string">"544816042d40151d3ce4ba4f95399d7860dc2e92"</span>,</div><div class="line">    <span class="attr">"build_timestamp"</span> : <span class="string">"2015-03-23T14:30:58Z"</span>,</div><div class="line">    <span class="attr">"build_snapshot"</span> : <span class="literal">false</span>,</div><div class="line">    <span class="attr">"lucene_version"</span> : <span class="string">"4.10.4"</span></div><div class="line">  &#125;,</div><div class="line">  <span class="attr">"tagline"</span> : <span class="string">"You Know, for Search"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面是前台启动方式，一旦关闭Linux shell，ES服务就会停止。所以是实际使用过程中，绝对不会使用这种方式去启动ES。除了上面的启动方式外，还可以加上一定的启动参数。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./elasticsearch –d #在后台运行Elasticsearch</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./elasticsearch -d -Xmx2g -Xms2g #后台启动，启动时指定内存大小（2G）</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./elasticsearch -d -Des.logger.level=DEBUG  #可以在日志中打印出更加详细的信息。</div></pre></td></tr></table></figure>
+<h4 id="ES的配置"><a href="#ES的配置" class="headerlink" title="ES的配置"></a><strong>ES的配置</strong></h4><p>配置文件所在的目录路径如下：$ES_HOME/config/elasticsearch.yml。<br>下面介绍一些重要的配置项及其含义。</p>
+<p><strong>（1）cluster.name: elasticsearch</strong></p>
+<blockquote>
+<p>配置elasticsearch的集群名称，默认是elasticsearch。elasticsearch会自动发现在同一网段下的集群名为elasticsearch的主机，如果在同一网段下有多个集群，就可以用这个属性来区分不同的集群。生成环境时建议更改。</p>
+</blockquote>
+<p><strong>（2）node.name: “Franz Kafka”</strong></p>
+<blockquote>
+<p>节点名，默认随机指定一个name列表中名字，该列表在elasticsearch的jar包中config文件夹里name.txt文件中，其中有很多作者添加的有趣名字，大部分是漫威动漫里面的人物名字。生成环境中建议更改以能方便的指定集群中的节点对应的机器</p>
+</blockquote>
+<p><strong>（3）node.master: true</strong></p>
+<blockquote>
+<p>指定该节点是否有资格被选举成为node，默认是true，elasticsearch默认集群中的第一台启动的机器为master，如果这台机挂了就会重新选举master。</p>
+</blockquote>
+<p><strong>（4）node.data: true</strong></p>
+<blockquote>
+<p>指定该节点是否存储索引数据，默认为true。如果节点配置node.master:false并且node.data: false，则该节点将起到负载均衡的作用</p>
+</blockquote>
+<p><strong>（5）index.number_of_shards: 5</strong></p>
+<blockquote>
+<p>设置默认索引分片个数，默认为5片。经本人测试，索引分片对ES的查询性能有很大的影响，在应用环境，应该选择适合的分片大小。</p>
+</blockquote>
+<p><strong>（6）index.number_of_replicas:</strong></p>
+<blockquote>
+<p>设置默认索引副本个数，默认为1个副本。此处的1个副本是指index.number_of_shards的一个完全拷贝；默认5个分片1个拷贝；即总分片数为10。</p>
+</blockquote>
+<p><strong>（7）path.conf: /path/to/conf</strong></p>
+<blockquote>
+<p>设置配置文件的存储路径，默认是es根目录下的config文件夹。</p>
+</blockquote>
+<p><strong>（8）path.data:/path/to/data1,/path/to/data2</strong></p>
+<blockquote>
+<p>设置索引数据的存储路径，默认是es根目录下的data文件夹，可以设置多个存储路径，用逗号隔开。</p>
+</blockquote>
+<p><strong>（9）path.work:/path/to/work</strong></p>
+<blockquote>
+<p>设置临时文件的存储路径，默认是es根目录下的work文件夹。</p>
+</blockquote>
+<p><strong>（10）path.logs: /path/to/logs</strong></p>
+<blockquote>
+<p>设置日志文件的存储路径，默认是es根目录下的logs文件夹</p>
+</blockquote>
+<p><strong>（11）path.plugins: /path/to/plugins</strong></p>
+<blockquote>
+<p>设置插件的存放路径，默认是es根目录下的plugins文件夹</p>
+</blockquote>
+<p><strong>（12）bootstrap.mlockall: true</strong></p>
+<blockquote>
+<p>设置为true来锁住内存。因为当jvm开始swapping时es的效率会降低，所以要保证它不swap，可以把ES_MIN_MEM和ES_MAX_MEM两个环境变量设置成同一个值，并且保证机器有足够的内存分配给es。同时也要允许elasticsearch的进程可以锁住内存，linux下可以通过<code>ulimit -l unlimited</code>命令。 </p>
+</blockquote>
+<p><strong>（13）network.bind_host: 192.168.0.1</strong></p>
+<blockquote>
+<p>设置绑定的ip地址，可以是ipv4或ipv6的，默认为0.0.0.0。</p>
+</blockquote>
+<p><strong>（14）network.publish_host: 192.168.0.1</strong></p>
+<blockquote>
+<p>设置其它节点和该节点交互的ip地址，如果不设置它会自动判断，值必须是个真实的ip地址。</p>
+</blockquote>
+<p><strong>（15）network.host: 192.168.0.1</strong></p>
+<blockquote>
+<p>这个参数是用来同时设置bind_host和publish_host上面两个参数。</p>
+</blockquote>
+<p><strong>（16）transport.tcp.port: 9300</strong></p>
+<blockquote>
+<p>设置节点间交互的tcp端口，默认是9300。</p>
+</blockquote>
+<p><strong>（17）transport.tcp.compress: true</strong></p>
+<blockquote>
+<p>设置是否压缩tcp传输时的数据，默认为false，不压缩。</p>
+</blockquote>
+<p><strong>（18）http.port: 9200</strong></p>
+<blockquote>
+<p>设置对外服务的http端口，默认为9200。 </p>
+</blockquote>
+<p><strong>（19）http.max_content_length: 100mb</strong></p>
+<blockquote>
+<p>设置内容的最大容量，默认100mb</p>
+</blockquote>
+<p><strong>（20）http.enabled: false</strong></p>
+<blockquote>
+<p>是否使用http协议对外提供服务，默认为true，开启。</p>
+</blockquote>
+<p><strong>（21）gateway.type: local</strong></p>
+<blockquote>
+<p>gateway的类型，默认为local即为本地文件系统，可以设置为本地文件系统，分布式文件系统，hadoop的HDFS，和amazon的s3服务器，其它文件系统的设置。</p>
+</blockquote>
+<p><strong>（22）gateway.recover_after_nodes: 1</strong></p>
+<blockquote>
+<p>设置集群中N个节点启动时进行数据恢复，默认为1。</p>
+</blockquote>
+<p><strong>（23）gateway.recover_after_time: 5m</strong></p>
+<blockquote>
+<p>设置初始化数据恢复进程的超时时间，默认是5分钟。</p>
+</blockquote>
+<p><strong>（24）gateway.expected_nodes: 2</strong></p>
+<blockquote>
+<p>设置这个集群中节点的数量，默认为2，一旦这N个节点启动，就会立即进行数据恢复。</p>
+</blockquote>
+<p><strong>（25）cluster.routing.allocation.node_initial_primaries_recoveries: 4</strong></p>
+<blockquote>
+<p>初始化数据恢复时，并发恢复线程的个数，默认为4。</p>
+</blockquote>
+<p><strong>（26）cluster.routing.allocation.node_concurrent_recoveries: 2</strong></p>
+<blockquote>
+<p>添加删除节点或负载均衡时并发恢复线程的个数，默认为4。</p>
+</blockquote>
+<p><strong>（27）indices.recovery.max_size_per_sec: 0</strong></p>
+<blockquote>
+<p>设置数据恢复时限制的带宽，如入100mb，默认为0，即无限制。 </p>
+</blockquote>
+<p><strong>（28）indices.recovery.concurrent_streams: 5</strong></p>
+<blockquote>
+<p>设置这个参数来限制从其它分片恢复数据时最大同时打开并发流的个数，默认为5。</p>
+</blockquote>
+<p><strong>（29）discovery.zen.minimum_master_nodes: 1</strong></p>
+<blockquote>
+<p>设置这个参数来保证集群中的节点可以知道其它N个有master资格的节点。默认为1，对于大的集群来说，可以设置大一点的值（2-4）</p>
+</blockquote>
+<p><strong>（30）discovery.zen.ping.timeout: 3s</strong></p>
+<blockquote>
+<p>设置集群中自动发现其它节点时ping连接超时时间，默认为3秒，对于比较差的网络环境可以高点的值来防止自动发现时出错。</p>
+</blockquote>
+<p><strong>（31）discovery.zen.ping.multicast.enabled: false</strong></p>
+<blockquote>
+<p>设置是否打开多播发现节点，默认是true。</p>
+</blockquote>
+<p><strong>（32）discovery.zen.ping.unicast.hosts: [“host1”, “host2:port”, “host3 [portX-portY] “]</strong></p>
+<blockquote>
+<p>设置集群中master节点的初始列表，可以通过这些节点来自动发现新加入集群的节点。</p>
+</blockquote>
+<p>除了上面的在安装时配置文件中就自带的配置项外，本人在实际使用过程还使用到了下面的配置：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">threadpool:</span></div><div class="line"><span class="symbol">    search:</span></div><div class="line"><span class="symbol">        type:</span> fixed</div><div class="line"><span class="symbol">        min:</span> <span class="number">60</span></div><div class="line"><span class="symbol">        max:</span> <span class="number">80</span></div><div class="line"><span class="symbol">        queue_size:</span> <span class="number">1000</span></div><div class="line"><span class="comment">// 配置es服务器的执行查询操作时所用线程池，fix固定线程数的线程池。</span></div></pre></td></tr></table></figure>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">index </span>:</div><div class="line">    <span class="attribute">store</span>:</div><div class="line">        <span class="attribute">type</span>: memory</div><div class="line"><span class="comment">// 表示索引存储在内存中，当然es不太建议这么做。经本人测试，做查询时，使用内存索引并不会比正常的索引快。</span></div></pre></td></tr></table></figure>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">index</span>.mapper.dynamic: <span class="literal">false</span></div><div class="line">// 禁止自动创建<span class="keyword">mapping</span>。默认情况下，es可以根据数据类型自动创建<span class="keyword">mapping</span>。配置成这样，可以禁止自动创建<span class="keyword">mapping</span>的行为。至于什么是<span class="keyword">mapping</span>，在之后的博文中再介绍。</div></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">index<span class="selector-class">.query</span><span class="selector-class">.parse</span><span class="selector-class">.allow_unmapped_fields</span>: false </div><div class="line"><span class="comment">// 不能查找没有在mapping中定义的属性</span></div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>本文介绍了Elasticsearch中的一些基础知识，包括其中的一些核心概念。只有理解了ES中的这些核心概念，才能对更加得心应手地使用ES，发挥其强大的搜索能力。同时，也介绍了ES的安装和运行，ES的安装和运行是很简单的，只需要极少的简单步骤，就可以开始体验ES。ES的配置非常丰富，安装时自带的配置文件只包含一部分比较核心的配置项，更多的配置内容需要自己去阅读ES的源码时才能被发现。</p>
+<h2 id="下一篇准备介绍ES的使用，特别是其封装的及其丰富的Rest-API的使用。"><a href="#下一篇准备介绍ES的使用，特别是其封装的及其丰富的Rest-API的使用。" class="headerlink" title="下一篇准备介绍ES的使用，特别是其封装的及其丰富的Rest API的使用。"></a>下一篇准备介绍ES的使用，特别是其封装的及其丰富的Rest API的使用。</h2></span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/教程/" rel="tag">#教程</a>
+          
+            <a href="/tags/系列/" rel="tag">#系列</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/05/02/effect-java-note-create-object/" rel="next" title="《Effective Java》学习心得——优雅而安全地构建Java对象">
+                <i class="fa fa-chevron-left"></i> 《Effective Java》学习心得——优雅而安全地构建Java对象
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/29/elasticsearch-2/" rel="prev" title="实时搜索引擎Elasticsearch（2）——Rest API的使用">
+                实时搜索引擎Elasticsearch（2）——Rest API的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/08/15/elasticsearch-1/"
+     data-title="实时搜索引擎Elasticsearch（1）——基础概念、安装和运行"
+     data-content=""
+     data-url="http://hinylover.space/2015/08/15/elasticsearch-1/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/08/15/elasticsearch-1/"
+           data-title="实时搜索引擎Elasticsearch（1）——基础概念、安装和运行" data-url="http://hinylover.space/2015/08/15/elasticsearch-1/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Elasticsearch简介"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Elasticsearch是什么"><span class="nav-number">1.1.</span> <span class="nav-text">Elasticsearch是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Elasticsearch中涉及到的重要概念"><span class="nav-number">1.2.</span> <span class="nav-text">Elasticsearch中涉及到的重要概念</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Elasticsearch安装与配置"><span class="nav-number">2.</span> <span class="nav-text">Elasticsearch安装与配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装与运行"><span class="nav-number">2.1.</span> <span class="nav-text">安装与运行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ES的配置"><span class="nav-number">2.2.</span> <span class="nav-text">ES的配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下一篇准备介绍ES的使用，特别是其封装的及其丰富的Rest-API的使用。"><span class="nav-number"></span> <span class="nav-text">下一篇准备介绍ES的使用，特别是其封装的及其丰富的Rest API的使用。</span></a></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

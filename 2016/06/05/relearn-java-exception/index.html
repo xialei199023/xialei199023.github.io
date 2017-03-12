@@ -1,0 +1,870 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="异常，是Java中非常常用的功能，它可以简化代码，并且增强代码的安全性。本文将介绍一些异常高级知识，也是学习Java一来的一次总结。包括以下内内容：
+
+异常的基础知识
+异常特点
+异常误用
+如何正确地使用异常
+异常的实现原理
+
+关于异常异常机制，是指程序不正常时的处理方式。具体来说，异常机制提供了程序退出的安全通道。当出现错误后，程序执行的流程发生改变，程序的控制权转移到异常处理器。
+异常的一般性语">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重新认识Java语言——异常（Exception）">
+<meta property="og:url" content="http://hinylover.space/2016/06/05/relearn-java-exception/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="异常，是Java中非常常用的功能，它可以简化代码，并且增强代码的安全性。本文将介绍一些异常高级知识，也是学习Java一来的一次总结。包括以下内内容：
+
+异常的基础知识
+异常特点
+异常误用
+如何正确地使用异常
+异常的实现原理
+
+关于异常异常机制，是指程序不正常时的处理方式。具体来说，异常机制提供了程序退出的安全通道。当出现错误后，程序执行的流程发生改变，程序的控制权转移到异常处理器。
+异常的一般性语">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/exception-structure.jpg">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/self-define-exception-system.png">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.547Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="重新认识Java语言——异常（Exception）">
+<meta name="twitter:description" content="异常，是Java中非常常用的功能，它可以简化代码，并且增强代码的安全性。本文将介绍一些异常高级知识，也是学习Java一来的一次总结。包括以下内内容：
+
+异常的基础知识
+异常特点
+异常误用
+如何正确地使用异常
+异常的实现原理
+
+关于异常异常机制，是指程序不正常时的处理方式。具体来说，异常机制提供了程序退出的安全通道。当出现错误后，程序执行的流程发生改变，程序的控制权转移到异常处理器。
+异常的一般性语">
+<meta name="twitter:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/exception-structure.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 重新认识Java语言——异常（Exception） | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                重新认识Java语言——异常（Exception）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-06-05T22:32:27+08:00" content="2016-06-05">
+              2016-06-05
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/05/relearn-java-exception/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/05/relearn-java-exception/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>异常，是Java中非常常用的功能，它可以简化代码，并且增强代码的安全性。本文将介绍一些异常高级知识，也是学习Java一来的一次总结。包括以下内内容：</p>
+<ol>
+<li>异常的基础知识</li>
+<li>异常特点</li>
+<li>异常误用</li>
+<li>如何正确地使用异常</li>
+<li>异常的实现原理</li>
+</ol>
+<h2 id="关于异常"><a href="#关于异常" class="headerlink" title="关于异常"></a>关于异常</h2><p>异常机制，是指程序不正常时的处理方式。具体来说，异常机制提供了程序退出的安全通道。当出现错误后，程序执行的流程发生改变，程序的控制权转移到异常处理器。</p>
+<p>异常的一般性语法为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">	<span class="comment">// 有可能抛出异常的代码</span></div><div class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">	<span class="comment">// 异常处理</span></div><div class="line">&#125; <span class="keyword">finally</span> &#123;</div><div class="line">	<span class="comment">// 无论是否捕获到异常都会执行的程序</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="Java异常体系"><a href="#Java异常体系" class="headerlink" title="Java异常体系"></a>Java异常体系</h3><p>Java异常中的体系结构如下图所示。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/exception-structure.jpg" alt="exception-structure"></p>
+<ul>
+<li><strong>Throwable</strong>类是整个Java异常体系的超类，都有的异常类都是派生自这个类。包含Error和Exception两个直接子类。</li>
+<li><strong>Error</strong>表示程序在运行期间出现了十分严重、不可恢复的错误，在这种情况下应用程序只能中止运行，例如JAVA虚拟机出现错误。在程序中不用捕获Error类型的异常。一般情况下，在程序中也不应该抛出Error类型的异常。</li>
+<li><strong>Exception</strong>是应用层面上最顶层的异常类，包含RuntimeException（运行时异常）和 Checked Exception（受检异常）。<ul>
+<li><strong>RuntimeException</strong>是一种Unchecked Exception，即表示编译器不会检查程序是否对RuntimeException作了处理，在程序中不必捕获RuntimException类型的异常，也不必在方法体声明抛出RuntimeException类。一般来说，RuntimeException发生的时候，表示程序中出现了编程错误，所以应该找出错误修改程序，而不是去捕获RuntimeException。常见的RuntimeException有NullPointException、ClassCastException、IllegalArgumentException、IndexOutOfBoundException等。</li>
+<li><strong>Checked Exception</strong>是相对于Unchecked Exception而言的，Java中并没有一个名为Checked Exception的类。它是在编程中使用最多的Exception，所有继承自Exception并且不是RuntimeException的异常都是Checked Exception。JAVA 语言规定必须对checked Exception作处理，编译器会对此作检查，要么在方法体中声明抛出checked Exception，要么使用catch语句捕获checked Exception进行处理，不然不能通过编译。常用的Checked Exception有IOException、ClassNotFoundException等。</li>
+</ul>
+</li>
+</ul>
+<h2 id="异常的特点"><a href="#异常的特点" class="headerlink" title="异常的特点"></a>异常的特点</h2><h3 id="通用特点"><a href="#通用特点" class="headerlink" title="通用特点"></a>通用特点</h3><h4 id="JVM捕获并处理未被应用程序捕获的异常"><a href="#JVM捕获并处理未被应用程序捕获的异常" class="headerlink" title="JVM捕获并处理未被应用程序捕获的异常"></a>JVM捕获并处理未被应用程序捕获的异常</h4><p>无论是受检异常（Checked Exception）还是运行时异常（Runtime Exception），如果异常没有被应用程序捕获，那么最终这个异常会交由JVM来进行处理，会明显出现下面两个结果：</p>
+<ol>
+<li>当前线程会停止运行，异常触发点后面的代码将得不到运行。</li>
+<li>异常栈信息会通过标准错误流输出。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 应用程序没有处理抛出的异常时，会交由JVM来处理这个异常。结果是：</div><div class="line"> * 1. 当前线程会停止运行，异常触发点后面的代码将得不到运行。</div><div class="line"> * 2. 异常栈信息会通过标准错误流输出。</div><div class="line"> * </div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年5月18日下午9:53:54</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UncatchedException</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		throwException();</div><div class="line">		System.out.println(<span class="string">"这一行不会被打印出来"</span>);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">throwException</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		<span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">		<span class="keyword">if</span> (i == <span class="number">0</span>) &#123;</div><div class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> Exception();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="异常catch有顺序性"><a href="#异常catch有顺序性" class="headerlink" title="异常catch有顺序性"></a>异常catch有顺序性</h4><p>在catch异常时，如果有多个异常，那么是会有顺序要求的。子类型必须要在父类型之前进行catch，catch与分支逻辑是一致，如果父类型先被catch，那么后被catch的分支根本得不到运行机会。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> * 个人主页：http://hinylover.space</div><div class="line"> *</div><div class="line"> * Creation Date: 2016年4月7日 下午2:29:42</div><div class="line"> */</div><div class="line"><span class="keyword">package</span> demo.blog.java.exception;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 在catch异常时，如果有多个异常，那么是会有顺序要求的。子类型必须要在父类型之前进行catch，</div><div class="line"> * catch与分支逻辑是一致，如果父类型先被catch，那么后被catch的分支根本得不到运行机会。</div><div class="line"> * </div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年5月18日下午10:00:40</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionCatchOrder</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wrongCatchOrder</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			Integer i = <span class="keyword">null</span>;</div><div class="line">			<span class="keyword">int</span> j = i;</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		&#125; <span class="keyword">catch</span> (NullPointerException e) &#123; <span class="comment">// 编译不通过，eclipse提示“Unreachable catch block for NullPointerException. It is already handled by the catch block for Exception”</span></div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="异常被吃掉"><a href="#异常被吃掉" class="headerlink" title="异常被吃掉"></a>异常被吃掉</h4><p>如果在finally中返回值，那么在程序中抛出的异常信息将会被吞噬掉。这是一个非常值得注意的问题，因为异常信息是非常重要的，在出现问题时，我们通常凭它来查找问题。如果编码不小心而导致异常被吞噬，排查起来是相当困难的，这将是一个大隐患。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> * 个人主页：http://hinylover.space</div><div class="line"> *</div><div class="line"> * Creation Date: 2016年4月7日 下午2:29:42</div><div class="line"> */</div><div class="line"><span class="keyword">package</span> demo.blog.java.exception;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 如果在finally中返回值，那么在程序中抛出的异常信息将会被吞噬掉。</div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年5月18日下午10:08:43</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FinallySwallowException</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		System.out.println(swallowException()); <span class="comment">// 打印出2，而不是打印出异常栈</span></div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">swallowException</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> Exception();</div><div class="line">		&#125; <span class="keyword">finally</span> &#123;</div><div class="line">			<span class="keyword">return</span> <span class="number">2</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="重写Exception的fillInStackTrace-方法"><a href="#重写Exception的fillInStackTrace-方法" class="headerlink" title="重写Exception的fillInStackTrace()方法"></a>重写Exception的fillInStackTrace()方法</h4><p>使用自定义异常时，可以重写fillInStackTrace()方法来控制Exception的异常栈信息。默认情况下，在程序抛出异常时，最终会通过调用<code>private native Throwable fillInStackTrace(int dummy)</code>这个本地方法来获取当前线程的堆栈信息，这是一个非常耗时的操作。如果我们仅仅需要用到异常的传播性质，而不关系异常的堆栈信息，那么完全可以通过重写fillInStackTrace()方法来实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> * 个人主页：http://hinylover.space</div><div class="line"> *</div><div class="line"> * Creation Date: 2016年4月7日 下午2:29:42</div><div class="line"> */</div><div class="line"><span class="keyword">package</span> demo.blog.java.exception;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 重写Exception的fillInStackTrace()方法</div><div class="line"> * </div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年5月18日下午10:18:57</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyException</span> <span class="keyword">extends</span> <span class="title">Exception</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MyException</span><span class="params">(String message)</span> </span>&#123;</div><div class="line">		<span class="keyword">super</span>(message);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/*</span></div><div class="line">	 * 重写fillInStackTrace方法会使得这个自定义的异常不会收集线程的整个异常栈信息，会大大</div><div class="line">	 * 提高减少异常开销。</div><div class="line">	 */</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Throwable <span class="title">fillInStackTrace</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> MyException(<span class="string">"由于MyException重写了fillInStackTrace方法，那么它不会收集线程运行栈信息。"</span>);</div><div class="line">		&#125; <span class="keyword">catch</span> (MyException e) &#123;</div><div class="line">			e.printStackTrace(); <span class="comment">// 在控制台的打印结果为：demo.blog.java.exception.MyException: 由于MyException重写了fillInStackTrace方法，那么它不会收集线程运行栈信息。</span></div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="受检异常（checked-exception）"><a href="#受检异常（checked-exception）" class="headerlink" title="受检异常（checked exception）"></a>受检异常（checked exception）</h3><h4 id="必须处理或者向上抛出"><a href="#必须处理或者向上抛出" class="headerlink" title="必须处理或者向上抛出"></a>必须处理或者向上抛出</h4><p>我们必须要对底层抛出来的受检异常进行处理，处理方式有<code>try…catch…</code>或者向上抛出（throws），否则程序无法通过编译。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> demo.blog.java.exception;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 必须对底层抛出的异常进行处理</div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年5月18日下午10:42:53</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CheckedException</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		throwException(); <span class="comment">// 编译不通过，必须对底层抛出的异常进行处理</span></div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">throwException</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> Exception();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="不能捕获未被抛出的受检异常"><a href="#不能捕获未被抛出的受检异常" class="headerlink" title="不能捕获未被抛出的受检异常"></a>不能捕获未被抛出的受检异常</h4><p>如果我们试图去捕获一个未被抛出的受检异常，程序将无法通过编译（Exception除外）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> * 个人主页：http://hinylover.space</div><div class="line"> *</div><div class="line"> * Creation Date: 2016年5月18日 下午10:45:32</div><div class="line"> */</div><div class="line"><span class="keyword">package</span> demo.blog.java.exception;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 不能捕获一个没有被抛出的受检异常（Exception除外）</div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年5月18日下午10:45:32</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CantCatchUnthrowedException</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cantCatchUnthrowedException</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123; <span class="comment">// 编译不通过，eclipse提示：Unreachable catch block for IOException. This exception is never thrown from the try statement body</span></div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="运行时异常（runtime-exception）"><a href="#运行时异常（runtime-exception）" class="headerlink" title="运行时异常（runtime exception）"></a>运行时异常（runtime exception）</h3><p>运行时异常（runtime exception）与受检异常（checked exception）的最大区别是不强制对抛出的异常进行处理。所有的运行时异常都继承自RuntimeException这个类，别问为什么，Java是这么规定的。与受检异常类似的例子，如果抛出的是运行时异常，就算不捕获这个异常，程序也可以编译通过。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> * 个人主页：http://hinylover.space</div><div class="line"> *</div><div class="line"> * Creation Date: 2016年5月18日 下午11:02:57</div><div class="line"> */</div><div class="line"><span class="keyword">package</span> demo.blog.java.exception;</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 编译通过</div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年5月18日下午11:02:57</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRuntimeException</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">myRuntimeException</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(); <span class="comment">// 可以正常编译</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="异常的使用"><a href="#异常的使用" class="headerlink" title="异常的使用"></a>异常的使用</h2><h3 id="用受检异常还是运行时异常？"><a href="#用受检异常还是运行时异常？" class="headerlink" title="用受检异常还是运行时异常？"></a>用受检异常还是运行时异常？</h3><p>在使用异常时，笔者经常为使用何种异常而犯难，在实际使用过程中总结了一些小经验。</p>
+<h4 id="大概率发生时使用运行时异常"><a href="#大概率发生时使用运行时异常" class="headerlink" title="大概率发生时使用运行时异常"></a>大概率发生时使用运行时异常</h4><p>从概率上来说，如果这个异常发生的频率非常高，那么因为使用运行时异常，最典型的就是NullPointException。Java中调用每个对象的方法时，都有可能会发生NullPointException。如果这是一个受检异常，那么在每次调用对象方法要么try {} catch {}，那么使用throws关键字向上抛出。无论哪种方式，代码无疑都会是非常丑陋的，那画面太“美”不敢看。如果代码里充斥着各种异常处理块，可读性将会大打折扣。</p>
+<h4 id="异常无法恢复时使用运行时异常"><a href="#异常无法恢复时使用运行时异常" class="headerlink" title="异常无法恢复时使用运行时异常"></a>异常无法恢复时使用运行时异常</h4><p>当异常发生时，如果开发者无法从异常状态恢复到正常状态，那么这种异常应该是运行时异常。如果使用受检异常，这除了加重开发者的负担之外，别无它用。当在调用其他方法时，如果方法抛出受检异常，那么笔者就会比较紧张。因为这意味着需要停止业务逻辑开发，然后开始思考如何处理这该死的异常。运行时异常通常是由于开发者编程不当所引起的，譬如空指针异常、除零异常等。如果开发者在开发过程中小心谨慎，考虑周全，就可能避免这种异常的发生。</p>
+<h4 id="可恢复时优先使用受检异常"><a href="#可恢复时优先使用受检异常" class="headerlink" title="可恢复时优先使用受检异常"></a>可恢复时优先使用受检异常</h4><p>如果我们能够从异常中恢复到正常状态，那么应该优先使用受检异常。为什么是优先而不是一定呢？因为从原理上来说，使用运行时异常也可以恢复到正常状态，而且使用运行时异常的代码无疑会比较干净整洁。而使用受检异常，明确地说明了调用方式时可能发生异常情况，强制开发者去处理这些异常情况常常会增强代码的健壮性。受检异常通常是由外部环境所引起的，譬如IOException等。</p>
+<h3 id="使用受检异常做流程控制"><a href="#使用受检异常做流程控制" class="headerlink" title="使用受检异常做流程控制"></a>使用受检异常做流程控制</h3><p>从Java语义上来说，应该是当程序层面真正发生异常状况时才应该使用异常（Exception），《Effect Java》一书中也建议只有真正的异常情况才使用异常。但我们有时也会利用异常来达到业务流程控制的目的。这样做主要有下面的好处：</p>
+<ol>
+<li><p>简化代码逻辑。我们无需为多分枝业务流程编写各种<code>if…else…</code>语句来处理不同的情况。相反地，我们只需处理正常的业务流程即可，异常流程只需要通过异常向上抛出去即可，至于谁去处理这些异常，则不需要我们过多地关心。</p>
+</li>
+<li><p>可读性增强。如果一段代码中充斥着分枝逻辑，那么整个代码的可读性会非常差。在阅读代码时，很难理清楚代码的主干。说到底，主干代码才是我们重点关注的。如果使用异常进行流程控制，主干代码就清晰地显示在面前，两个字：舒服！</p>
+</li>
+</ol>
+<h3 id="尽量集中处理异常"><a href="#尽量集中处理异常" class="headerlink" title="尽量集中处理异常"></a>尽量集中处理异常</h3><p>在各种有关代码重构的书本中，都会提到一个核心原则：一个方法应该仅做一件事情。如果一个方法中，既包含业务逻辑，又包含异常处理程序，那么实际上这个方法就做了两件事情。如果异常上层可以处理，那么就不应该在下层处理。在上层进行处理的好处是，可以对异常进行统一地处理。而至于将异常处理程序分散到代码的各个地方，导致维护起来十分困难。在进行异常处理时，应该优先考虑使用AOP（面向切面编程）技术，这样降低了核心业务逻辑与异常处理的耦合性。</p>
+<h3 id="自定义异常体系"><a href="#自定义异常体系" class="headerlink" title="自定义异常体系"></a>自定义异常体系</h3><p>在应用系统中应该要建立自己的异常体系，这样便于统一处理系统中出现的异常。笔者在开发过程中，通常会建立类似下图所示的系统体系。越靠近底层，越使用更加底层的、具体的异常。如果是其他系统中的异常（譬如Java自身的异常），也应该将其转化为自定义体系中的对应异常。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/self-define-exception-system.png" alt="self-define-exception-system"></p>
+<h2 id="异常误用"><a href="#异常误用" class="headerlink" title="异常误用"></a>异常误用</h2><h3 id="e-printTrace-处理所有异常。"><a href="#e-printTrace-处理所有异常。" class="headerlink" title="e.printTrace()处理所有异常。"></a>e.printTrace()处理所有异常。</h3><p>使用<code>e.printTrace()</code>来粗暴地处理所有异常是新手经常犯的毛病，笔者在初学时也是这么干的。为什么会出现这种情况呢？因为如果未处理的受检异常，代码将编译不通过，IDE（如eclipse）中会无情地打上各种红叉叉。这是IDE可以帮我们处理的情况，于是按照IDE的提示，try{}catch{}这段代码，其默认的异常处理就是调用<code>e.printTrace()</code>方法。初学者只顾着代码顺利通过编译，而完全没有考虑这样做存在的风险。这样做的风险如下：</p>
+<ol>
+<li>错失正确的处理方法。相当一部分受检异常通过正确地处理是可以恢复正常，简单粗暴地使用<code>e.printTrace()</code>将错失恢复机会。</li>
+<li>“丢失”异常信息。<code>printTrace()</code>方法是<code>Throwable</code>类中的一个方法，它的作用是将异常栈信息打印到标准错误流中。如果Web项目，会将异常信息打印到容器的日志文件中；如果是普通项目，通常会将标准输出和标准错误重定向到dev/null（空设备）中。无论是何种情况，都有可能导致异常信息“丢失”（web容器中的日志其实不代表丢失了，但是我们通常不会利用容器级别的日志排错），给排错带来很大的麻烦。</li>
+</ol>
+<h3 id="全部使用运行时异常"><a href="#全部使用运行时异常" class="headerlink" title="全部使用运行时异常"></a>全部使用运行时异常</h3><p>为了“偷懒”，无论什么情况都使用运行时异常，这样就可以不用费劲处理异常了，轻轻松松。但是，现在没事不代表以后不出事，这无疑为代码埋下了隐患。如果在调用一个方法时，该方法并没有显示地抛出异常，也没有在javadoc中强调，我们就不会知道调用这段代码可能发生的异常情况，那些可能出现的异常情况对我们来说是透明的。</p>
+<h3 id="总是catch-Exception对象"><a href="#总是catch-Exception对象" class="headerlink" title="总是catch Exception对象"></a>总是catch Exception对象</h3><p>在捕获和处理异常时，不管3721，一股脑地catch Exception对象。没错，这样就可以一次性处理所有异常情况。但是，所有地异常都使用相同的处理程序真的对吗？在这样做之前应该先要打个大大的问号。这样做的后果是我们会无形中忽略那些重要的异常。</p>
+<h2 id="正确使用异常"><a href="#正确使用异常" class="headerlink" title="正确使用异常"></a>正确使用异常</h2><ul>
+<li>正确地处理异常。针对不用的异常采取合适的、正确的异常处理方式，不要遇到任何异常都<code>printTrace()</code>或者打印一个日志。</li>
+<li>catch时指定具体的异常。不要一股脑地catch Exception，具体的异常应该单独catch住，越具体的异常越早catch。</li>
+<li>涉及到资源时，需要finally。如果涉及到资源的关闭时，应该将关闭资源的代码写在finally代码块内。</li>
+<li>最小化try{ } catch{ }范围。try的范围应该尽量小，最好就是try住抛出异常的那个方法即可。</li>
+</ul>
+<h2 id="异常的实现原理（字节码级别）"><a href="#异常的实现原理（字节码级别）" class="headerlink" title="异常的实现原理（字节码级别）"></a>异常的实现原理（字节码级别）</h2><p>从字节码层面上来分析一下Java异常的实现原理，编写如下所示的源代码，使用<code>javac</code>命令进行编译，然后使用<code>javap</code>命令查看编译后的字节码细节内容。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionClassCode</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">demo</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">int</span> x;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			x = <span class="number">1</span>;</div><div class="line">			<span class="keyword">return</span> x;</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			x = <span class="number">2</span>;</div><div class="line">			<span class="keyword">return</span> x;</div><div class="line">		&#125; <span class="keyword">finally</span> &#123;</div><div class="line">			x = <span class="number">3</span></div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">int</span> demo();</div><div class="line">   descriptor: ()I</div><div class="line">   flags: ACC_PUBLIC</div><div class="line">   Code:</div><div class="line">     stack=<span class="number">1</span>, locals=<span class="number">5</span>, args_size=<span class="number">1</span></div><div class="line">        <span class="number">0</span>: iconst_1 <span class="comment">// 生成整数1</span></div><div class="line">        <span class="number">1</span>: istore_1 <span class="comment">// 将生成的整数1赋予第1号局部变量（x=1）</span></div><div class="line">        <span class="number">2</span>: iload_1 <span class="comment">// 将x(=1)的值入栈</span></div><div class="line">        <span class="number">3</span>: istore_2 <span class="comment">// 将栈顶的值（=1）赋予第2号变量（returnValue）</span></div><div class="line">        <span class="number">4</span>: iconst_3 <span class="comment">// 生成整数3</span></div><div class="line">        <span class="number">5</span>: istore_1 <span class="comment">// x=3</span></div><div class="line">        <span class="number">6</span>: iload_2 <span class="comment">// returnValue=当前栈顶值（=1）</span></div><div class="line">        <span class="number">7</span>: ireturn <span class="comment">// 返回returnValue（=1）</span></div><div class="line">        <span class="number">8</span>: astore_2 <span class="comment">// 将Exception对象引用值赋予第2号局部变量</span></div><div class="line">        <span class="number">9</span>: iconst_2 <span class="comment">// 生成整数2</span></div><div class="line">       <span class="number">10</span>: istore_1 <span class="comment">// x=2</span></div><div class="line">       <span class="number">11</span>: iload_1 <span class="comment">// x(=2)压入栈顶</span></div><div class="line">       <span class="number">12</span>: istore_3 <span class="comment">// 将栈顶的值（=2）赋予第3号变量（returnValue）</span></div><div class="line">       <span class="number">13</span>: iconst_3 <span class="comment">// 生成整数3</span></div><div class="line">       <span class="number">14</span>: istore_1 <span class="comment">// x=3</span></div><div class="line">       <span class="number">15</span>: iload_3  <span class="comment">// returnValue(=2)压入栈顶</span></div><div class="line">       <span class="number">16</span>: ireturn  <span class="comment">// 返回returnValue（=2）</span></div><div class="line">       <span class="number">17</span>: astore        <span class="number">4</span> <span class="comment">// 将异常信息保存到第4号局部变量</span></div><div class="line">       <span class="number">19</span>: iconst_3 <span class="comment">// 生成整数3</span></div><div class="line">       <span class="number">20</span>: istore_1 <span class="comment">// x=3</span></div><div class="line">       <span class="number">21</span>: aload         <span class="number">4</span> <span class="comment">// 将异常引用值压入栈</span></div><div class="line">       <span class="number">23</span>: athrow <span class="comment">// 抛出栈顶所引用的异常</span></div><div class="line">     Exception table:</div><div class="line">        <span class="keyword">from</span>    to  target type</div><div class="line">            <span class="number">0</span>     <span class="number">4</span>     <span class="number">8</span>   <span class="keyword">Class</span> java<span class="regexp">/lang/</span>Exception # 如果<span class="number">0</span>~<span class="number">4</span>行字节码（<span class="keyword">try</span>代码块）中出现Exception及其子类异常，则执行第<span class="number">8</span>行（<span class="keyword">catch</span>代码行）</div><div class="line">            <span class="number">0</span>     <span class="number">4</span>    <span class="number">17</span>   <span class="keyword">any</span> # 无论<span class="number">0</span>~<span class="number">4</span>行字节码（<span class="keyword">try</span>代码块）是否抛出异常，都执行第<span class="number">17</span>行（<span class="keyword">finally</span>代码行）</div><div class="line">            <span class="number">8</span>    <span class="number">13</span>    <span class="number">17</span>   <span class="keyword">any</span> # 无论<span class="number">8</span>~<span class="number">13</span>行字节码（<span class="keyword">catch</span>代码块）是否抛出异常，都执行第<span class="number">17</span>行（<span class="keyword">finally</span>代码行）</div><div class="line">           <span class="number">17</span>    <span class="number">19</span>    <span class="number">17</span>   <span class="keyword">any</span></div></pre></td></tr></table></figure>
+<p>看到字节码中有一个Exception table（异常表）区域，这个就是与异常相关的字节码内容。它表示在<code>from</code>到<code>to</code>所指示的字节码行中，如果抛出<code>type</code>所对应的异常（及其子类），那么就跳到<code>target</code>指定的字节码行开始执行。</p>
+<hr>
+<p>本文由<a href="http://hinylover.space">xialei</a>原创，转载请说明出处<a href="http://hinylover.space/2016/06/05/relearn-java-exception/">http://hinylover.space/2016/06/05/relearn-java-exception/</a>。</p>
+<hr>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/系列/" rel="tag">#系列</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/10/relearn-java-index/" rel="next" title="重新认识Java系列文章索引">
+                <i class="fa fa-chevron-left"></i> 重新认识Java系列文章索引
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/16/relearn-java-base-type-and-wrapper/" rel="prev" title="重新认识Java——基本类型和包装类">
+                重新认识Java——基本类型和包装类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/06/05/relearn-java-exception/"
+     data-title="重新认识Java语言——异常（Exception）"
+     data-content=""
+     data-url="http://hinylover.space/2016/06/05/relearn-java-exception/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/05/relearn-java-exception/"
+           data-title="重新认识Java语言——异常（Exception）" data-url="http://hinylover.space/2016/06/05/relearn-java-exception/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于异常"><span class="nav-number">1.</span> <span class="nav-text">关于异常</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java异常体系"><span class="nav-number">1.1.</span> <span class="nav-text">Java异常体系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常的特点"><span class="nav-number">2.</span> <span class="nav-text">异常的特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通用特点"><span class="nav-number">2.1.</span> <span class="nav-text">通用特点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#JVM捕获并处理未被应用程序捕获的异常"><span class="nav-number">2.1.1.</span> <span class="nav-text">JVM捕获并处理未被应用程序捕获的异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常catch有顺序性"><span class="nav-number">2.1.2.</span> <span class="nav-text">异常catch有顺序性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常被吃掉"><span class="nav-number">2.1.3.</span> <span class="nav-text">异常被吃掉</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重写Exception的fillInStackTrace-方法"><span class="nav-number">2.1.4.</span> <span class="nav-text">重写Exception的fillInStackTrace()方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#受检异常（checked-exception）"><span class="nav-number">2.2.</span> <span class="nav-text">受检异常（checked exception）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#必须处理或者向上抛出"><span class="nav-number">2.2.1.</span> <span class="nav-text">必须处理或者向上抛出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不能捕获未被抛出的受检异常"><span class="nav-number">2.2.2.</span> <span class="nav-text">不能捕获未被抛出的受检异常</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行时异常（runtime-exception）"><span class="nav-number">2.3.</span> <span class="nav-text">运行时异常（runtime exception）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常的使用"><span class="nav-number">3.</span> <span class="nav-text">异常的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用受检异常还是运行时异常？"><span class="nav-number">3.1.</span> <span class="nav-text">用受检异常还是运行时异常？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#大概率发生时使用运行时异常"><span class="nav-number">3.1.1.</span> <span class="nav-text">大概率发生时使用运行时异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常无法恢复时使用运行时异常"><span class="nav-number">3.1.2.</span> <span class="nav-text">异常无法恢复时使用运行时异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可恢复时优先使用受检异常"><span class="nav-number">3.1.3.</span> <span class="nav-text">可恢复时优先使用受检异常</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用受检异常做流程控制"><span class="nav-number">3.2.</span> <span class="nav-text">使用受检异常做流程控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#尽量集中处理异常"><span class="nav-number">3.3.</span> <span class="nav-text">尽量集中处理异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义异常体系"><span class="nav-number">3.4.</span> <span class="nav-text">自定义异常体系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常误用"><span class="nav-number">4.</span> <span class="nav-text">异常误用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#e-printTrace-处理所有异常。"><span class="nav-number">4.1.</span> <span class="nav-text">e.printTrace()处理所有异常。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全部使用运行时异常"><span class="nav-number">4.2.</span> <span class="nav-text">全部使用运行时异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总是catch-Exception对象"><span class="nav-number">4.3.</span> <span class="nav-text">总是catch Exception对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正确使用异常"><span class="nav-number">5.</span> <span class="nav-text">正确使用异常</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常的实现原理（字节码级别）"><span class="nav-number">6.</span> <span class="nav-text">异常的实现原理（字节码级别）</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

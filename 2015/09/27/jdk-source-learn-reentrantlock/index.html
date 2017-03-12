@@ -1,0 +1,897 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="源码研究,jdk," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="从今天开始，要执行自己的学习计划了！！写正文之前，先发一下牢骚。前几天租的地方断网了，说是要进行城中村网络线路改造，把原来的所有的网线都暴力剪断了！搞得好几天上不了网。现在没有网络，生活中总感觉缺少点什么东西。虽然上网也干不了什么东西，但就是会觉得比较烦闷。以前没有网络的时候不也好好的嘛，所以说，互联网真的是已经深刻地改变了我们的生活，已经成为了生活中必不可少的东西。谷物是生活食量，而网络就是精神">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK源码研究——ReentrantLock浅析">
+<meta property="og:url" content="http://hinylover.space/2015/09/27/jdk-source-learn-reentrantlock/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="从今天开始，要执行自己的学习计划了！！写正文之前，先发一下牢骚。前几天租的地方断网了，说是要进行城中村网络线路改造，把原来的所有的网线都暴力剪断了！搞得好几天上不了网。现在没有网络，生活中总感觉缺少点什么东西。虽然上网也干不了什么东西，但就是会觉得比较烦闷。以前没有网络的时候不也好好的嘛，所以说，互联网真的是已经深刻地改变了我们的生活，已经成为了生活中必不可少的东西。谷物是生活食量，而网络就是精神">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JDK源码研究——ReentrantLock浅析">
+<meta name="twitter:description" content="从今天开始，要执行自己的学习计划了！！写正文之前，先发一下牢骚。前几天租的地方断网了，说是要进行城中村网络线路改造，把原来的所有的网线都暴力剪断了！搞得好几天上不了网。现在没有网络，生活中总感觉缺少点什么东西。虽然上网也干不了什么东西，但就是会觉得比较烦闷。以前没有网络的时候不也好好的嘛，所以说，互联网真的是已经深刻地改变了我们的生活，已经成为了生活中必不可少的东西。谷物是生活食量，而网络就是精神">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> JDK源码研究——ReentrantLock浅析 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                JDK源码研究——ReentrantLock浅析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-09-27T22:17:50+08:00" content="2015-09-27">
+              2015-09-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/09/27/jdk-source-learn-reentrantlock/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/27/jdk-source-learn-reentrantlock/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>从今天开始，要执行自己的学习计划了！！写正文之前，先发一下牢骚。前几天租的地方断网了，说是要进行城中村网络线路改造，把原来的所有的网线都暴力剪断了！搞得好几天上不了网。现在没有网络，生活中总感觉缺少点什么东西。虽然上网也干不了什么东西，但就是会觉得比较烦闷。以前没有网络的时候不也好好的嘛，所以说，互联网真的是已经深刻地改变了我们的生活，已经成为了生活中必不可少的东西。谷物是生活食量，而网络就是精神食量了。现在貌似也没有听说过“网瘾”这个词了，这个词在早些年可是一个标准的贬义词来着。看来人们的思维也是在时刻发生着变化的。废话有点多，进入正题！</p>
+<p>本文简单地谈一谈从JDK1.5开始引入的java.util.concurrent（简称JUC）包下的ReentrantLock类。Reentrant的英文含义是“可重入的”，也就是说ReentrantLock表示可重入的锁。这个类是用纯的java语言来实现synchronized关键字的功能，并且补充了synchronized没有实现的部分功能。由于能力有限，只能从浅层次来对ReentrantLock进行分析。本文的主要内容如下：</p>
+<ol>
+<li>浅析ReentrantLock的核心源代码；</li>
+<li>解释一下自己所理解的公平锁和非公平锁；</li>
+<li>把ReentrantLock和synchronized做一下简单地对比。</li>
+</ol>
+<a id="more"></a>
+<h3 id="1-ReentrantLock的核心源代码"><a href="#1-ReentrantLock的核心源代码" class="headerlink" title="1 ReentrantLock的核心源代码"></a><strong>1 ReentrantLock的核心源代码</strong></h3><p>首先，感觉源代码的分析工作实在是不好做。贴太多代码吧，让人看得昏昏欲睡；不贴吧，光用文字和图片又说不太清楚。太深入吧，代码一层套一层，讲完<br>下层还得回到上层，反正我是理解不了了。准备以自己看代码的顺序和思维方式来讲讲ReentrantLock的源代码（JDK1.7），大致的分析顺序为：</p>
+<ol>
+<li>代码的整体结构</li>
+<li>类的javadoc要点</li>
+<li>核心内部类和方法（调用层次不超过3层）。</li>
+</ol>
+<h4 id="1-1-ReentrantLock类的整体结构"><a href="#1-1-ReentrantLock类的整体结构" class="headerlink" title="1.1 ReentrantLock类的整体结构"></a><strong>1.1 ReentrantLock类的整体结构</strong></h4><p>首先先看一下ReentrantLock类的继承结构。类的签名如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Lock</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span></span></div></pre></td></tr></table></figure>
+<p>ReentrantLock类实现Serializable接口,表示这个类是可以序列化和反序列话的，也就是说ReentrantLock对象可以保存到硬盘中，通过网络传输，或者其他的其他方式。实现了Lock接口表示这是锁的一种，Lock接口是一个独立的接口，没有继承其他接口。它定义了所有锁的一系列基本操作:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>; <span class="comment">// 尝试获取锁，如果没有成功，则阻塞当前线程。</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span></span>; <span class="comment">// 尝试获取锁，如果不成功，则直接放弃锁，并返回false。成功的话，则加锁，并返回true。</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException</span>; <span class="comment">// 尝试获取锁，然后等待time时间后仍然没有成功，则返回false。</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span></span>; <span class="comment">// 释放锁</span></div><div class="line"></div><div class="line"><span class="function">Condition <span class="title">newCondition</span><span class="params">()</span></span>; <span class="comment">// 创建新的Condition实例。Condition是通过Java代码实现object.wait()，object.notify()和object.notifyAll()的功能。</span></div></pre></td></tr></table></figure>
+<h4 id="1-2-ReentrantLock类javadoc要点"><a href="#1-2-ReentrantLock类javadoc要点" class="headerlink" title="1.2 ReentrantLock类javadoc要点"></a><strong>1.2 ReentrantLock类javadoc要点</strong></h4><p>Javadoc是JDK的重要的资料和资源，通常，类和方法的一些重要信息都会在里面提及。Javadoc里面的英文还算比较好懂，是比较经典的技术文档的写好。认真研究这些Javadoc可以提高自己的文档注释能力。写一些优雅的文档和注释，应该是一个IT人员的基本素养。写好注释和文档，你好我好他也好！</p>
+<p>下面尝试着翻译一下ReentrantLock类javadoc。</p>
+<blockquote>
+<p>synchronized方法或申明可以隐式地监视锁，可重入锁除了具备与其相同的基本行为和语义外，还附加了其他功能。<br>可重入锁属于最后成功加锁，但还没有释放锁的线程。如果锁不属于其他线程，则当前线程可以通过调用lock方法成功地获取锁。如果当前线程就是锁的拥有者，那么调用lock方法就可以立刻返回。这些可以通过调用isHeldByCurrentThread和getHoldCount方法来检测。<br>本类的构造函数能够接收一个fairness参数。如果这个参数被设置为true，则锁倾向于授予等待最久的那个线程。否则，不保证任何特定的访问顺序。如果程序中使用公平锁，当大量线程访问锁时，其吞吐量通过远小于使用非公平锁。但却有更小的时间间隔（两个线程获得锁的时间差），并且可以保证不会出现线程饥饿。然而，公平锁并不能保证线程调度的公平性。这样的话，有可能会出现同一个线程多次成功获得锁，而另外的活动线程却无法继续运行，并且当前没有持有锁的情况。<br>注意，如果使用不限时的tryLock方法，则不遵守公平性设置。如果锁是空闲的，使用不限时的tryLock方法可以成功地获取锁，即使还有其他的锁在等待。<br>一种值得推荐的用法是：在调用lock方法后，立刻接上try代码块。典型的用法如下：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">* <span class="class"><span class="keyword">class</span> <span class="title">X</span> </span>&#123;</div><div class="line">*   <span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</div><div class="line">*   <span class="comment">// ...</span></div><div class="line">*</div><div class="line">*   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m</span><span class="params">()</span> </span>&#123;</div><div class="line">*     lock.lock();  <span class="comment">// block until condition holds</span></div><div class="line">*     <span class="keyword">try</span> &#123;</div><div class="line">*       <span class="comment">// ... method body</span></div><div class="line">*     &#125; <span class="keyword">finally</span> &#123;</div><div class="line">*       lock.unlock()</div><div class="line">*     &#125;</div><div class="line">*   &#125;</div><div class="line">* &#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>除了实现了Lock接口外，本类还定义了isLocked和getLockQueueLength方法。此外，还定义了一些相关的protected级别的方法，方便记录和监控。<br>序列化这个类的实例时，与内建的锁的行为相同。即不管序列化时对象是何种状态，反序列化后其一定是未锁定的。<br>这种锁支持被同一个线程锁定的最大重数为2147483647。试图超过这个限制，会导致锁定时出现错误。</p>
+</blockquote>
+<h4 id="1-3-核心内部成员和方法分析"><a href="#1-3-核心内部成员和方法分析" class="headerlink" title="1.3 核心内部成员和方法分析"></a><strong>1.3 核心内部成员和方法分析</strong></h4><p>下面列出重要的成员变量（类）和方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> Sync sync;  <span class="comment">// 私有的同步器类，这个类是ReentrantLock定义的内部类。final表示锁的性质一旦确定，不可更改。</span></div><div class="line"></div><div class="line"><span class="keyword">abstract</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Sync</span> <span class="keyword">extends</span> <span class="title">AbstractQueuedSynchronizer</span> // 包级别的内部静态类，它集成的<span class="title">AbstractQueuedSynchronizer</span>（简称<span class="title">A</span>.<span class="title">Q</span>.<span class="title">S</span>）类是整个<span class="title">J</span>.<span class="title">U</span>.<span class="title">C</span>包的基础，定义了带队列的同步的器的功能。它有两个子类<span class="title">NonfairSync</span>（非公平同步器）和<span class="title">FairSync</span>（公平的同步器），</span></div><div class="line"></div><div class="line"><span class="title">static</span> <span class="title">final</span> <span class="title">class</span> <span class="title">NonfairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span>; <span class="comment">// 非公平同步器</span></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span>； // 公平同步器</span></div></pre></td></tr></table></figure>
+<p>如果上面的第1行代码中<code>sync</code>指向NonfairSync实例，表示锁是非公平锁，如果指向FairSync实例，则表示锁为非公平锁。它们的区别会在接下的内容详细解释。下面详细地分析ReentrantLock类中的主要方法，如果可以，也会试着按照自己的理解来解释为什么要这么实现。</p>
+<p><strong>(1) lock()方法</strong></p>
+<p>这个方法直接调用sync.lock()方法，这是在Sync类的一个抽象方法，需要在子类中实现。NonfairSync和FairSync是Sync的两个实现类，lock()方法的实现就体现了这个类的差异。首先看下NonfairSync的lock()方法，该方法的源代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</div><div class="line">        setExclusiveOwnerThread(Thread.currentThread());</div><div class="line">    <span class="keyword">else</span></div><div class="line">        acquire(<span class="number">1</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第2行代码的compareAndSetState尝试修改state（0表示锁空闲，大于0表示忙）字段的值，它直接调用UnSafe类的compareAndSwapInt（简称CAS）方法，通过硬件指令来实现安全地修改变量值。如果state修改成功，则表示当前线程成功地获得锁，于是调用setExclusiveOwnerThread方法将锁的拥有者设置为当前线程。否则，调用acquire(1)方法。这是AbstractQueuedSynchronizer类的方法，该方法的源代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</div><div class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</div><div class="line">        selfInterrupt();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该方法首先调用tryAcquire再一次尝试加锁，这样做的目的是尽可能地提高锁的性能。假设此时加好锁空闲，那么这样做能尽快地获取锁。这个方法是AbstractQueuedSynchronizer类中的一个protected级别的方法，方法内部直接抛出UnsupportedOperationException。这是java一个比较常用的技巧，protected修饰的方法用于继承，抛出UnsupportedOperationException异常表示方法内部没有任何的逻辑代码，全靠子类自己实现。NonfairSync和FairSync类都实现了这个方法，这个方法的实现就体现了它们之间本质性的不同。先看看NonfairSync的tryAcquire的实现，它直接调用了Sync类的nonfairTryAcquire的方法，那就直接看看这个方法代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</div><div class="line">    <span class="keyword">int</span> c = getState();</div><div class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;  <span class="comment">// 如果当前锁空闲，则直接尝试加锁。acquires可以看做是锁的重数，如果加了n重锁，则需要释放n重锁方能完全地释放锁。</span></div><div class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</div><div class="line">            setExclusiveOwnerThread(current);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123; <span class="comment">// 如果当前线程就是锁的拥有者，则直接加上acquires重锁即可。</span></div><div class="line">        <span class="keyword">int</span> nextc = c + acquires;</div><div class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow   // 超过重数限制，抛出Error类型异常。超过int类型取值，则数直接变成负数。</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</div><div class="line">        setState(nextc);  <span class="comment">// 设置新的状态</span></div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;  <span class="comment">// 不属于上面的情况，就直接返回false。</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法首先查看锁是否空闲，一旦空闲，则直接尝试加锁，如果加锁成功直接返回true，否则返回false。如果锁非空闲，查看当前锁的拥有者是否为当前线程本身，如果是，则在原来的基础上加上新的重数，这就是为什么这个锁叫做可重入锁。拥有锁的线程无需再次加锁即可直接进入加锁的代码区域。下面看一下FairSync的tryAcquire的实现代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</div><div class="line">    <span class="keyword">int</span> c = getState();</div><div class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123; <span class="comment">// 如果锁空闲，先看看等待队列里是否还有等待线程，如果没有，才尝试加锁。</span></div><div class="line">        <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp;</div><div class="line">            compareAndSetState(<span class="number">0</span>, acquires)) &#123;</div><div class="line">            setExclusiveOwnerThread(current);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;  <span class="comment">// 如果当前线程就是锁的拥有者，则直接加上acquires重锁即可。</span></div><div class="line">        <span class="keyword">int</span> nextc = c + acquires;</div><div class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// 超过重数限制，抛出Error类型异常。超过int类型取值，则数直接变成负数。</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</div><div class="line">        setState(nextc);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">false</span>; <span class="comment">// 不属于上面的情况，就直接返回false。</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以明显地看到FairSync的tryAcquire的实现与NonfairSync实现的唯一不同点就是在锁空闲时的处理方式。在锁空闲时，它不会急于抢占锁，而是先查看当前是否有线程等待，如果有，就不会去尝试加锁，那么等待队列的线程就可以获得运行机会。这与NonfairSync是完全不同的，理论上讲，NonfairSync的处理方式可能会导致等待队列里的线程永久或者很长时间无法运行，而出现线程饥饿。这两种类型的锁的区别会在接下来的内容中较为详细的介绍。</p>
+<p>如果没有通过tryAcquire成功获取锁，则acquire方法就会调用acquireQueued(addWaiter(Node.EXCLUSIVE), arg)方法。这个方法比较复杂，也是比较独立的部分。由于本篇文章是浅析，所以不打算分析这个部分内容，搞太多东西容易让人发晕。如果真想了解这个部分的内容，可以参考<a href="http://ifeve.com/java-special-troops-aqs" target="_blank" rel="external">这篇文章</a>。简单点说，这个方法就是将没有成功获得锁的线程假如到等待队列，这个队列是一个阻塞队列。如果线程一直处于等待状态，直到其获得锁方可继续运行。如果没有成功的插入等待队列，则调用selfInterrupt方法直接中断当前线程。</p>
+<p>接下来再看看FairSync的lock方法的实现。lock方法源代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</div><div class="line">    acquire(<span class="number">1</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>与NonfairSync的lock方法不同的是，当前线程并不会在刚开始就尝试加锁，而是直接调用acquire(1)方法。这个方法在上面已经详细解释过了，则不赘述了。</p>
+<p><strong>请注意</strong>，上面的方法都是final的，表示这些方法不能被子类所覆盖。</p>
+<p><strong>（2）tryLock()方法</strong></p>
+<p>该方法尝试加锁，如果没有成功，则直接作罢。它适合那些对锁的需求不是那么强烈的场景。举个例子，假设你突然觉得肚子不舒服，于是放下手中的工作跑去厕所。不巧的是，唯一的厕所已经被别人占领了，如果你还能忍得住的话，完全可以先去工作，过一段时间再来看看。这种时候使用TryAcquire是比较合适的，它不会因为加锁不成功而阻塞当前线程，这样可以提高工作效率。源代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="keyword">return</span> sync.nonfairTryAcquire(<span class="number">1</span>);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>可以惊讶得看到它直接调用nonfairTryAcquire而非tryAcquire方法，所以当前线程会尽可能地抢夺锁。</p>
+<p><strong>（3）unlock()方法</strong></p>
+<p>该方法直接释放锁，方法体内仅仅调用AbstractQueuedSynchronizer的release方法，那么就来直接看看AbstractQueuedSynchronizer的release方法代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (tryRelease(arg)) &#123; <span class="comment">// 尝试释放锁</span></div><div class="line">           Node h = head;</div><div class="line">           <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)  <span class="comment">// 通知等待队列的线程，锁已释放，队首的线程可以抢锁了</span></div><div class="line">               unparkSuccessor(h);</div><div class="line">           <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>release方法首先调用tryRelease方法尝试释放锁，如果释放失败，则直接返回false。下面来看看tryRelease方法的源代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryRelease</span><span class="params">(<span class="keyword">int</span> releases)</span> </span>&#123;</div><div class="line">      <span class="keyword">int</span> c = getState() - releases;  <span class="comment">// 减去相应的重数</span></div><div class="line">      <span class="keyword">if</span> (Thread.currentThread() != getExclusiveOwnerThread()) <span class="comment">// 如果当前线程不是锁的拥有者，则抛出异常</span></div><div class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> IllegalMonitorStateException();</div><div class="line">      <span class="keyword">boolean</span> free = <span class="keyword">false</span>;</div><div class="line">      <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;  <span class="comment">// 如果锁的state是0，则表示锁已经完全释放，将锁置为空闲状态。否则，仅仅减少锁的重数。</span></div><div class="line">          free = <span class="keyword">true</span>;</div><div class="line">          setExclusiveOwnerThread(<span class="keyword">null</span>);</div><div class="line">      &#125;</div><div class="line">      setState(c);</div><div class="line">      <span class="keyword">return</span> free;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>首先判断当前要释放锁的线程是否是锁的拥有者，如果不是直接抛出IllegalMonitorStateException，通过这个异常名就知道这是什么异常了。所以说，为要抛出的异常取好名是非常重要的，好的异常名能一眼就看出问题是什么。这就说明只有拥有锁的线程才有权释放锁，这也是自然的。只有当锁的重数为0时才算真正地释放了锁，也就是所加锁重数和放锁重数是对应的。</p>
+<p>以上就是ReentrantLock类中的常用方法的实现，当然ReentrantLock中有一些其他的方法，这些方法实现都比较简单。</p>
+<h3 id="2-再谈公平锁和非公平锁"><a href="#2-再谈公平锁和非公平锁" class="headerlink" title="2 再谈公平锁和非公平锁"></a><strong>2 再谈公平锁和非公平锁</strong></h3><p>从上面的源代码的分析中其实就可以看出来公平锁和非公平锁的区别在哪里，本节试着用日常化的语言和实例再来谈谈它们的区别。</p>
+<p>非公平锁是直接尝试加锁，一旦成功，当前线程就是锁的拥有者（有可能会导致队列里的等待线程一直拿不到锁）；公平锁要先判断等待队列是否有等待线程，如果是，则当前线程不加锁而进入等待队列，那么队首线程就有机会获得锁。公平性体现在这！！</p>
+<p>举一个编造的例子。三国时蜀国封5虎将，分别为关羽、张飞、赵云、马超和黄忠。蜀主刘备分别为它们进行受封典礼，每次受封一名。关羽因留守荆州，姗姗入川。首先张飞进店受封，其余3人在殿外等候。张飞受封完毕，老蒋黄忠正要进殿，关羽急冲冲赶到，大喊一声：“慢！”。<br>“让我先进去”，关羽对黄忠说。<br>“凭啥？”，黄忠不悦，对关羽说。<br>“吾是陛下结拜兄弟，征战多年，立下汗马功劳。其余各位均是当世英雄，汝，败军之将耳，何德何能，竟能与吾平起平坐？！”<br>于是两人争执，均要先入。那么问题来了，谁应该先进去受封？<br>（1）如果刘备说，你们自己抢，强者先入。那么这就是不公平的。<br>（2）如果说，殿外等得时间最久者先入。那么就是公平的。</p>
+<h3 id="3-ReentrantLock和synchronized的对比"><a href="#3-ReentrantLock和synchronized的对比" class="headerlink" title="3 ReentrantLock和synchronized的对比"></a><strong>3 ReentrantLock和synchronized的对比</strong></h3><p>ReentrantLock被设计为synchronized的Java实现，除了实现了synchronized原来的功能和语义之外，还添加了其他的额外的功能。下面来对他们进行一下对比，看看它们的适用场景。</p>
+<p><strong>（1）字节码</strong></p>
+<p>首先来看一下使用ReentrantLock的示例源代码及其编译后的字节码，直接看到字节码的第 行的代码，通过invokeinterface指令调用lock方法。invokeinterface指令是java语言调用接口方法的指令，说明ReentrantLock其实就是一个普通的Java类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ByteReentrantLock</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="keyword">private</span> Lock reentrantLock = <span class="keyword">new</span> ReentrantLock();</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</div><div class="line">		reentrantLock.lock();</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			</div><div class="line">		&#125; <span class="keyword">finally</span> &#123;</div><div class="line">			reentrantLock.unlock();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">public class demo.blog.reentrant2sync.<span class="class">ByteReentrantLock </span>&#123;</div><div class="line">  public demo.blog.reentrant2sync.ByteReentrantLock();</div><div class="line"><span class="symbol">    Code:</span></div><div class="line">       <span class="number">0</span>: aload_0</div><div class="line">       <span class="number">1</span>: invokespecial <span class="meta">#1                  <span class="comment">// Method java/lang/Object."&lt;init&gt;":</span></span></div><div class="line">()V</div><div class="line">       <span class="number">4</span>: aload_0</div><div class="line">       <span class="number">5</span>: new           <span class="meta">#2                  <span class="comment">// class java/util/concurrent/locks/</span></span></div><div class="line">ReentrantLock</div><div class="line">       <span class="number">8</span>: dup</div><div class="line">       <span class="number">9</span>: invokespecial <span class="meta">#3                  <span class="comment">// Method java/util/concurrent/locks</span></span></div><div class="line">/ReentrantLock.<span class="string">"&lt;init&gt;"</span>:()V</div><div class="line">      <span class="number">12</span>: putfield      <span class="meta">#4                  <span class="comment">// Field reentrantLock:Ljava/util/co</span></span></div><div class="line">ncurrent<span class="meta-keyword">/locks/</span>Lock;</div><div class="line">      <span class="number">15</span>: return</div><div class="line"></div><div class="line">  public void test();</div><div class="line"><span class="symbol">    Code:</span></div><div class="line">       <span class="number">0</span>: aload_0</div><div class="line">       <span class="number">1</span>: getfield      <span class="meta">#4                  <span class="comment">// Field reentrantLock:Ljava/util/co</span></span></div><div class="line">ncurrent<span class="meta-keyword">/locks/</span>Lock;</div><div class="line">       <span class="number">4</span>: invokeinterface <span class="meta">#5,  1            <span class="comment">// InterfaceMethod java/util/concurr</span></span></div><div class="line">ent<span class="meta-keyword">/locks/</span>Lock.lock:()V</div><div class="line">       <span class="number">9</span>: aload_0</div><div class="line">      <span class="number">10</span>: getfield      <span class="meta">#4                  <span class="comment">// Field reentrantLock:Ljava/util/co</span></span></div><div class="line">ncurrent<span class="meta-keyword">/locks/</span>Lock;</div><div class="line">      <span class="number">13</span>: invokeinterface <span class="meta">#6,  1            <span class="comment">// InterfaceMethod java/util/concurr</span></span></div><div class="line">ent<span class="meta-keyword">/locks/</span>Lock.unlock:()V</div><div class="line">      <span class="number">18</span>: goto          <span class="number">33</span></div><div class="line">      <span class="number">21</span>: astore_1</div><div class="line">      <span class="number">22</span>: aload_0</div><div class="line">      <span class="number">23</span>: getfield      <span class="meta">#4                  <span class="comment">// Field reentrantLock:Ljava/util/co</span></span></div><div class="line">ncurrent<span class="meta-keyword">/locks/</span>Lock;</div><div class="line">      <span class="number">26</span>: invokeinterface <span class="meta">#6,  1            <span class="comment">// InterfaceMethod java/util/concurr</span></span></div><div class="line">ent<span class="meta-keyword">/locks/</span>Lock.unlock:()V</div><div class="line">      <span class="number">31</span>: aload_1</div><div class="line">      <span class="number">32</span>: athrow</div><div class="line">      <span class="number">33</span>: return</div><div class="line">    Exception table:</div><div class="line">       from    to  target type</div><div class="line">          <span class="number">21</span>    <span class="number">22</span>    <span class="number">21</span>   any</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来看一下使用synchronized关键词时的示例代码及其编译后的字节码。直接看字节码的第 行代码，使用了monitorenter指令来锁定同步块，然后再使用monitorexit退出同步块。所以，synchronized关键词是通过jvm运行时特殊指令来实现的。这与ReentrantLock的普通Java实现是不同的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ByteSync</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">			</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">  <span class="keyword">public</span> demo.blog.reentrant2sync.ByteSync();</div><div class="line">    Code:</div><div class="line">       <span class="number">0</span>: aload_0</div><div class="line">       <span class="number">1</span>: invokespecial #<span class="number">1</span>                  <span class="comment">// Meth</span></div><div class="line">()V</div><div class="line">       <span class="number">4</span>: <span class="keyword">return</span></div><div class="line"></div><div class="line">  <span class="keyword">public</span> <span class="built_in">void</span> test();</div><div class="line">    Code:</div><div class="line">       <span class="number">0</span>: aload_0</div><div class="line">       <span class="number">1</span>: dup</div><div class="line">       <span class="number">2</span>: astore_1</div><div class="line">       <span class="number">3</span>: monitorenter</div><div class="line">       <span class="number">4</span>: aload_1</div><div class="line">       <span class="number">5</span>: monitorexit</div><div class="line">       <span class="number">6</span>: goto          <span class="number">14</span></div><div class="line">       <span class="number">9</span>: astore_2</div><div class="line">      <span class="number">10</span>: aload_1</div><div class="line">      <span class="number">11</span>: monitorexit</div><div class="line">      <span class="number">12</span>: aload_2</div><div class="line">      <span class="number">13</span>: athrow</div><div class="line">      <span class="number">14</span>: <span class="keyword">return</span></div><div class="line">    Exception table:</div><div class="line">       <span class="keyword">from</span>    to  target <span class="keyword">type</span></div><div class="line">           <span class="number">4</span>     <span class="number">6</span>     <span class="number">9</span>   <span class="built_in">any</span></div><div class="line">           <span class="number">9</span>    <span class="number">12</span>     <span class="number">9</span>   <span class="built_in">any</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>（2）jvm支持</strong></p>
+<p>ReentrantLock的lock方法和unlock方法必须要成对出现的，否则会导致永久锁死。同时，为了确保unlock一定能执行，应该要将其置于finally代码块内，否则如果因出现异常而导致锁没有及时释放，后果不堪设想。ReentrantLock使用时一定要特别谨慎，否则很有可能会出现线程死锁。由于ReentrantLock就是一个普通的Java对象，那么它是可以被传递到其他的方法中的。所以ReentrantLock的锁定和解锁是可以跨方法的，或者更底层一点说是可以跨栈帧的。</p>
+<p>synchronized关键词使用jvm指令来实现，如果synchronized代码块内出现异常，则jvm会帮我们自动解锁，不需要编程者做额外的工作，这大大减少了编码量和简化了编程的难度，同时降低了死锁的风险。可以看到monitorenter和monitorexit指令也是成对出现的，但是它们限定在同一个方法内。synchronized包裹的代码块不能跨不同的方法，也就是说synchronized是不能跨栈帧的。这制约了synchronized的适用场景，如果需要跨栈帧加锁和解锁，synchronized是不合适的。</p>
+<p><strong>（3）性能</strong></p>
+<p>由于笔者并没有Java大规模并发的实践经历，所以有关它们的性能差距只能借用别人的实验。据资料说，ReetrantLock在大规模并发的场景下性能优于synchronized，而在并发不是那么大的场景下，synchronized的性能比较高。由于没有大规模并发的条件，于是笔者借助PC做了一下小规模的并发。测试代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.concurrent.CountDownLatch;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 比较ReetrantLock与synchronized的性能区别。</div><div class="line"> * <span class="doctag">@author</span> xialei(xialei199023@163.com)</div><div class="line"> * <span class="doctag">@version</span> v1.0 2015-9-27上午11:12:20</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReetrantLockTest</span> </span>&#123;</div><div class="line">	</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> threadNum = <span class="number">10</span>;</div><div class="line">	</div><div class="line">	<span class="keyword">private</span> CountDownLatch reentrantLockCdl = <span class="keyword">new</span> CountDownLatch(threadNum);</div><div class="line">	</div><div class="line">	<span class="keyword">private</span> CountDownLatch synchronizedCdl = <span class="keyword">new</span> CountDownLatch(threadNum);</div><div class="line">	</div><div class="line">	<span class="keyword">private</span> Lock lock = <span class="keyword">new</span> ReentrantLock();</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doReetrantLockTest</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">long</span> start = System.currentTimeMillis();</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; threadNum; i++) &#123;</div><div class="line">			<span class="keyword">new</span> Thread() &#123;</div><div class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">					lock.lock();</div><div class="line">					<span class="keyword">try</span> &#123;</div><div class="line">						doBusiness(reentrantLockCdl);</div><div class="line">					&#125; <span class="keyword">finally</span> &#123;</div><div class="line">						lock.unlock();</div><div class="line">					&#125;</div><div class="line">				&#125;;</div><div class="line">			&#125;.start();</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			reentrantLockCdl.await();</div><div class="line">			<span class="keyword">long</span> end = System.currentTimeMillis();</div><div class="line">			System.out.println(<span class="string">"ReetrantLock use time : "</span>+ (end - start));</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSynchronized</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">long</span> start = System.currentTimeMillis();</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; threadNum; i++) &#123;</div><div class="line">			<span class="keyword">new</span> Thread() &#123;</div><div class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">					<span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">						doBusiness(synchronizedCdl);</div><div class="line">					&#125;</div><div class="line">				&#125;;</div><div class="line">			&#125;.start();</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			synchronizedCdl.await();</div><div class="line">			<span class="keyword">long</span> end = System.currentTimeMillis();</div><div class="line">			System.out.println(<span class="string">"synchronized use time : "</span>+ (end - start));</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doBusiness</span><span class="params">(CountDownLatch latch)</span> </span>&#123;</div><div class="line">		</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">long</span> i = <span class="number">0l</span>; i &lt; <span class="number">10000000l</span>; i++) &#123;</div><div class="line">			<span class="comment">//System.out.println(Thread.currentThread().getName());</span></div><div class="line">		&#125;</div><div class="line">		latch.countDown();</div><div class="line">		</div><div class="line">	&#125; </div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		ReetrantLockTest test = <span class="keyword">new</span> ReetrantLockTest();</div><div class="line">		test.doReetrantLockTest();</div><div class="line">		test.doSynchronized();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>测试结果如下表所示（时间单位为毫秒）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">线程并发数</th>
+<th>ReentrantLock</th>
+<th style="text-align:left">synchronized</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td>26</td>
+<td style="text-align:left">23</td>
+</tr>
+<tr>
+<td style="text-align:left">10</td>
+<td>218</td>
+<td style="text-align:left">112</td>
+</tr>
+<tr>
+<td style="text-align:left">50</td>
+<td>1107</td>
+<td style="text-align:left">645</td>
+</tr>
+<tr>
+<td style="text-align:left">100</td>
+<td>2208</td>
+<td style="text-align:left">1152</td>
+</tr>
+<tr>
+<td style="text-align:left">200</td>
+<td>4281</td>
+<td style="text-align:left">2409</td>
+</tr>
+<tr>
+<td style="text-align:left">400</td>
+<td>8678</td>
+<td style="text-align:left">4400</td>
+</tr>
+<tr>
+<td style="text-align:left">600</td>
+<td>12937</td>
+<td style="text-align:left">6610</td>
+</tr>
+<tr>
+<td style="text-align:left">800</td>
+<td>17072</td>
+<td style="text-align:left">8868</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到在小规模并发下synchronized的性能大概是ReentrantLock的2倍，这主要归功于官方对synchronized在性能上的不断完善，通过诸如偏向锁、轻量级锁等优化措施保证在小规模并发下synchronized的性能。实际上，Java官网也直接在推荐使用synchronized来做多线程同步，毕竟synchronized才是真正属于Java语言本身的。</p>
+<h3 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a><strong>4 总结</strong></h3><p>本文着重分析了JDK1.7中的ReentrantLock源代码，包括它的Javadoc和重要的方法。通过源代码的分析，找到了公平锁和非公平锁的差异之处。ReentrantLock和synchronized是实现类似功能的不同实现，本文最后分别在字节码、jvm支持和性能这3个方面对它们进行的对比，并且说明了它们的适用场景。第一次写这种源代码的分析文章，实在是拿不准轻重，希望通过不断的写提高自己的写作能力。</p>
+<p><strong>参考资料</strong>：</p>
+<p><a href="http://blog.csdn.net/fw0124/article/details/6672522" target="_blank" rel="external">Java中的ReentrantLock和synchronized两种锁定机制的对比</a></p>
+<p><a href="http://ifeve.com/java-special-troops-aqs/" target="_blank" rel="external">AQS的原理浅析</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码研究/" rel="tag">#源码研究</a>
+          
+            <a href="/tags/jdk/" rel="tag">#jdk</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/09/12/summary-and-plan/" rel="next" title="2015-09-12总结与学习计划">
+                <i class="fa fa-chevron-left"></i> 2015-09-12总结与学习计划
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/11/28/elasticsearch-5/" rel="prev" title="实时搜索引擎Elasticsearch（5）——Java API的使用">
+                实时搜索引擎Elasticsearch（5）——Java API的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/09/27/jdk-source-learn-reentrantlock/"
+     data-title="JDK源码研究——ReentrantLock浅析"
+     data-content=""
+     data-url="http://hinylover.space/2015/09/27/jdk-source-learn-reentrantlock/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/09/27/jdk-source-learn-reentrantlock/"
+           data-title="JDK源码研究——ReentrantLock浅析" data-url="http://hinylover.space/2015/09/27/jdk-source-learn-reentrantlock/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ReentrantLock的核心源代码"><span class="nav-number">1.</span> <span class="nav-text">1 ReentrantLock的核心源代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-ReentrantLock类的整体结构"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 ReentrantLock类的整体结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-ReentrantLock类javadoc要点"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 ReentrantLock类javadoc要点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-核心内部成员和方法分析"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 核心内部成员和方法分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-再谈公平锁和非公平锁"><span class="nav-number">2.</span> <span class="nav-text">2 再谈公平锁和非公平锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ReentrantLock和synchronized的对比"><span class="nav-number">3.</span> <span class="nav-text">3 ReentrantLock和synchronized的对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-总结"><span class="nav-number">4.</span> <span class="nav-text">4 总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

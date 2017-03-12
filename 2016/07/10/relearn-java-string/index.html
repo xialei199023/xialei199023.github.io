@@ -1,0 +1,902 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="对于任何变成语言来说，接触字符串都是不可避免，Java也不例外。Java中String类位于java.lang包下，是整个Java语言的基石。同时String类使用final关键词修饰，意味着外部调用者无法通过继承和重写来更改其功能。Java中的字符串与语言相比，也有其特殊性。本文深入地理解Java字符串，主要内容有：
+
+String的初始化
+String与常量池
+String的不变性
+Strin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重新认识Java——字符串（String）">
+<meta property="og:url" content="http://hinylover.space/2016/07/10/relearn-java-string/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="对于任何变成语言来说，接触字符串都是不可避免，Java也不例外。Java中String类位于java.lang包下，是整个Java语言的基石。同时String类使用final关键词修饰，意味着外部调用者无法通过继承和重写来更改其功能。Java中的字符串与语言相比，也有其特殊性。本文深入地理解Java字符串，主要内容有：
+
+String的初始化
+String与常量池
+String的不变性
+Strin">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/String-1.jpg">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/String-2.jpg">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/String-3.jpg">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.547Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="重新认识Java——字符串（String）">
+<meta name="twitter:description" content="对于任何变成语言来说，接触字符串都是不可避免，Java也不例外。Java中String类位于java.lang包下，是整个Java语言的基石。同时String类使用final关键词修饰，意味着外部调用者无法通过继承和重写来更改其功能。Java中的字符串与语言相比，也有其特殊性。本文深入地理解Java字符串，主要内容有：
+
+String的初始化
+String与常量池
+String的不变性
+Strin">
+<meta name="twitter:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 重新认识Java——字符串（String） | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                重新认识Java——字符串（String）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-07-10T12:55:19+08:00" content="2016-07-10">
+              2016-07-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/10/relearn-java-string/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/10/relearn-java-string/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>对于任何变成语言来说，接触字符串都是不可避免，Java也不例外。Java中<code>String</code>类位于<code>java.lang</code>包下，是整个Java语言的基石。同时<code>String</code>类使用<code>final</code>关键词修饰，意味着外部调用者无法通过继承和重写来更改其功能。Java中的字符串与语言相比，也有其特殊性。本文深入地理解Java字符串，主要内容有：</p>
+<ol>
+<li>String的初始化</li>
+<li>String与常量池</li>
+<li>String的不变性</li>
+<li>String、StringBuffer与StringBuilder</li>
+<li>“+”操作符</li>
+</ol>
+<a id="more"></a>
+<h2 id="String初始化"><a href="#String初始化" class="headerlink" title="String初始化"></a>String初始化</h2><p>首先要强调的是，String并不是Java中的基础类型，它也是一个对象。在源代码层面来说，String有多种不同的初始化方法，本节就介绍这些初始化方法。</p>
+<h3 id="字面量法"><a href="#字面量法" class="headerlink" title="字面量法"></a>字面量法</h3><p><code>String</code>的字面量初始化法如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String a = <span class="string">"abc"</span>;</div><div class="line">String b = <span class="string">"hello world"</span>;</div></pre></td></tr></table></figure>
+<p>这种方法首先从常量池中查找是否有相同值的字符串对象，如果有，则直接将对象地址赋予引用变量；如果没有，在首先在常量池区域中创建一个新的字符串对象，然后将地址赋予引用变量。</p>
+<h3 id="构造方法法"><a href="#构造方法法" class="headerlink" title="构造方法法"></a>构造方法法</h3><p><code>String</code>的构造方法初始化法如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String a = <span class="keyword">new</span> String(<span class="string">"abc"</span>);</div><div class="line">String b = <span class="keyword">new</span> String(<span class="string">"hello world"</span>);</div></pre></td></tr></table></figure>
+<p><code>String</code>类的构造方法有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">String</span><span class="params">()</span> </span>&#123;&#125; <span class="comment">// 构造空串（注意与null的区别）</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">String</span><span class="params">(String original)</span> </span>&#123;&#125; <span class="comment">// 基于另外一个字符串构造一个新字符串对象</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">String</span><span class="params">(<span class="keyword">char</span> value[])</span> </span>&#123;&#125; <span class="comment">// 使用byte数组构造字符串</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">String</span><span class="params">(<span class="keyword">char</span> value[], <span class="keyword">int</span> offset, <span class="keyword">int</span> count)</span></span>&#123;&#125; <span class="comment">// 使用byte数组以及偏移参数构造</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">String</span><span class="params">(<span class="keyword">int</span>[] codePoints, <span class="keyword">int</span> offset, <span class="keyword">int</span> count)</span> </span>&#123;&#125; <span class="comment">// 基于Uncode编码数组以及偏移量构造</span></div></pre></td></tr></table></figure>
+<p>这种初始化方法与一般对象的初始化方法完全一样。与字面量法不同的是，每次调用构造方法都会在堆内存中创建一个新的字符串对象。下面的例子可以清楚地显示它们的区别：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> * 个人主页：http://hinylover.space</div><div class="line"> *</div><div class="line"> * Creation Date: 2016年7月6日 下午9:14:56</div><div class="line"> */</div><div class="line"><span class="keyword">package</span> demo.blog.java.string;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 不同初始化方法的区别。</div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年7月6日下午9:14:56</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringEqual</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		String a1 = <span class="string">"123"</span>;</div><div class="line">		String b1 = <span class="string">"123"</span>;</div><div class="line">		System.out.println(a1 == b1); <span class="comment">// true</span></div><div class="line">		</div><div class="line">		String a2 = <span class="keyword">new</span> String(<span class="string">"123"</span>);</div><div class="line">		String b2 = <span class="keyword">new</span> String(<span class="string">"123"</span>);</div><div class="line">		System.out.println(a2 == b2); <span class="comment">// false</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们知道，Java中的“==”符比较的变量保存的实际内存数据，由于基础数据类型变量保存的是数据的实际值，而引用类型变量保存的是对象的地址，不同的地址代表着不同的对象。<code>a1 == b1</code>为<code>true</code>表明a1和b1指向同一个对象，而a2和b2分别指向不同的对象。</p>
+<h2 id="String与JVM常量池"><a href="#String与JVM常量池" class="headerlink" title="String与JVM常量池"></a>String与JVM常量池</h2><p>说起String ，就不能不提到JVM常量池，是笔试和面试中经常喜欢出题的点。</p>
+<h3 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h3><p>在正式进入常量池之前，首先简单地介绍一下JVM（Java虚拟机，由于市面上有多种不同的JVM，本文中仅考虑Hotspot VM）的内存结构，也是作为Java程序员必须要了解的内容（以后再深入JVM）。由于本文的主体并不是Java虚拟机，内容会比较粗糙，更加详细的JVM知识会在以后撰写。</p>
+<p>JVM的内存顶层结构如下图所示：</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.jpg" alt="JVM内存结构"></p>
+<p>下面分别来说说主要的内存区域：</p>
+<ol>
+<li>程序计数器：这是一块比较小的内存区域，可以看做是当前线程所执行的字节码的行号指示器。每一个线程都会需要有一个独立的程序计数器，各个程序计数器之间相互不影响。如果线程当前执行的是Java方法，则计数器记录当前正在执行字节码指令地址，如果是Native方法，则计数器的值为空。</li>
+<li>栈区：栈区是线程私有的，其生命周期与线程相同。栈区描述的是Java方法执行的内存模型（以后会详细研究）。</li>
+<li>本地方法栈：功能与栈区的功能相似，不过是为Java中的Native方法服务的。</li>
+<li>堆区：这是JVM管理的最大的一块内存区域，是所有线程共享的，几乎所有的对象实例都放置在这个区域。堆又可以细分为：年轻代、老年代。我们通常所说的垃圾回收就是发现在这个内存区域。</li>
+<li>方法区：与堆一样，也是所有线程所共享的。由于习惯问题，方法区也被叫做永久代，因为上面放置的数据很难被回收（条件很苛刻）。</li>
+</ol>
+<p>常量池（准确地说是运行时常量池），在JDK1.6及以前都是方法区中的一部分，在JDK1.7之后被移入堆区，用来存放编译时生成的各种字面量和符号引用。下面来看一下普通类编译后的字节码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		String a = <span class="string">"123"</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的源代码编译完后的字节码如下：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> class Test</div><div class="line">  minor version: <span class="number">0</span></div><div class="line">  major version: <span class="number">52</span></div><div class="line">  flags: ACC_PUBLIC, ACC_SUPER</div><div class="line">Constant pool:</div><div class="line">   #1 = Methodref          #4.#13         <span class="comment">// java/lang/Object."&lt;init&gt;":()V</span></div><div class="line">   #2 = <span class="built_in">String</span>             #14            <span class="comment">// 123</span></div><div class="line">   #3 = Class              #15            <span class="comment">// Test</span></div><div class="line">   #4 = Class              #16            <span class="comment">// java/lang/Object</span></div><div class="line">   #5 = Utf8               &lt;init&gt;</div><div class="line">   #6 = Utf8               ()V</div><div class="line">   #7 = Utf8               Code</div><div class="line">   #8 = Utf8               LineNumberTable</div><div class="line">   #9 = Utf8               main</div><div class="line">  #10 = Utf8               (<span class="meta">[</span>Ljava/lang/<span class="built_in">String</span>;)V</div><div class="line">  #11 = Utf8               SourceFile</div><div class="line">  #12 = Utf8               Test.java</div><div class="line">  #13 = NameAndType        #5:#6          <span class="comment">// "&lt;init&gt;":()V</span></div><div class="line">  #14 = Utf8               <span class="number">123</span></div><div class="line">  #15 = Utf8               Test</div><div class="line">  #16 = Utf8               java/lang/Object</div><div class="line">&#123;</div><div class="line">  <span class="keyword">public</span> Test();</div><div class="line">    descriptor: ()V</div><div class="line">    flags: ACC_PUBLIC</div><div class="line">    Code:</div><div class="line">      <span class="built_in">stack</span>=<span class="number">1</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></div><div class="line">         <span class="number">0</span>: aload_0</div><div class="line">         <span class="number">1</span>: invokespecial #1                  <span class="comment">// Method java/lang/Object."&lt;init&gt;":()V</span></div><div class="line">         <span class="number">4</span>: <span class="keyword">return</span></div><div class="line">      LineNumberTable:</div><div class="line">        line <span class="number">4</span>: <span class="number">0</span></div><div class="line"></div><div class="line">  <span class="keyword">public</span> static <span class="literal">void</span> main(java.lang.<span class="built_in">String</span><span class="meta">[</span><span class="meta">]</span>);</div><div class="line">    descriptor: (<span class="meta">[</span>Ljava/lang/<span class="built_in">String</span>;)V</div><div class="line">    flags: ACC_PUBLIC, ACC_STATIC</div><div class="line">    Code:</div><div class="line">      <span class="built_in">stack</span>=<span class="number">1</span>, locals=<span class="number">2</span>, args_size=<span class="number">1</span></div><div class="line">         <span class="number">0</span>: ldc           #2                  <span class="comment">// String 123</span></div><div class="line">         <span class="number">2</span>: astore_1</div><div class="line">         <span class="number">3</span>: <span class="keyword">return</span></div><div class="line">      LineNumberTable:</div><div class="line">        line <span class="number">7</span>: <span class="number">0</span></div><div class="line">        line <span class="number">8</span>: <span class="number">3</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第6~21行是编译后产生的常量池（编译时常量池），这些常量在类加载时被保存到运行时常量池中，代码中<code>123</code>字符串在编译后放入常量池中（见第19行），这也就解释了上一节示例中的<code>a1 == b1</code>为<code>true</code>的问题。常量池中的大部分数据都来自编译时常量池，也可以在运行时将数据放入常量池。</p>
+<h3 id="intern-方法"><a href="#intern-方法" class="headerlink" title="intern()方法"></a>intern()方法</h3><p><code>intern()</code>方法的作用是在常量池中查找值等于（equals）当前字符串的对象，如果找到，则直接返回这个对象的地址；如果没有找到，则将当前字符串拷贝到常量池中，然后返回拷贝后的对象地址。下面的代码可以解释<code>intern()</code>的功能。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">String a = <span class="string">"123"</span>;</div><div class="line">String b = <span class="keyword">new</span> String(<span class="string">"123"</span>);</div><div class="line">String c = <span class="keyword">new</span> String(<span class="string">"123"</span>);</div><div class="line"></div><div class="line">System.out.println(a == b); <span class="comment">// false</span></div><div class="line">System.out.println(a == b.intern()); <span class="comment">// true</span></div><div class="line">System.out.println(c == b.intern()); <span class="comment">// false</span></div><div class="line">System.out.println(c.intern() == b.intern()); <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<p>由于<code>String a = “123”;</code>产生的字符串对象会直接放入常量池中，当调用<code>b.intern()</code>方法时，由于已经存在值为123的对象（即a所指向的对象），直接返回这个对象，所以<code>a == b.intern()</code>判定为<code>true</code>。</p>
+<h2 id="String的不可变性"><a href="#String的不可变性" class="headerlink" title="String的不可变性"></a>String的不可变性</h2><h3 id="类的不可变性"><a href="#类的不可变性" class="headerlink" title="类的不可变性"></a>类的不可变性</h3><p>什么叫做类的不变性？简单地说，就是其实例一旦创建完成，在其整个生命周期内状态都不会发生变化。状态这个词有一些抽象，在Java中对象的状态是由其成员变量来表现的，那么状态不变即是成员变量不变（具体来说，基本类型变量的值不变、引用类型变量的引用地址不变）。不可变的类有不少好处：</p>
+<ol>
+<li>更加易于设计、实现和使用。</li>
+<li>并发时，不容易出错，并且更加安全。</li>
+</ol>
+<p>为了使类成为不可变，要遵循下面五条规则（引用自《Effective Java》）：</p>
+<ol>
+<li>不提供任何会修改对象状态的方法；</li>
+<li>保证类不能被扩展；</li>
+<li>所有的成员变量都被final修饰的；</li>
+<li>所有的成员变量都是private的；</li>
+<li>确保对于任何可变组件的互斥访问。如果一个类的成员变量引用了可变对象，则必须确保外部调用类无法获取指向这些对象的引用。</li>
+</ol>
+<p>当然，所有的这些条件都是针对正常调用而言的，如果使用反射，则仅仅满足上述的条件也无法保证对象不可变。</p>
+<h3 id="String的不可变性-1"><a href="#String的不可变性-1" class="headerlink" title="String的不可变性"></a>String的不可变性</h3><p>首先来通过一个图文案例来说明<code>String</code>不可变性。</p>
+<p>1、声明一个String类型变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">String s = <span class="string">"abcd"</span>;</div></pre></td></tr></table></figure>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/String-1.jpg" alt="String-1"></p>
+<p>2、将字符串变量赋予另外一个String类型变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">String s2=s;</div></pre></td></tr></table></figure>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/String-2.jpg" alt="String-2"></p>
+<p>3、连接另外一个字符串对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">String s3 = s.concat(<span class="string">"ef"</span>);</div></pre></td></tr></table></figure>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-string/String-3.jpg" alt="String-3"></p>
+<p>可以看到<code>s3</code>指向是另外一个对象，而不是原来<code>a</code>所指向的对象。在调用<code>concat(String)</code>方法之后，<code>a</code>所指向的对象状态并没有发生改变，而是生成了一个新的对象。下面是<code>concat(String)</code>方法的源代码（JDK1.8）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">concat</span><span class="params">(String str)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> otherLen = str.length();</div><div class="line">    <span class="keyword">if</span> (otherLen == <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">int</span> len = value.length;</div><div class="line">    <span class="keyword">char</span> buf[] = Arrays.copyOf(value, len + otherLen);</div><div class="line">    str.getChars(buf, len);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> String(buf, <span class="keyword">true</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意到第9行代码，它直接创建一个新的<code>String</code>对象。</p>
+<p>为什么<code>String</code>要设计为不可变呢？主要原因如下：</p>
+<ol>
+<li><p>字符串池（String pool）的需求。之前已经说过，通过字面量发初始化一个Java字符串时，会将这个字符串保存在常量池中。如果定义了另外一个相同值的字符串变量，则直接指向之前初始化的那个对象。如果字符串是可变的，改变另一个字符串变量，就会使另一个字符串变量指向错误的值。 </p>
+</li>
+<li><p>缓存字符串hashcode码的需要。字符串的hashcode是经常被使用的，字符串的不变性确保了hashcode的值一直是一样的，在需要hashcode时，就不需要每次都计算，这样会很高效。</p>
+</li>
+<li><p>出于安全性考虑。字符串经常作为网络连接、数据库连接等参数，不可变就可以保证连接的安全性。 </p>
+</li>
+</ol>
+<h2 id="String、StringBuffer与StringBuilder"><a href="#String、StringBuffer与StringBuilder" class="headerlink" title="String、StringBuffer与StringBuilder"></a>String、StringBuffer与StringBuilder</h2><p><code>StringBuffer</code>与<code>StringBuilder</code>是创建字符串常用的类，采用<a href="http://hinylover.space/2015/05/02/effect-java-note-create-object/">构建器</a>模式来构建字符串对象，使得可以在运行时动态地构建字符串对象。下表是它们各自的特点。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">类</th>
+<th style="text-align:center">可变性</th>
+<th style="text-align:center">线程安全</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">String</td>
+<td style="text-align:center">不可变</td>
+<td style="text-align:center">线程安全</td>
+</tr>
+<tr>
+<td style="text-align:center">StringBuffer</td>
+<td style="text-align:center">可变</td>
+<td style="text-align:center">线程安全</td>
+</tr>
+<tr>
+<td style="text-align:center">StringBuilder</td>
+<td style="text-align:center">可变</td>
+<td style="text-align:center">非线程安全</td>
+</tr>
+</tbody>
+</table>
+<h2 id="“-”操作符"><a href="#“-”操作符" class="headerlink" title="“+”操作符"></a>“+”操作符</h2><p><code>String</code>是一个异类，除了基本类型及其包装类之外，只有它可以使用”+” 操作符号。在<code>String</code>中，”+” 表示字符串连接，而不是数学运算中的加法运算。下面通过一些例子（例子引用自<a href="http://www.cnblogs.com/ITtangtang/p/3976820.html" target="_blank" rel="external">《深入理解Java：String》</a>）来说明不同场景下使用”+”操作符的特点。</p>
+<h3 id="编译时优化"><a href="#编译时优化" class="headerlink" title="编译时优化"></a>编译时优化</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> * 由于常量的值在编译的时候就被确定(优化)了。 </div><div class="line"> * 在这里，"ab"和"cd"都是常量，因此变量str3的值在编译时就可以确定。 </div><div class="line"> * 这行代码编译后的效果等同于： String str3 = "abcd"; </div><div class="line"> */  </div><div class="line">String str1 = <span class="string">"ab"</span> + <span class="string">"cd"</span>;   </div><div class="line">String str11 = <span class="string">"abcd"</span>;   </div><div class="line">System.out.println(<span class="string">"str1 = str11 : "</span>+ (str1 == str11));  <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<p>为了提高效率和减少内存占用，Java编译器会在编译时做一些其力所能及的事情。上面的代码中，由于在编译时即可以确定str1的值为”abcd”，所以编译时，直接将”abcd”字符串对象赋予str1，所以str1和str11引用的是常量池中的同一个对象。</p>
+<h3 id="利用StringBuilder实现"><a href="#利用StringBuilder实现" class="headerlink" title="利用StringBuilder实现"></a>利用StringBuilder实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*  </span></div><div class="line"> * 局部变量str2,str3存储的是存储两个拘留字符串对象(intern字符串对象)的地址。 </div><div class="line"> *  </div><div class="line"> * 第三行代码原理(str2+str3)： </div><div class="line"> * 运行期JVM首先会在堆中创建一个StringBuilder类， </div><div class="line"> * 同时用str2指向的拘留字符串对象完成初始化， </div><div class="line"> * 然后调用append方法完成对str3所指向的拘留字符串的合并， </div><div class="line"> * 接着调用StringBuilder的toString()方法在堆中创建一个String对象， </div><div class="line"> * 最后将刚生成的String对象的堆地址存放在局部变量str3中。 </div><div class="line"> *  </div><div class="line"> * 而str5存储的是字符串池中"abcd"所对应的拘留字符串对象的地址。 </div><div class="line"> * str4与str5地址当然不一样了。 </div><div class="line"> *  </div><div class="line"> * 内存中实际上有五个字符串对象： </div><div class="line"> *       三个拘留字符串对象、一个String对象和一个StringBuilder对象。 </div><div class="line"> */  </div><div class="line">String str2 = <span class="string">"ab"</span>;  </div><div class="line">String str3 = <span class="string">"cd"</span>;                                          </div><div class="line">String str4 = str2 + str3;                                        </div><div class="line">String str5 = <span class="string">"abcd"</span>;    </div><div class="line">System.out.println(<span class="string">"str4 = str5 : "</span> + (str4 == str5)); <span class="comment">// false</span></div></pre></td></tr></table></figure>
+<p>上面的源代码编译后的字节码如下，第5行创建了一个<code>StringBuilder</code>对象，并在第9行和第11行分别将字符串”ab”和”cd”append到对象中，生成新的字符串对象”abcd”，并将引用赋予变量str4。str5引用的对象保存在常量池中，而str4引用的对象是保存在Java堆中的，它们不是同一个对象。</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"> <span class="number">0</span>: ldc           <span class="meta">#2                  <span class="comment">// String ab</span></span></div><div class="line"> <span class="number">2</span>: astore_1</div><div class="line"> <span class="number">3</span>: ldc           <span class="meta">#3                  <span class="comment">// String cd</span></span></div><div class="line"> <span class="number">5</span>: astore_2</div><div class="line"> <span class="number">6</span>: <span class="keyword">new</span>           <span class="meta">#4                  <span class="comment">// class java/lang/StringBuilder</span></span></div><div class="line"> <span class="number">9</span>: dup</div><div class="line"><span class="number">10</span>: invokespecial <span class="meta">#5                  <span class="comment">// Method java/lang/StringBuilder."&lt;init&gt;":()V</span></span></div><div class="line"><span class="number">13</span>: aload_1</div><div class="line"><span class="number">14</span>: invokevirtual <span class="meta">#6                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span></div><div class="line"><span class="number">17</span>: aload_2</div><div class="line"><span class="number">18</span>: invokevirtual <span class="meta">#6                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span></div><div class="line"><span class="number">21</span>: invokevirtual <span class="meta">#7                  <span class="comment">// Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span></span></div><div class="line"><span class="number">24</span>: astore_3</div><div class="line"><span class="number">25</span>: ldc           <span class="meta">#8                  <span class="comment">// String abcd</span></span></div><div class="line"><span class="number">27</span>: astore        <span class="number">4</span></div><div class="line"><span class="number">29</span>: getstatic     <span class="meta">#9                  <span class="comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span></span></div><div class="line"><span class="number">32</span>: <span class="keyword">new</span>           <span class="meta">#4                  <span class="comment">// class java/lang/StringBuilder</span></span></div><div class="line"><span class="number">35</span>: dup</div><div class="line"><span class="number">36</span>: invokespecial <span class="meta">#5                  <span class="comment">// Method java/lang/StringBuilder."&lt;init&gt;":()V</span></span></div><div class="line"><span class="number">39</span>: ldc           <span class="meta">#10                 <span class="comment">// String str4 = str5 :</span></span></div><div class="line"><span class="number">41</span>: invokevirtual <span class="meta">#6                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span></div><div class="line"><span class="number">44</span>: aload_3</div><div class="line"><span class="number">45</span>: aload         <span class="number">4</span></div><div class="line"><span class="number">47</span>: if_acmpne     <span class="number">54</span></div><div class="line"><span class="number">50</span>: iconst_1</div><div class="line"><span class="number">51</span>: <span class="keyword">goto</span>          <span class="number">55</span></div><div class="line"><span class="number">54</span>: iconst_0</div><div class="line"><span class="number">55</span>: invokevirtual <span class="meta">#11                 <span class="comment">// Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;</span></span></div><div class="line"><span class="number">58</span>: invokevirtual <span class="meta">#7                  <span class="comment">// Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span></span></div><div class="line"><span class="number">61</span>: invokevirtual <span class="meta">#12                 <span class="comment">// Method java/io/PrintStream.println:(Ljava/lang/String;)V</span></span></div><div class="line"><span class="number">64</span>: <span class="keyword">return</span></div></pre></td></tr></table></figure>
+<h3 id="final字符串编译时优化"><a href="#final字符串编译时优化" class="headerlink" title="final字符串编译时优化"></a>final字符串编译时优化</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> *  JAVA编译器对string + 基本类型/常量 是当成常量表达式直接求值来优化的。 </div><div class="line"> *  运行期的两个string相加，会产生新的对象的，存储在堆(heap)中 </div><div class="line"> */   </div><div class="line"><span class="keyword">final</span> String str8 = <span class="string">"b"</span>;  </div><div class="line">String str9 = <span class="string">"a"</span> + str8;  </div><div class="line">String str89 = <span class="string">"ab"</span>;  </div><div class="line">System.out.println(<span class="string">"str9 = str89 : "</span>+ (str9 == str89)); <span class="comment">// true  </span></div><div class="line"><span class="comment">//↑str8为常量变量，编译期会被优化</span></div></pre></td></tr></table></figure>
+<p>用<code>final</code>修饰的变量str8表示字符串常量，str8不可能引用其他的字符串。在编译时，直接将”ab”字符串赋予str9变量，所以，上面的判断结果为true。</p>
+<hr>
+<p>参考文献</p>
+<p>《深入理解Java虚拟机 JVM高级特性与最佳实践》<br>《Effective Java》<br><a href="http://www.cnblogs.com/ITtangtang/p/3976820.html" target="_blank" rel="external">深入理解Java：String</a></p>
+<hr>
+<p>本文由<a href="http://hinylover.space">xialei</a>原创，转载请说明出处<a href="http://hinylover.space/2016/07/10/relearn-java-string/">http://hinylover.space/2016/07/10/relearn-java-string/</a>。</p>
+<hr>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/系列/" rel="tag">#系列</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/03/relearn-java-generic-2/" rel="next" title="重新认识Java——泛型（通配、特性和注意点）">
+                <i class="fa fa-chevron-left"></i> 重新认识Java——泛型（通配、特性和注意点）
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/23/relearn-java-collection/" rel="prev" title="重新认识Java——容器体系（Collection）">
+                重新认识Java——容器体系（Collection） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/10/relearn-java-string/"
+     data-title="重新认识Java——字符串（String）"
+     data-content=""
+     data-url="http://hinylover.space/2016/07/10/relearn-java-string/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/10/relearn-java-string/"
+           data-title="重新认识Java——字符串（String）" data-url="http://hinylover.space/2016/07/10/relearn-java-string/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#String初始化"><span class="nav-number">1.</span> <span class="nav-text">String初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字面量法"><span class="nav-number">1.1.</span> <span class="nav-text">字面量法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造方法法"><span class="nav-number">1.2.</span> <span class="nav-text">构造方法法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#String与JVM常量池"><span class="nav-number">2.</span> <span class="nav-text">String与JVM常量池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常量池"><span class="nav-number">2.1.</span> <span class="nav-text">常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#intern-方法"><span class="nav-number">2.2.</span> <span class="nav-text">intern()方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#String的不可变性"><span class="nav-number">3.</span> <span class="nav-text">String的不可变性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类的不可变性"><span class="nav-number">3.1.</span> <span class="nav-text">类的不可变性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String的不可变性-1"><span class="nav-number">3.2.</span> <span class="nav-text">String的不可变性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#String、StringBuffer与StringBuilder"><span class="nav-number">4.</span> <span class="nav-text">String、StringBuffer与StringBuilder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#“-”操作符"><span class="nav-number">5.</span> <span class="nav-text">“+”操作符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译时优化"><span class="nav-number">5.1.</span> <span class="nav-text">编译时优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用StringBuilder实现"><span class="nav-number">5.2.</span> <span class="nav-text">利用StringBuilder实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#final字符串编译时优化"><span class="nav-number">5.3.</span> <span class="nav-text">final字符串编译时优化</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

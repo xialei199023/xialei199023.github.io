@@ -1,0 +1,889 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Web,Demo," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="前言springmvc和mybatis是当前最流行的创建java web项目的框架组合，有了它们就能创建一个简单的Web项目。笔者将相关内容以系列文的形式撰写，本文将详细演示如何搭建起一个最简单的web应用骨架。
+由于涉及到的内容比较多，深究起来细节非常多且繁琐，所以有些内容并不会讲得很细，仅仅对过程进行大致描述。按理来说，要理解本系列文章需要一定的基础，包括：
+
+spring基础
+J2EE基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用springmvc+mybatis创建Web应用（一）—— 相关概念，工具，搭建Web应用">
+<meta property="og:url" content="http://hinylover.space/2016/03/23/springmvc-mybatis-createproject-demo-1/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="前言springmvc和mybatis是当前最流行的创建java web项目的框架组合，有了它们就能创建一个简单的Web项目。笔者将相关内容以系列文的形式撰写，本文将详细演示如何搭建起一个最简单的web应用骨架。
+由于涉及到的内容比较多，深究起来细节非常多且繁琐，所以有些内容并不会讲得很细，仅仅对过程进行大致描述。按理来说，要理解本系列文章需要一定的基础，包括：
+
+spring基础
+J2EE基础">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fmaven-download-link.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fmaven-struct.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-download-link.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-struct.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-search.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-install1.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-install2.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-install-check.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-config.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-add.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-select.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-project1.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-project2.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-project3.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-project4.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclise-maven-project-struct.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-springmvc-mybatis-ministruct.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-run1.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-run2.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-run3.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fjetty-run-configed.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fcheck-success-helloworld.png">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.547Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用springmvc+mybatis创建Web应用（一）—— 相关概念，工具，搭建Web应用">
+<meta name="twitter:description" content="前言springmvc和mybatis是当前最流行的创建java web项目的框架组合，有了它们就能创建一个简单的Web项目。笔者将相关内容以系列文的形式撰写，本文将详细演示如何搭建起一个最简单的web应用骨架。
+由于涉及到的内容比较多，深究起来细节非常多且繁琐，所以有些内容并不会讲得很细，仅仅对过程进行大致描述。按理来说，要理解本系列文章需要一定的基础，包括：
+
+spring基础
+J2EE基础">
+<meta name="twitter:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fmaven-download-link.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 使用springmvc+mybatis创建Web应用（一）—— 相关概念，工具，搭建Web应用 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用springmvc+mybatis创建Web应用（一）—— 相关概念，工具，搭建Web应用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-03-23T23:05:33+08:00" content="2016-03-23">
+              2016-03-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/教程/" itemprop="url" rel="index">
+                    <span itemprop="name">教程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/23/springmvc-mybatis-createproject-demo-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/23/springmvc-mybatis-createproject-demo-1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>springmvc和mybatis是当前最流行的创建java web项目的框架组合，有了它们就能创建一个简单的Web项目。笔者将相关内容以系列文的形式撰写，本文将详细演示如何搭建起一个最简单的web应用骨架。</p>
+<p>由于涉及到的内容比较多，深究起来细节非常多且繁琐，所以有些内容并不会讲得很细，仅仅对过程进行大致描述。按理来说，要理解本系列文章需要一定的基础，包括：</p>
+<ol>
+<li>spring基础</li>
+<li>J2EE基础</li>
+<li>数据库基础</li>
+</ol>
+<p>有了上述基础，看起来就会比较轻松。如果基础计较薄弱，也可以直接从本文中的内容开始着手，遇到不清楚的内容再查资料，这样就可以有的放矢。</p>
+<p>本文的主要内容包括：</p>
+<ol>
+<li>相关的知识点概要介绍；</li>
+<li>安装eclipse、maven等相关开发工具</li>
+<li>使用springMVC搭建一个简单的Web应用。</li>
+</ol>
+<a id="more"></a>
+<h3 id="相关知识介绍"><a href="#相关知识介绍" class="headerlink" title="相关知识介绍"></a>相关知识介绍</h3><p>在正式介绍创建步骤之前，先简单的介绍了其中会涉及到的一些软件和工具。</p>
+<ul>
+<li>Maven：基于项目对象模型(POM)，可以通过一小段描述信息来管理项目的构建，报告和文档的软件项目管理工具。其最重要的功能是自动下载所需的依赖包，让开发者再也不用为下载依赖包而发愁了！</li>
+<li>Jetty：一个开源的servlet容器，它为基于Java的web容器，例如JSP和servlet提供运行环境。Jetty是使用Java语言编写的，它的API以一组JAR包的形式发布。它可以嵌入在应用程序内部，作为web容器对外提供服务。</li>
+<li>Springmvc：Spring框架中的一个子模块，提供了构建 Web 应用程序的全功能 MVC 模块。</li>
+<li>Mybatis：本是apache的一个开源项目iBatis，后迁移到google code，并改名为Mybatis。它是一个半自动的ORM（对象-关系映射）框架。我们可以通过编写原生的SQL语句来操作数据库。</li>
+</ul>
+<h3 id="要准备的东西"><a href="#要准备的东西" class="headerlink" title="要准备的东西"></a>要准备的东西</h3><p>工欲善其事，必先利其器。Java环境是必须要事先搭好的，具体搭建步骤可以看<a href="http://hinylover.space/2016/03/23/install-and-config-java">这里</a>。在正式搭建框架之前，还需要安装相关的环境和软件。下面的内容是针对Java初学者，如果是“老鸟”，请忽略。</p>
+<h4 id="安装Maven"><a href="#安装Maven" class="headerlink" title="安装Maven"></a>安装Maven</h4><p>进入Maven的<a href="http://maven.apache.org/download.cgi" target="_blank" rel="external">官方下载站点</a>，下载Maven安装包。直接下载如图所示的安装版本（*-bin.zip），就不必要自己编译了。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fmaven-download-link.png" alt="maven-download-link"></p>
+<p>注意，不同版本的Maven要求的环境不一样，如果自己电脑不满足最新版本的要求的话，可进入<a href="https://archive.apache.org/dist/maven/maven-3/" target="_blank" rel="external">这里</a>或者<a href="https://archive.apache.org/dist/maven/maven-2/" target="_blank" rel="external">这里</a>下载更低版本。</p>
+<p>将下载下来的压缩包直接解压安装成功，解压后的目录结构如下图所示。<strong>请记住Maven的安装位置</strong>。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fmaven-struct.png" alt="maven-struct"></p>
+<h4 id="安装Eclipse"><a href="#安装Eclipse" class="headerlink" title="安装Eclipse"></a>安装Eclipse</h4><p>Eclipse是最流行的Java集成开发工具（IDE），功能十分强大。虽然近年出现了以IntelliJ IDEA为代码的IDE强力重启，但其仍是使用最广泛的Java IDE。</p>
+<p>从<a href="http://www.eclipse.org/downloads/packages/release/Mars/2" target="_blank" rel="external">官网</a>下载最新版本（代号为Mars）的Eclipse，可选择下图所示的两种不同类型的版本。for java EE版本针对Java企业级开发环境，for java版本针对普通Java开发环境。可以看到for java EE版本比for java版本要大很多，这是因为它集成了更多的功能插件，所以功能也更加强大。不过，也正是由于其功能集成更多，导致其启动速度更慢。可以根据自己电脑配置下载不同的版本，笔者推荐for java的版本。注意，也请根据自己电脑操作系统的版本，下载不同位数的版本。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-download-link.png" alt="eclipse-download"></p>
+<p>下载完成后，直接解压即可。解压缩之后的目录结构如下图所示，双击<code>eclipse.exe</code>即可运行eclipse。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-struct.png" alt="eclipse目录结构"></p>
+<h4 id="安装Jetty和Maven插件"><a href="#安装Jetty和Maven插件" class="headerlink" title="安装Jetty和Maven插件"></a>安装Jetty和Maven插件</h4><h5 id="安装Jetty"><a href="#安装Jetty" class="headerlink" title="安装Jetty"></a>安装Jetty</h5><p>接下来安装eclipse下的Jetty插件，有两种安装方式：在线安装和安装包安装。</p>
+<ol>
+<li>在线安装。<br>运行eclipse，点击菜单栏中的Help-&gt;Eclipse Marketplace菜单，在搜索框中输入jetty并回车。搜索过程可能会很慢，因为毕竟服务器在国外。选择第一条搜索结果，并点击【install】按钮安装插件。按照下面的图所示的步骤即可开始在线安装jetty插件。最后点击【finish】按钮后，等待期下载并自动安装即可。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-search.png" alt="eclipse-jetty-search"><br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-install1.png" alt="eclipse安装jetty插件1"><br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-install2.png" alt="eclipse安装jetty插件2"></li>
+</ol>
+<p>安装完成后，eclipse会提示是否restart，点击restart重启。点击【Run】-&gt;【Run Configurations】菜单，如果侧边菜单栏中出现下图中的Jetty WebApp则表示安装成功！<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-install-check.png" alt="eclipse安装jetty插件-验证"></p>
+<ol>
+<li>安装包安装<br>在<a href="http://download.csdn.net/detail/xialei199023/9466604" target="_blank" rel="external">这里</a>下载Jetty插件安装包，将安装包直接丢入eclipse安装目录下的plugins目录下即可。譬如笔者的eclipse安装目录为：<code>D:\ProgramFiles\eclipse-java-luna-SR2-win32-x86_64\eclipse</code>，则将下载的安装包放入<code>D:\ProgramFiles\eclipse-java-luna-SR2-win32-x86_64\eclipse\plugins</code>目录下即可。按照上面的验证步骤即可验证Jetty插件是否成功安装</li>
+</ol>
+<p>上面的安装方式不仅仅针对Jetty插件，所有eclipse插件都可以用类似的方法进行安装。通过情况下，只有运气非常好才能一次安装成功，可能会出现很多种错误。如果安装失败，可以根据相应的错误信息找度娘或者谷歌找寻解决方案</p>
+<h5 id="安装Maven插件"><a href="#安装Maven插件" class="headerlink" title="安装Maven插件"></a>安装Maven插件</h5><p>一般说来，下载的较高版本的eclipse中已自带了Maven插件，所以无需安装。由于内置的版本可能比较旧，我们也可以手动配置Maven，下面就用自己下载的Maven来替换掉它。</p>
+<p>打开eclipse，点击【Windows】-&gt;【Preferences】，弹出的窗口面板就是eclipse的配置主面板。选择【Maven】-&gt;【Installations】，点击【Add】按钮。在弹出的窗口中点击【Directory…】按钮，在文件选择器中选择之前安装的Maven的路径，然后点击【Finish】。在复选框中选中刚刚添加的Maven，点击【OK】按钮即可。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-config.png" alt="eclipse-maven-config"><br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-add.png" alt="eclipse-maven-add"><br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-select.png" alt="eclipse-maven-select"></p>
+<h2 id="一步一步搭建Web工程"><a href="#一步一步搭建Web工程" class="headerlink" title="一步一步搭建Web工程"></a>一步一步搭建Web工程</h2><p>好了，刀已经磨好了，下面就正式进入开发阶段。</p>
+<h3 id="创建简单的Maven-Web工程"><a href="#创建简单的Maven-Web工程" class="headerlink" title="创建简单的Maven Web工程"></a>创建简单的Maven Web工程</h3><p>先创建一个Maven Web工程，然后在工程的基础上编写代码。</p>
+<p>1、打开eclipse软件，依次点击“File”-&gt;“New”-&gt;“Other”，弹出eclipse的工程选择窗口。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-project1.png" alt="eclipse-maven-project1"></p>
+<p>2、点击“Maven”菜单，选择下拉菜单中的“Maven Project”子菜单。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-project2.png" alt="eclipse-maven-project2"></p>
+<p>3、勾选【Create a simple project】的复选框，点击“Next &gt;”。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-project3.png" alt="eclipse-maven-project3"></p>
+<p>4、填写工程信息如图所示。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-maven-project4.png" alt="eclipse-maven-project4"></p>
+<p>上面的主要信息的含义如下：</p>
+<ol>
+<li>Group Id：项目所属组织的唯一标识符，通常以公司地址+部门的方式填写。每个不同的部分以“.”号分开，所表示的范围从左至右依次减小。目标是从Group Id就能看到该工程出自哪里。譬如Group Id为<code>org.springframework</code>一看就知道是属于Spring。</li>
+<li>Artifact Id：项目在组织内的唯一标识符，一般就是项目的名称。</li>
+<li>Version：项目的版本信息。如果是以SNATSHOT结尾，则表示该版本不是稳定版本。</li>
+<li>Packaging：项目的打包方式，由于是web项目，这里选择war。</li>
+</ol>
+<p>点击“Finish”就创建了一个简单的Maven工程，下图是该工程的目录结构。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclise-maven-project-struct.png" alt="eclise-maven-project-struct"></p>
+<p>其中：</p>
+<ul>
+<li>src/main/java目录放置Java源代码</li>
+<li>src/main/resources目录放置资源文件（如配置文件）</li>
+<li>src/test/java目录方式一些测试用例</li>
+<li>src/test/resources目录方式测试利用所需的资源文件</li>
+</ul>
+<h3 id="加入SpringMVC框架"><a href="#加入SpringMVC框架" class="headerlink" title="加入SpringMVC框架"></a>加入SpringMVC框架</h3><p>好了，接下来在所创建的Maven工程中加入SpringMVC的内容，并且创建一个简单的用例来测试是否创建成功。首先看看加入SpringMVC后的整个代码的结构，这是一个SpringMVC项目的最简单、最基本的结构。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-springmvc-mybatis-ministruct.png" alt="eclipse-springmvc-mybatis-ministruct"></p>
+<p>下面贴一下各个文件的内容，并对核心内容做了相应的注释。</p>
+<p>1、pom.xml：Maven要求的文件。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></div><div class="line">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</div><div class="line">	<span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>xiale.demo.blog<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-mybatis-webapp<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">packaging</span>&gt;</span>war<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>spring-mybatis-webapp<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">description</span>&gt;</span>简单的spring+mybatis的web应用<span class="tag">&lt;/<span class="name">description</span>&gt;</span></div><div class="line">	</div><div class="line">	<span class="tag">&lt;<span class="name">properties</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">spring.version</span>&gt;</span>4.2.0.RELEASE<span class="tag">&lt;/<span class="name">spring.version</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">properties</span>&gt;</span></div><div class="line">	</div><div class="line">	<span class="comment">&lt;!-- 配置项目依赖 --&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></div><div class="line">		<span class="comment">&lt;!-- spring framework --&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-webmvc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-jdbc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-aspects<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-context-support<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="comment">&lt;!-- serlvet jsp --&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jstl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">type</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">type</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javax.servlet-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>3.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jsp-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>2、web.xml：jave ee所需要的文件。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="php"><span class="meta">&lt;?</span>xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span><span class="meta">?&gt;</span></span></div><div class="line"><span class="tag">&lt;<span class="name">web-app</span> <span class="attr">version</span>=<span class="string">"2.4"</span> <span class="attr">xmlns</span>=<span class="string">"http://java.sun.com/xml/ns/j2ee"</span></span></div><div class="line">	<span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"</span>&gt;</div><div class="line">	<span class="tag">&lt;<span class="name">display-name</span>&gt;</span>springmvc+mybatis web项目<span class="tag">&lt;/<span class="name">display-name</span>&gt;</span></div><div class="line">	</div><div class="line">	<span class="comment">&lt;!-- 过滤器，所有输出的数据都使用UTF-8编码 --&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">filter</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>encodingFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.springframework.web.filter.CharacterEncodingFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">init-param</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">param-name</span>&gt;</span>encoding<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">param-value</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">init-param</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">param-name</span>&gt;</span>forceEncoding<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">param-value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">filter</span>&gt;</span></div><div class="line">	</div><div class="line">	<span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>encodingFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div><div class="line">	</div><div class="line">	<span class="comment">&lt;!-- 创建一个Servlet，这是配置SpringMVC的关键。  --&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">servlet</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>dispatch<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>dispatch<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>3、dispatch-servlet.xml：spring mvc的核心文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="php"><span class="meta">&lt;?</span>xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span><span class="meta">?&gt;</span></span></div><div class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></div><div class="line">	<span class="attr">xmlns:mvc</span>=<span class="string">"http://www.springframework.org/schema/mvc"</span></div><div class="line">	<span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">	<span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></div><div class="line">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></div><div class="line">		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd</div><div class="line">		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd"&gt;</div><div class="line"></div><div class="line">	<span class="comment">&lt;!-- JSP视图解析器 --&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"viewResolver"</span></span></div><div class="line">		<span class="attr">class</span>=<span class="string">"org.springframework.web.servlet.view.InternalResourceViewResolver"</span>&gt;</div><div class="line">		<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"prefix"</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">value</span>&gt;</span>/WEB-INF/jsp/<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">		</div><div class="line">		<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"suffix"</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">value</span>&gt;</span>.jsp<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div><div class="line">	</div><div class="line">	<span class="comment">&lt;!-- 配置Spring可识别特定注解 --&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">context:annotation-config</span>/&gt;</span></div><div class="line">	</div><div class="line">	<span class="comment">&lt;!-- 配置Spring要在哪些基础包下扫描主机 --&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"demo.controller"</span>/&gt;</span></div><div class="line">	</div><div class="line">	<span class="comment">&lt;!-- 配置静态资源的位置及其pattern --&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">mvc:resources</span> <span class="attr">location</span>=<span class="string">"/static/"</span> <span class="attr">mapping</span>=<span class="string">"/static/**"</span>/&gt;</span>	</div><div class="line">	</div><div class="line">	<span class="comment">&lt;!-- 配置Spring MVC可识别Controller等注解 --&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">mvc:annotation-driven</span> /&gt;</span> </div><div class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>4、IndexController：用于检测可用性的一个简单控制器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> demo.controller;</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</div><div class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Index控制器，拦截请求并进行业务逻辑处理。</div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@version</span> 1.0 2016年3月21日下午8:38:45</div><div class="line"> */</div><div class="line"><span class="meta">@Controller</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IndexController</span> </span>&#123;</div><div class="line">	</div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 主页映射。表示拦截url path为"/index"的请求。</div><div class="line">	 * <span class="doctag">@return</span> 返回String类型的数据，表示不附加任何数据，直接将请求转发到index.jsp。</div><div class="line">	 */</div><div class="line">	<span class="meta">@RequestMapping</span>(<span class="string">"/index"</span>)</div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">index</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="string">"index"</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>4、index.jsp：与<code>IndexController</code>中配置的<code>@RequestMapping(“/index”)</code>所对应的jsp文件。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%&gt;</div><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html &gt;</div><div class="line">&lt;head&gt;</div><div class="line">&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;</div><div class="line">&lt;title&gt;Hello&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">    Hello World!</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>大功告成，现在来试着运行一下这个项目，这时需要用到之前安装的Jetty插件。由于是第一次使用Jetty应用，需要进行下面的步骤来生成一个Jetty应用。</p>
+<p>首先，依次点击“Run”-&gt;Debug Configurations..”。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-run1.png" alt="eclipse-jetty-run1"></p>
+<p>其次，选中“Jetty Webapp”，点击左上角的图形按钮新建一个Jetty运行实例如下。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-run2.png" alt="eclipse-jetty-run2"></p>
+<p>最后，选中刚刚新建的Jetty实例（通常为工程名），点击“Browse…”，在弹出的对话框中选择新创建的Web项目。点击“OK”-&gt;“Run”就开始运行这个Web项目了。如果Console(控制台)中没有出现红色的异常信息，那么恭喜你成功地创建了一个SpringMVC项目。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Feclipse-jetty-run3.png" alt="eclipse-jetty-run3"></p>
+<p>如果出现下面的信息，则表示项目成功运行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">   ____    ___                   __    __  __         ___</div><div class="line">  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  ( _ )</div><div class="line"> / _// __/ / / _ \(_-&lt;/ -_) / // / -_) __/ __/ // / / _  |</div><div class="line">/___/\__/_/_/ .__/___/\__/  \___/\__/\__/\__/\_, /  \___/</div><div class="line">           /_/                              /___/</div><div class="line"></div><div class="line"></div><div class="line">   Configuration: C:\Users\xialei\AppData\Local\Temp\eclipseJettyPlugin.spring_mybatis_webapp.xml</div><div class="line">         Version: 8.1.12.v20130726</div><div class="line">         Context: /</div><div class="line">            Port: 8080</div><div class="line">       Classpath: E:/repositorys/mavenRepository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar</div><div class="line">                  E:/repositorys/mavenRepository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/aspectj/aspectjweaver/1.8.6/aspectjweaver-1.8.6.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-aop/4.2.0.RELEASE/spring-aop-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-aspects/4.2.0.RELEASE/spring-aspects-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-beans/4.2.0.RELEASE/spring-beans-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-context-support/4.2.0.RELEASE/spring-context-support-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-context/4.2.0.RELEASE/spring-context-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-core/4.2.0.RELEASE/spring-core-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-expression/4.2.0.RELEASE/spring-expression-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-jdbc/4.2.0.RELEASE/spring-jdbc-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-tx/4.2.0.RELEASE/spring-tx-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-web/4.2.0.RELEASE/spring-web-4.2.0.RELEASE.jar</div><div class="line">                  E:/repositorys/mavenRepository/org/springframework/spring-webmvc/4.2.0.RELEASE/spring-webmvc-4.2.0.RELEASE.jar</div><div class="line">                  E:/workspaces/eclipse/demo-blog/spring-mybatis-webapp/target/classes</div><div class="line"></div><div class="line"></div><div class="line">2016-03-21 22:42:19.538:INFO:oejs.Server:jetty-8.1.12.v20130726</div><div class="line">2016-03-21 22:42:20.168:INFO:/:Initializing Spring FrameworkServlet &apos;dispatch&apos;</div><div class="line">三月 21, 2016 10:42:20 下午 org.springframework.web.servlet.DispatcherServlet initServletBean</div><div class="line">信息: FrameworkServlet &apos;dispatch&apos;: initialization started</div><div class="line">三月 21, 2016 10:42:20 下午 org.springframework.web.context.support.XmlWebApplicationContext prepareRefresh</div><div class="line">信息: Refreshing WebApplicationContext for namespace &apos;dispatch-servlet&apos;: startup date [Mon Mar 21 22:42:20 CST 2016]; root of context hierarchy</div><div class="line">三月 21, 2016 10:42:20 下午 org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions</div><div class="line">信息: Loading XML bean definitions from ServletContext resource [/WEB-INF/dispatch-servlet.xml]</div><div class="line">三月 21, 2016 10:42:20 下午 org.springframework.web.servlet.handler.SimpleUrlHandlerMapping registerHandler</div><div class="line">信息: Mapped URL path [/static/**] onto handler &apos;org.springframework.web.servlet.resource.ResourceHttpRequestHandler#0&apos;</div><div class="line">三月 21, 2016 10:42:20 下午 org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping register</div><div class="line">信息: Mapped &quot;&#123;[/index]&#125;&quot; onto public java.lang.String demo.controller.IndexController.index()</div><div class="line">三月 21, 2016 10:42:21 下午 org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter initControllerAdviceCache</div><div class="line">信息: Looking for @ControllerAdvice: WebApplicationContext for namespace &apos;dispatch-servlet&apos;: startup date [Mon Mar 21 22:42:20 CST 2016]; root of context hierarchy</div><div class="line">三月 21, 2016 10:42:21 下午 org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter initControllerAdviceCache</div><div class="line">信息: Looking for @ControllerAdvice: WebApplicationContext for namespace &apos;dispatch-servlet&apos;: startup date [Mon Mar 21 22:42:20 CST 2016]; root of context hierarchy</div><div class="line">三月 21, 2016 10:42:21 下午 org.springframework.web.servlet.DispatcherServlet initServletBean</div><div class="line">信息: FrameworkServlet &apos;dispatch&apos;: initialization completed in 1170 ms</div><div class="line">2016-03-21 22:42:21.442:INFO:oejs.AbstractConnector:Started SelectChannelConnector@0.0.0.0:8080</div><div class="line">-------------------------------------------------</div><div class="line">Jetty startup finished in 2.256 s.</div><div class="line">Used memory: 9.8 MB of 77.5 MB (894.5 MB maximum)</div><div class="line">-------------------------------------------------</div></pre></td></tr></table></figure></p>
+<p><strong>注意</strong>，如果不是第一次在该项目上运行Jetty，如下图所示，先点击工具栏中的红框所示的按钮，在下来应用中选择自己的Jetty应用就可以直接运行了。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fjetty-run-configed.png" alt="check-success-helloworld"></p>
+<p>我们在浏览器中测试一下是否真的创建成功。打开浏览器，在地址栏中输入<code><a href="http://localhost:8080/index" target="_blank" rel="external">http://localhost:8080/index</a></code>，如果出现下图所示的内容，则表示web项目成功创建了。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog%2Fspringmvc-mybatis-createproject-demo%2Fcheck-success-helloworld.png" alt="check-success-helloworld"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文介绍了从零开始搭建一个最简单的SpringMVC Web应用，该系列的下一篇介绍如何在应用中加入数据库，并使用mybatis来操作数据库。</p>
+<hr>
+<p>本文由<a href="http://hinylover.space">xialei</a>原创，转载请说明出处<a href="http://hinylover.space/2016/03/23/springmvc-mybatis-createproject-demo-1/">http://hinylover.space/2016/03/23/springmvc-mybatis-createproject-demo-1/</a>。</p>
+<hr>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Web/" rel="tag">#Web</a>
+          
+            <a href="/tags/Demo/" rel="tag">#Demo</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/23/install-and-config-java/" rel="next" title="从零开始搭建Java环境">
+                <i class="fa fa-chevron-left"></i> 从零开始搭建Java环境
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/31/create-online-document-use-apidoc/" rel="prev" title="使用apidocJs快速生成在线文档">
+                使用apidocJs快速生成在线文档 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/03/23/springmvc-mybatis-createproject-demo-1/"
+     data-title="使用springmvc+mybatis创建Web应用（一）—— 相关概念，工具，搭建Web应用"
+     data-content=""
+     data-url="http://hinylover.space/2016/03/23/springmvc-mybatis-createproject-demo-1/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/03/23/springmvc-mybatis-createproject-demo-1/"
+           data-title="使用springmvc+mybatis创建Web应用（一）—— 相关概念，工具，搭建Web应用" data-url="http://hinylover.space/2016/03/23/springmvc-mybatis-createproject-demo-1/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#相关知识介绍"><span class="nav-number">1.1.</span> <span class="nav-text">相关知识介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#要准备的东西"><span class="nav-number">1.2.</span> <span class="nav-text">要准备的东西</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装Maven"><span class="nav-number">1.2.1.</span> <span class="nav-text">安装Maven</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装Eclipse"><span class="nav-number">1.2.2.</span> <span class="nav-text">安装Eclipse</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装Jetty和Maven插件"><span class="nav-number">1.2.3.</span> <span class="nav-text">安装Jetty和Maven插件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装Jetty"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">安装Jetty</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#安装Maven插件"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">安装Maven插件</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一步一步搭建Web工程"><span class="nav-number">2.</span> <span class="nav-text">一步一步搭建Web工程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建简单的Maven-Web工程"><span class="nav-number">2.1.</span> <span class="nav-text">创建简单的Maven Web工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加入SpringMVC框架"><span class="nav-number">2.2.</span> <span class="nav-text">加入SpringMVC框架</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

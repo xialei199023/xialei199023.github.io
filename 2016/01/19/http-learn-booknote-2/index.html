@@ -1,0 +1,1523 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="学习笔记,协议," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="上一篇文章写了HTTP协议中的基本概念和URL，这一篇要来讲一下HTTP协议中的报文本身。如果说HTTP是Internet的信使，那么HTTP报文就是它用来搬东西的包裹了。本文包含以下内容：
+
+HTTP报文的组成部分
+HTTP报文的语法结构
+HTTP方法
+HTTP状态码
+HTTP首部（Header）详解 
+自己的一些读后的总结和感悟">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《HTTP权威指南》学习笔记（2）-HTTP报文">
+<meta property="og:url" content="http://hinylover.space/2016/01/19/http-learn-booknote-2/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="上一篇文章写了HTTP协议中的基本概念和URL，这一篇要来讲一下HTTP协议中的报文本身。如果说HTTP是Internet的信使，那么HTTP报文就是它用来搬东西的包裹了。本文包含以下内容：
+
+HTTP报文的组成部分
+HTTP报文的语法结构
+HTTP方法
+HTTP状态码
+HTTP首部（Header）详解 
+自己的一些读后的总结和感悟">
+<meta property="og:image" content="http://img.blog.csdn.net/20160119230511726">
+<meta property="og:image" content="http://img.blog.csdn.net/20160119230421756">
+<meta property="og:image" content="http://img.blog.csdn.net/20160119230637509">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《HTTP权威指南》学习笔记（2）-HTTP报文">
+<meta name="twitter:description" content="上一篇文章写了HTTP协议中的基本概念和URL，这一篇要来讲一下HTTP协议中的报文本身。如果说HTTP是Internet的信使，那么HTTP报文就是它用来搬东西的包裹了。本文包含以下内容：
+
+HTTP报文的组成部分
+HTTP报文的语法结构
+HTTP方法
+HTTP状态码
+HTTP首部（Header）详解 
+自己的一些读后的总结和感悟">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160119230511726">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 《HTTP权威指南》学习笔记（2）-HTTP报文 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                《HTTP权威指南》学习笔记（2）-HTTP报文
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-01-19T22:22:25+08:00" content="2016-01-19">
+              2016-01-19
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/http-s/" itemprop="url" rel="index">
+                    <span itemprop="name">http(s)</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/01/19/http-learn-booknote-2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/19/http-learn-booknote-2/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>上一篇<a href="/2015/12/29/http-learn-booknot-1">文章</a>写了HTTP协议中的基本概念和URL，这一篇要来讲一下HTTP协议中的报文本身。如果说HTTP是Internet的信使，那么HTTP报文就是它用来搬东西的包裹了。本文包含以下内容：</p>
+<ol>
+<li>HTTP报文的组成部分</li>
+<li>HTTP报文的语法结构</li>
+<li>HTTP方法</li>
+<li>HTTP状态码</li>
+<li>HTTP首部（Header）详解 </li>
+<li>自己的一些读后的总结和感悟</li>
+</ol>
+<a id="more"></a>
+<h3 id="HTTP报文的语法"><a href="#HTTP报文的语法" class="headerlink" title="HTTP报文的语法"></a>HTTP报文的语法</h3><p>HTTP是基于请求/响应模式的通信协议，所有的HTTP报文可以分为请求报文和响应报文。请求报文会向Web服务器请求一个动作，响应报文会将请求结果返回给客户端。</p>
+<h4 id="语法结构"><a href="#语法结构" class="headerlink" title="语法结构"></a>语法结构</h4><p>请求报文和响应报文的基本结构非常类似，下面是请求报文的语法结构：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">method</span>&gt;</span> <span class="tag">&lt;<span class="name">request-url</span>&gt;</span> <span class="tag">&lt;<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">headers</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">entity-body</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>下面是响应报文的语法结构：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">version</span>&gt;</span> <span class="tag">&lt;<span class="name">status-code</span>&gt;</span> <span class="tag">&lt;<span class="name">reason-phrase</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">headers</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">entity-body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">headers</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">entity-body</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>可以看出，请求报文和响应报文的语法仅仅在起始行（第一行）处有所不同。下面对报文的各个部分做简要描述。</p>
+<p><strong>方法（method）</strong>：表示客户端对资源执行的动作，是一个单独的动词，比如GET、POST等。<br><strong>请求资源的URL（request-url）</strong>：表示请求的资源的URL，关于URL的知识已经在上一篇文章中介绍了。<br><strong>协议版本（version）</strong>：表示所使用的HTTP的协议版本，其格式为：HTTP/<major>.<minor>，其中major表示主版本号，minor表示次版本号。<br><strong>状态码（status-code）</strong>：表示请求过程中所发生的情况，是一组三位数的数字。关于状态码会在接下来的内容介绍。<br><strong>原因短语（reason-phrase）</strong>：状态码的可读版本，是对状态码的解释，对人类来说是可读的。<br><strong>首部（header）</strong>：表示请求或响应中的附加信息，可以有零个或多个首部，每个首部项都是形如<code>name: value</code>的字符串，每个首部项后面都以CRLF（回车+换行）结束。<br><strong>实体的主体部分（entity-body）</strong>：包含任意格式的数据块，是Web应用的主体内容。</minor></major></p>
+<h3 id="HTTP报文的组成部分"><a href="#HTTP报文的组成部分" class="headerlink" title="HTTP报文的组成部分"></a>HTTP报文的组成部分</h3><p>HTTP报文包括请求报文和响应报文，由起始行（start line）、首部（header）和主体(body)三个部分组成，其中起始行和首部是必有的，主体部分是可选的。</p>
+<h4 id="起始行-start-line"><a href="#起始行-start-line" class="headerlink" title="起始行(start line)"></a>起始行(start line)</h4><p>所有的HTTP报文都以一个起始行作为开始，请求报文起始行说明<em>要做什么事</em>，响应报文的起始行说明<em>发生了什么事</em>。</p>
+<p><strong>请求起始行</strong><br>请求报文请求对服务器中的资源进行一些操作，包含请求方法，请求URL，在有些版本的协议中还需要加入HTTP协议的版本。一个典型的请求报文的起始行如下：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">GET</span> <span class="string">/test/hi-there.txt</span> HTTP/1.1</div></pre></td></tr></table></figure>
+<p>注意，URL部分并不包含主机信息，不是完整的路径，而是具体服务器上的资源路径。主机（host）的信息会包含到首部中，首部会在接下来的内容中介绍。</p>
+<p><strong>响应起始行</strong><br>响应报文承载着响应状态信息和操作产生的结果数据，并返回给客户端。响应起始行包含着HTTP版本、数字状态码以及描述操作状态的文本形式的原因短语，每一部分之间用空格分隔。一个典型的响应报文的起始行如下：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">HTTP/1.1 <span class="number">200</span> OK</div></pre></td></tr></table></figure>
+<h4 id="首部-header"><a href="#首部-header" class="headerlink" title="首部(header)"></a>首部(header)</h4><p>首部是向请求或响应报文中添加的附加信息，本质上来说，是一些key:value列表。下面列出了一些平常常见的首部。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="attr">Accept:</span><span class="string">text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</span></div><div class="line"><span class="attr">Accept-Encoding:</span><span class="string">gzip,</span> <span class="string">deflate,</span> <span class="string">sdch</span></div><div class="line"><span class="attr">Accept-Language:</span><span class="string">zh-CN,zh;q=0.8,en;q=0.6,ja;q=0.4,zh-TW;q=0.2</span></div><div class="line"><span class="attr">Cache-Control:</span><span class="string">max-age=0</span></div><div class="line"><span class="attr">Host:</span><span class="string">www.csdn.net</span></div><div class="line"><span class="attr">User-Agent:</span><span class="string">Mozilla/5.0</span> <span class="string">(Windows</span> <span class="string">NT</span> <span class="number">10.0</span><span class="string">;</span> <span class="string">WOW64)</span> <span class="string">AppleWebKit/537.36</span> <span class="string">(KHTML,</span> <span class="string">like</span> <span class="string">Gecko)</span> <span class="string">Chrome/45.0.2454.101</span> <span class="string">Safari/537.36</span></div></pre></td></tr></table></figure>
+<p>由于首部全部都是文本，所以首部是可扩展的，只要服务端支持即可。首部字段可以分成下面几类：</p>
+<ul>
+<li>通用首部：可以同时用于请求和响应报文，比如Date首部。</li>
+<li>请求首部</li>
+<li>响应首部</li>
+<li>实体首部</li>
+<li>扩展首部</li>
+</ul>
+<p>首部内容是HTTP中的重点内容，在实际开发过程中需要时常与之接触，详细内容将接下来的单独介绍。</p>
+<h4 id="主体-body"><a href="#主体-body" class="headerlink" title="主体(body)"></a>主体(body)</h4><p>主体是HTTP报文实际负载的内容，具体来说，就是应用程序数据。Web开发者要做工作就是编写这部分内容。主体类型非常丰富，可以是：图片、视频、HTML文档、电子邮件等。所以HTTP协议为什么将超文本传输协议，就是因为其负载的内容并不局限与文本。主体的类型有上层开发者负责，HTTP协议对它并没有做很多约束和限制。</p>
+<h3 id="HTTP方法"><a href="#HTTP方法" class="headerlink" title="HTTP方法"></a>HTTP方法</h3><p>方法告知服务器要做什么操作，位于请求报文起始行的开始位置。HTTP协议中规定的主要方法有：</p>
+<ul>
+<li>GET：最常用的方法，用户请求服务器上的某个资源。</li>
+<li>HEAD：与GET方法的行为很类似，但在服务器响应中仅返回首部，不会返回主体数据。</li>
+<li>PUT：与GET方法相反，PUT回向服务器中写入文档。PUT的语义是让服务器用请求的主体部分来创建一个由所请求的URL命名的新文档。或者，如果那么URL所对应的资源已经存在的话，这个请求中的主体来替换原来的文档。</li>
+<li>POST：向服务器中发送数据。实际上，通常会用它来支持HTML表单。<a href="注意与PUT方法的区别，POST向服务器发送数据，PUT用于向服务器中的资源（比如文件）中存储数据。">^footnote</a></li>
+<li>DELETE：请服务器删除请求URL所指定的资源。</li>
+<li>TRACE：用于“环回”测试和诊断。客户端请求可能要穿过防火墙、代理、网关等中间节点才能达到最终的目的服务器，每个中间节点都可能会修改原始的HTTP请求，TRACE方法允许客户端看到它的请求最终变成了什么样子。下图是一个TRACE过程示例。尽管TRACE可以很方便的诊断，但它也有缺点。它假定中间节点对不同的类型的请求（比如不同的方法）会做相同的处理，实际上，不同类型的请求可能会做不同的处理，譬如，将POST请求直接发到应用服务器，而将GET请求发往缓存服务器。TRACE请求中不能带有实体的主体部分，响应报文中的主体部分是服务器收到的请求的精确副本。<br><img src="http://img.blog.csdn.net/20160119230511726" alt="一个Trace示例"></li>
+<li>OPTIONS:请求服务器告知其支持的各种功能。可以询问服务器通常支持哪些方法，或者哪些特殊资源支持哪些方法。下面是一个OPTIONS方法示例：<br><img src="http://img.blog.csdn.net/20160119230421756" alt="一个Option示例"></li>
+</ul>
+<p>下图是对HTTP协议中主要方法汇总：<br><img src="http://img.blog.csdn.net/20160119230637509" alt="HTTP主要方法汇总"></p>
+<p>上面的方法中，GET和HEAD方法是安全的方法，使用这些方法不会产生什么动作。POST等方法不是安全方法，POST方法会在服务器端生成新数据。假设是个请求扣款操作，多次执行POST操作有可能（如果服务端写的非常糟糕的话）会导致重复扣款。</p>
+<h3 id="HTTP状态码"><a href="#HTTP状态码" class="headerlink" title="HTTP状态码"></a>HTTP状态码</h3><p>HTTP中状态码的作用是告诉客户端发生了什么事，状态码位于响应报文的起始行中。HTTP中状态码使用三位数字来表示，根据最高位数据可以分为下面几类：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">可用范围</th>
+<th style="text-align:left">已用范围</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">100~199</td>
+<td style="text-align:left">100~101</td>
+<td style="text-align:left">信息提示</td>
+</tr>
+<tr>
+<td style="text-align:left">200~299</td>
+<td style="text-align:left">200~206</td>
+<td style="text-align:left">请求成功</td>
+</tr>
+<tr>
+<td style="text-align:left">300~399</td>
+<td style="text-align:left">300~305</td>
+<td style="text-align:left">重定向</td>
+</tr>
+<tr>
+<td style="text-align:left">400~499</td>
+<td style="text-align:left">400~415</td>
+<td style="text-align:left">客户端错误</td>
+</tr>
+<tr>
+<td style="text-align:left">500~599</td>
+<td style="text-align:left">300~305</td>
+<td style="text-align:left">服务端错误</td>
+</tr>
+</tbody>
+</table>
+<p>下面来介绍一下使用开发中比较常用的状态码。</p>
+<p>1、 <strong>100~199（信息性状态码）</strong></p>
+<p>HTTP/1.1向协议中引入的信息性状态码，由于对其复杂性和感知价值存在争议，因为使用受到限制。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">状态码</th>
+<th style="text-align:left">原因短语</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">100</td>
+<td style="text-align:left">Continue</td>
+<td style="text-align:left">说明服务端了请求的初始部分，请客户端继续。发送了这个状态码之后，服务器在收到请求之后必须进行响应</td>
+</tr>
+<tr>
+<td style="text-align:left">101</td>
+<td style="text-align:left">Switching Protocols</td>
+<td style="text-align:left">说明服务器正在根据客户端指定，将协议切换成Update首部所列的协议</td>
+</tr>
+</tbody>
+</table>
+<p>2、 <strong>200~299（成功状态码）</strong></p>
+<p>客户端发起请求时，这些请求通常是成功的。这一段状态码表示成功的状态，分别对应不同类型的请求。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">状态码</th>
+<th style="text-align:left">原因短语</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">200</td>
+<td style="text-align:left">OK</td>
+<td style="text-align:left">请求没问题，实体的主体部分包含了所请求的资源</td>
+</tr>
+<tr>
+<td style="text-align:left">201</td>
+<td style="text-align:left">Created</td>
+<td style="text-align:left">用于创建服务器对象的请求。响应的实体主体部分中应该包含各种引用了已创建的资源和URL，Location首部包含的则是最具体的引用。</td>
+</tr>
+<tr>
+<td style="text-align:left">202</td>
+<td style="text-align:left">Accepted</td>
+<td style="text-align:left">请求已被接受，但服务器还未对其执行任何动作。不能保证服务器会完成这个请求，这是意味着接受请求时，它看起来是有效的。通常，该请求执行的是一个异步任务。</td>
+</tr>
+<tr>
+<td style="text-align:left">203</td>
+<td style="text-align:left">Non-Authoritative Information</td>
+<td style="text-align:left">实体首部包含的信息不是来源于源端服务器，而是来自资源的一份副本。如果中间节点上有一份资源副本，但无法或没有对它所发送的的资源相关的元信息进行验证，就会出现这种情况。</td>
+</tr>
+<tr>
+<td style="text-align:left">204</td>
+<td style="text-align:left">No Content</td>
+<td style="text-align:left">响应报文中包含若干首部和一个状态行，但没有实体的主体部分。主要用于在浏览器不转为显示新文档的情况下，对其进行更新</td>
+</tr>
+<tr>
+<td style="text-align:left">205</td>
+<td style="text-align:left">Reset Content</td>
+<td style="text-align:left">负责告知浏览器清除当前页面中的所有HTML表单元素</td>
+</tr>
+<tr>
+<td style="text-align:left">206</td>
+<td style="text-align:left">Partial Content</td>
+<td style="text-align:left">成功执行了一个部分或Range请求。 必须包含Content Range、Date以及Etag或者Content-Location首部</td>
+</tr>
+</tbody>
+</table>
+<p>3、 <strong>300~399（重定向状态码）</strong></p>
+<p>重定向响应码要么告知客户端使用替代位置来访问他们所感兴趣的资源，那么提供一个替代的响应而不是替代的内容。如果原来的资源已经被移走，可发送一个重定向状态码和一个可选的Location首部来告知客户端资源已经被移走了。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">状态码</th>
+<th style="text-align:left">原因短语</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">300</td>
+<td style="text-align:left">Multiple Chioces</td>
+<td style="text-align:left">客户端一个请求实际上指向多个资源的URL时会返回这个状态码，比如服务器上有某个HTML文档的中文和英文版本。返回这个状态时会带有一个选项列表，这样用户就可以选择他希望的那一项了。</td>
+</tr>
+<tr>
+<td style="text-align:left">301</td>
+<td style="text-align:left">Moved Permanently</td>
+<td style="text-align:left">请求的URL链接已被永久移除， Location中首部中包含资源现在处的URL。</td>
+</tr>
+<tr>
+<td style="text-align:left">302</td>
+<td style="text-align:left">Found</td>
+<td style="text-align:left">与301状态码类似，但是，它表示URL临时移除。客户端应该使用Location首部给出的URL来临时定位资源。将来的请求仍然使用老的URL。</td>
+</tr>
+<tr>
+<td style="text-align:left">303</td>
+<td style="text-align:left">See Other</td>
+<td style="text-align:left">告知客户端应该使用另外一个URL来获取资源。新的URL位于响应报文的Location首部。其主要目的是允许POST请求的响应将客户端定位到某个资源上去。</td>
+</tr>
+<tr>
+<td style="text-align:left">304</td>
+<td style="text-align:left">Not Modified</td>
+<td style="text-align:left">客户端可以通过所包含的首部（如If-Modifid-Since），使得请求是有条件的。如果客户端发起一个GET请求，而该资源未被修改，就可以返回这个状态码。响应报文不应该包含主体内容。</td>
+</tr>
+<tr>
+<td style="text-align:left">305</td>
+<td style="text-align:left">Use Proxy</td>
+<td style="text-align:left">用来说明必须通过指定的代理来访问资源，代理的位置有Location首部提供。很重要的一点，客户端是相对某个特定的资源来解析这条响应，不能假定所有的请求都通过这个代理。</td>
+</tr>
+<tr>
+<td style="text-align:left">306</td>
+<td style="text-align:left">（还未使用）</td>
+<td style="text-align:left">还未被使用</td>
+</tr>
+<tr>
+<td style="text-align:left">307</td>
+<td style="text-align:left">Temporary Redirect</td>
+<td style="text-align:left">与302的作用相同，用于HTTP/1.1。</td>
+</tr>
+</tbody>
+</table>
+<p>从上表中可以看出，302、303、307的状态码功能非常相似，它们有些细微的差别，大部分差别来源于HTTP/1.0和HTTP/1.1应用程序对这些状态码的处理不同。</p>
+<p>当HTTP/1.0客户端发起POST请求，并在收到302响应时，它会接受Location首部的重定向URL，并向那么URL发起一个GET请求（而不是向原始请求的那样发起POST请求）。问题在于，在HTTP/1.1中使用303状态码实现了与HTTP/1.0中的302状态码的相同功能。为了避开这个问题，HTTP/1.1规范指出，对于HTTP/1.1客户端，用307状态码取代302状态码来进行临时重定向。这个服务器就把302状态码保留起来，为HTTP/1.0可以使用了。</p>
+<p>这样一来，服务器要选择适当的重定向状态码放入重定向响应中，就需要查看客户端的HTTP版本了。</p>
+<p>4、 <strong>400~499（客户端错误状态码）</strong><br>有时客户端会发送一些服务器无法处理的请求，比如格式错误的请求报文，或者最常见的是，请求一个不存在的URL。很多客户端错误都是有浏览器来处理的，甚至不会打扰到用户。只有少量的错误，比如404会来到用户的面前。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">状态码</th>
+<th style="text-align:left">原因短语</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">400</td>
+<td style="text-align:left">Bad Request</td>
+<td style="text-align:left">用于告知客户端它发送了一个错误的请求。</td>
+</tr>
+<tr>
+<td style="text-align:left">401</td>
+<td style="text-align:left">Unauthorized</td>
+<td style="text-align:left">与适当的首部一同返回，在这些首部中请求客户端在获取资源前，需进行认证。</td>
+</tr>
+<tr>
+<td style="text-align:left">402</td>
+<td style="text-align:left">Payment Required</td>
+<td style="text-align:left">保留，还未使用？</td>
+</tr>
+<tr>
+<td style="text-align:left">403</td>
+<td style="text-align:left">Forbidden</td>
+<td style="text-align:left">说明请求被服务端拒绝了。 可以在主体内容中说明拒绝原因，但这个状态码通常用于不想说明原因的场景。</td>
+</tr>
+<tr>
+<td style="text-align:left">404</td>
+<td style="text-align:left">Not Found</td>
+<td style="text-align:left">用于说明服务器无法找到所请求的URL。</td>
+</tr>
+<tr>
+<td style="text-align:left">405</td>
+<td style="text-align:left">Method Not Allowed</td>
+<td style="text-align:left">发起的请求的方法不被服务端支持时，使用此状态码。响应中应该使用Allow首部来告知所请求的资源可使用的方法。</td>
+</tr>
+<tr>
+<td style="text-align:left">406</td>
+<td style="text-align:left">Not Acceptable</td>
+<td style="text-align:left">客户端可以指定参数来说明它们愿意接受什么类型的实体，如果服务器没有与客户端可接受URL相匹配时，使用这个状态码。</td>
+</tr>
+<tr>
+<td style="text-align:left">407</td>
+<td style="text-align:left">Proxy Authetication Required</td>
+<td style="text-align:left">与401的作用相似，但用于要求对资源进行认证的代理服务器。</td>
+</tr>
+<tr>
+<td style="text-align:left">408</td>
+<td style="text-align:left">Request Timeout</td>
+<td style="text-align:left">如果客户端的请求所花的时间太长，服务器可以返回次状态码，并关闭连接。</td>
+</tr>
+<tr>
+<td style="text-align:left">409</td>
+<td style="text-align:left">Conflict</td>
+<td style="text-align:left">用于说明请求可能在资源上引发的一些冲突，服务器担心可能发生冲突时，可以发送此状态码。</td>
+</tr>
+<tr>
+<td style="text-align:left">410</td>
+<td style="text-align:left">Gone</td>
+<td style="text-align:left">与404类似，只是服务器曾经拥有过此资源。主要用于Web站点的维护，这样服务器的管理者就可以在资源被移除的情况下通知客户端了。</td>
+</tr>
+<tr>
+<td style="text-align:left">411</td>
+<td style="text-align:left">Length Required</td>
+<td style="text-align:left">服务器要求在请求报文中包含Content-Length首部时使用。</td>
+</tr>
+<tr>
+<td style="text-align:left">412</td>
+<td style="text-align:left">Precodition Failed</td>
+<td style="text-align:left">客户端发起条件请求，且其中的一个条件失败了的使用使用。客户端包含了Expact首部时发起的请求就是条件请求。</td>
+</tr>
+<tr>
+<td style="text-align:left">413</td>
+<td style="text-align:left">Request Entity Too Large</td>
+<td style="text-align:left">客户端所发送的实体比服务器能够或者处理的要大。</td>
+</tr>
+<tr>
+<td style="text-align:left">414</td>
+<td style="text-align:left">Request URI Too Long</td>
+<td style="text-align:left">客户端所请求的的URL长度比服务器能够或者处理的要长。</td>
+</tr>
+<tr>
+<td style="text-align:left">415</td>
+<td style="text-align:left">Unsupport Media Type</td>
+<td style="text-align:left">服务器无法理解或支持客户端发送的内容类型。</td>
+</tr>
+<tr>
+<td style="text-align:left">416</td>
+<td style="text-align:left">Request Range Not Satisfiable</td>
+<td style="text-align:left">客户端请求的资源的范围无法被满足。</td>
+</tr>
+<tr>
+<td style="text-align:left">417</td>
+<td style="text-align:left">Expaction Failed</td>
+<td style="text-align:left">请求的Expact首部包含一个期望，如果期望不能被满足时，使用这个状态码。</td>
+</tr>
+</tbody>
+</table>
+<p>5、 <strong>500~599（服务器出错状态码）</strong><br>如果客户端发送了一个请求，服务端自身发生了错误，就会返回这么段的状态码。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">状态码</th>
+<th style="text-align:left">原因短语</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">500</td>
+<td style="text-align:left">Internal Server Error</td>
+<td style="text-align:left">服务端遇到一个妨碍它为请求提供服务的错误时，使用此状态码。</td>
+</tr>
+<tr>
+<td style="text-align:left">501</td>
+<td style="text-align:left">Not Implemented</td>
+<td style="text-align:left">请求超过了服务端的能力范围时，返回这个响应码。</td>
+</tr>
+<tr>
+<td style="text-align:left">502</td>
+<td style="text-align:left">Bad Gateway</td>
+<td style="text-align:left">代理或者网关使用的服务器收到链路上的下一个节点的伪响应（比如，无法连接到其父网关）时，使用此状态码。</td>
+</tr>
+<tr>
+<td style="text-align:left">503</td>
+<td style="text-align:left">Service Unavailable</td>
+<td style="text-align:left">用来说明服务器现在无法为请求提供服务，但是将来可以。如果服务器知道服务何时可用，可在响应中包含一个Retry-After首部。</td>
+</tr>
+<tr>
+<td style="text-align:left">504</td>
+<td style="text-align:left">Gateway Timeout</td>
+<td style="text-align:left">与状态码408类似，只是响应来自网关或代理，它们在等待另外的服务器对其请求响应时超时。</td>
+</tr>
+<tr>
+<td style="text-align:left">505</td>
+<td style="text-align:left">HTTP Version Not Supported</td>
+<td style="text-align:left">服务器收到的请求使用了它无法或者不愿意支持的协议版本时，返回此状态码。</td>
+</tr>
+</tbody>
+</table>
+<p>下面自己试着总结一下这些HTTP状态码：</p>
+<ol>
+<li>4XX错误种类最多。客户端是软件开发者能掌控的最弱的环节，也是可能出错最多的地方；</li>
+<li>有些状态码的语义比较模糊（比如400、500），通用性很强，不利于定位错误。所以，在实际开发中应该尽量少用这种语义模糊的状态码。</li>
+<li>有些状态码语义有些重叠和相似。比如405和501这两个状态码，虽然405的错误更加明确，但都是表示服务端无法处理这个请求。那么到底是客户端使用了未实现或未允许的方法呢？还是服务器无法处理这个请求呢？语义的重叠带来了开发中的选择困难。</li>
+</ol>
+<h3 id="HTTP首部详解"><a href="#HTTP首部详解" class="headerlink" title="HTTP首部详解"></a>HTTP首部详解</h3><p>首部和方法配合，共同绝对了客户端和服务端能够做什么。在请求和响应报文中都可以用首部来提供信息，按照首部所处的端点和位置可以将首部分成5类：</p>
+<ol>
+<li>通用首部：客户端和服务端都可以使用的首部。</li>
+<li>请求首部：请求报文中特有的首部。</li>
+<li>响应首部：响应报文中特有的首部。</li>
+<li>实体首部：对应于实体主体部分的首部。</li>
+<li>扩展首部：应用开发者自己创建的首部。</li>
+</ol>
+<h4 id="通用首部"><a href="#通用首部" class="headerlink" title="通用首部"></a>通用首部</h4><p>通用首部提供了一些最基本的信息，下表列出了一些常用的通用首部。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Connection</td>
+<td style="text-align:left">客户端和服务端指定与请求/响应连接相关的选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">Date</td>
+<td style="text-align:left">提供日期和时间标志，说明报文是什么时间创建的。</td>
+</tr>
+<tr>
+<td style="text-align:left">MINE-Vesion</td>
+<td style="text-align:left">发送端使用的MINE的版本。</td>
+</tr>
+<tr>
+<td style="text-align:left">Transfer-Encoding</td>
+<td style="text-align:left">告知接收端报文采用何种编码方式。</td>
+</tr>
+<tr>
+<td style="text-align:left">Update</td>
+<td style="text-align:left">告知发送端可能想要“升级”使用的新版本或协议。</td>
+</tr>
+<tr>
+<td style="text-align:left">Via</td>
+<td style="text-align:left">显示报文经过的中间节点（代理、网关）。</td>
+</tr>
+<tr>
+<td style="text-align:left">Cache-Control</td>
+<td style="text-align:left">指示缓存方式。</td>
+</tr>
+<tr>
+<td style="text-align:left">Prama</td>
+<td style="text-align:left">另外一种随报文传送的指示的方式，但并不专用于缓存。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="请求首部"><a href="#请求首部" class="headerlink" title="请求首部"></a>请求首部</h4><p>请求首部是只在请求报文中有意义的首部。用于说明是谁或什么在发送请求、请求源于何处。可以根据首部的功能来对请求首部进行分类。</p>
+<p>1、 <strong>信息性请求首部</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Client-IP</td>
+<td style="text-align:left">提供运行客户端的主机IP。</td>
+</tr>
+<tr>
+<td style="text-align:left">From</td>
+<td style="text-align:left">提供了客户端用户的Email地址。</td>
+</tr>
+<tr>
+<td style="text-align:left">Host</td>
+<td style="text-align:left">提供了接受请求的服务器的主机名和端口。与起始行中的URL路径结合起来，组成了一个完整的绝对URL地址。</td>
+</tr>
+<tr>
+<td style="text-align:left">Referer</td>
+<td style="text-align:left">提供了包含了当前URI的文档的URL。 比如，点击URL为www.xx.com的页面中的任意链接，请求中会带上Referer: www.xx.com的首部。</td>
+</tr>
+<tr>
+<td style="text-align:left">User-Agent</td>
+<td style="text-align:left">将发起请求的应用程序告知服务端。如果想模拟浏览器请求来做个爬虫，通常都会加上这个首部。</td>
+</tr>
+</tbody>
+</table>
+<p>2、 <strong>Accept首部</strong><br>Accept首部为客户端提供了一种将其喜好和能力告知服务器的方式。可以告知服务端它们想要什么，可以使用什么，以及不想要什么。服务端可以根据这些首部，来做发送的内容作出更加明智的决定。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Accept</td>
+<td style="text-align:left">告知服务端客户发送哪些媒体类型。</td>
+</tr>
+<tr>
+<td style="text-align:left">Accept-Charset</td>
+<td style="text-align:left">告诉服务端能够发送哪些字符集。</td>
+</tr>
+<tr>
+<td style="text-align:left">Accept-Encoding</td>
+<td style="text-align:left">告知服务端可以使用哪些编码方式。</td>
+</tr>
+<tr>
+<td style="text-align:left">Accept-Language</td>
+<td style="text-align:left">告知服务端能够发送哪些语言。</td>
+</tr>
+</tbody>
+</table>
+<p>3、 <strong>条件请求首部</strong><br>通过条件请求首部，客户端可以为请求加上限制，要求服务器在对请求响应之前，确保某个条件为真。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Expect</td>
+<td style="text-align:left">允许客户端列出请求所要求的服务端行为。</td>
+</tr>
+<tr>
+<td style="text-align:left">If-Match</td>
+<td style="text-align:left">如果服务端的实体标记与当前的实体标记相匹配时，就获取这份文档。</td>
+</tr>
+<tr>
+<td style="text-align:left">If-None-Match</td>
+<td style="text-align:left">如果服务端的实体标记与当前的实体标记相匹配时，就获取这份文档。</td>
+</tr>
+<tr>
+<td style="text-align:left">If-Modified-Since</td>
+<td style="text-align:left">如果请求的文档在指定的日期后修改过，就获取这份文档。</td>
+</tr>
+<tr>
+<td style="text-align:left">If-Unmodified-Since</td>
+<td style="text-align:left">如果请求的文档在指定的日期后没有修改过，就获取这份文档。</td>
+</tr>
+<tr>
+<td style="text-align:left">If-Range</td>
+<td style="text-align:left">如果服务端支持范围请求，就进行响应。</td>
+</tr>
+<tr>
+<td style="text-align:left">Range</td>
+<td style="text-align:left">指定一个请求范围。</td>
+</tr>
+</tbody>
+</table>
+<p>4、 <strong>安全请求首部</strong><br>HTTP本身就支持一种简单的机制，可以对请求进行质询/响应认证。客户端在请求资源时，需要带上安全请求首部才能获取特定的资源。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Authorization</td>
+<td style="text-align:left">包含客户端对自身进行认证的数据。</td>
+</tr>
+<tr>
+<td style="text-align:left">Cookie</td>
+<td style="text-align:left">客户端向服务端传送的一个令牌。</td>
+</tr>
+</tbody>
+</table>
+<p>5、 <strong>代理请求首部</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Max-Forward</td>
+<td style="text-align:left">在通往源端服务器的路径上，将请求转发给其他代理或网关的最大次数（与Trace方法一同使用）。</td>
+</tr>
+<tr>
+<td style="text-align:left">Proxy-Authorization</td>
+<td style="text-align:left">与Authorization首部含义相同，只不过用于代理认证。</td>
+</tr>
+<tr>
+<td style="text-align:left">Proxy-Connection</td>
+<td style="text-align:left">与Connection首部含义相同，用于与代理建立连接时使用。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="响应首部"><a href="#响应首部" class="headerlink" title="响应首部"></a>响应首部</h4><p>响应首部为客户端提供一些额外信息，比如谁在发送响应，响应者的功能，甚至与响应相关的一些特殊指令。这些首部有利于客户端处理响应，并在将来发起跟高的请求。</p>
+<p>1、 <strong>信息性响应首部</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Age</td>
+<td style="text-align:left">从最初创建开始，响应持续时间。</td>
+</tr>
+<tr>
+<td style="text-align:left">Retry-After</td>
+<td style="text-align:left">如果当前资源不可用，在此日期或时间重试。</td>
+</tr>
+<tr>
+<td style="text-align:left">Server</td>
+<td style="text-align:left">服务器应用程序软件的名称和版本。</td>
+</tr>
+<tr>
+<td style="text-align:left">Title</td>
+<td style="text-align:left">对于HTML文档来说，就是HTML文档的源端给出的标题。</td>
+</tr>
+<tr>
+<td style="text-align:left">Warning</td>
+<td style="text-align:left">比起始行中的原因短语更加详细的警告信息。</td>
+</tr>
+</tbody>
+</table>
+<p>2、 <strong>协商响应首部</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Accept-Ranges</td>
+<td style="text-align:left">对此资源来说，服务器可接受的范围类型。</td>
+</tr>
+<tr>
+<td style="text-align:left">Vary</td>
+<td style="text-align:left">服务器查看的其他首部的列表，可能会使响应发生变化。也就是说，这是个首部列表，服务器会根据这些首部的内容挑选出合适的资源版本发给客户端。</td>
+</tr>
+</tbody>
+</table>
+<p>3、 <strong>安全响应首部</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Proxy-Authenicate</td>
+<td style="text-align:left">代理可客户端的质询列表。</td>
+</tr>
+<tr>
+<td style="text-align:left">Set-Cookie</td>
+<td style="text-align:left">在客户端设置一个令牌，以便对客户端进行标识。</td>
+</tr>
+<tr>
+<td style="text-align:left">WWW-Authenicate</td>
+<td style="text-align:left">来自服务器对客户端的质询列表。</td>
+</tr>
+<tr>
+<td style="text-align:left">Title</td>
+<td style="text-align:left">对于HTML文档来说，就是HTML文档的源端给出的标题。</td>
+</tr>
+<tr>
+<td style="text-align:left">Warning</td>
+<td style="text-align:left">比起始行中的原因短语更加详细的警告信息。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="实体首部"><a href="#实体首部" class="headerlink" title="实体首部"></a>实体首部</h4><p>有很对首部用来描述HTTP的负荷，由于请求和响应中都可能包含实体部分，所以在这两张报文中都可能出现这类首部。</p>
+<p>实体首部提供了实体及其内容的的大量信息，从有关对象类型的信息，到能够对资源使用的各种有效的请求方法。总之，实体首部可以告知报文的接受者它在对什么进行处理。</p>
+<p>1、 <strong>信息性实体首部</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Allow</td>
+<td style="text-align:left">列出可以对实体执行的请求方法。</td>
+</tr>
+<tr>
+<td style="text-align:left">Location</td>
+<td style="text-align:left">告知客户端实体实际位于何处，用于将接收端定向到资源的位置上去。</td>
+</tr>
+</tbody>
+</table>
+<p>2、 <strong>内容实体首部</strong><br>内容首部提供了与实体内容有关的特定信息，说明了其类型、尺寸以及处理它所需的其他有用信息。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Conntent-Base</td>
+<td style="text-align:left">解析主体中相对URL时所使用的基础URL。</td>
+</tr>
+<tr>
+<td style="text-align:left">Conntent-Encoding</td>
+<td style="text-align:left">对主体执行的编码方式。</td>
+</tr>
+<tr>
+<td style="text-align:left">Conntent-Language</td>
+<td style="text-align:left">理解主体时最适合使用的自然语言。</td>
+</tr>
+<tr>
+<td style="text-align:left">Conntent-Length</td>
+<td style="text-align:left">主体的长度或尺寸。</td>
+</tr>
+<tr>
+<td style="text-align:left">Conntent-Location</td>
+<td style="text-align:left">资源主体实际所处的位置。</td>
+</tr>
+<tr>
+<td style="text-align:left">Conntent-MD5</td>
+<td style="text-align:left">主体的MD5校验和。</td>
+</tr>
+<tr>
+<td style="text-align:left">Conntent-Range</td>
+<td style="text-align:left">在整个资源中，此实体表示的字节范围。</td>
+</tr>
+<tr>
+<td style="text-align:left">Conntent-Type</td>
+<td style="text-align:left">这个主体的对象类型。</td>
+</tr>
+</tbody>
+</table>
+<p>3、 <strong>实体缓存首部</strong><br>缓存首部说明了如何或什么时候进行缓存。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">首部</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Etag</td>
+<td style="text-align:left">与此实体相关的实体标记。</td>
+</tr>
+<tr>
+<td style="text-align:left">Expires</td>
+<td style="text-align:left">实体不再有效，要从原始的源端再次获取此实体的日期和时间。</td>
+</tr>
+<tr>
+<td style="text-align:left">Last-Modified</td>
+<td style="text-align:left">实体最后一次被修改的日期和时间。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="读后反省"><a href="#读后反省" class="headerlink" title="读后反省"></a>读后反省</h3><p>读了本节内容，再联系到自己在实际开发过程中对HTTP协议的运用，发现之前用的不正确、不合理。下面是自己总结的用的不正确的地方：</p>
+<ol>
+<li>除了post、get方法外的方法，基本上没有用过其他HTTP方法。HTTP是应用层协议，与自己开发的应用程序属于同一个网络层次。只不过它给我们解决了网络应用程序中的通用性问题，让应用软件开发者可以将重心放在应用内容本身。既然HTTP协议本身已经定义了这么多的执行动作的方法，就不应该弃之不用。必然要删除某个资源，完全可以使用delete方法来标志删除动作。 最近在研究rest这种Web应用设计思想，它可以使得应用程序充分运用HTTP协议。</li>
+<li>URL误用。URL是资源的唯一标识符，指示资源的位置和获取方式。从语言词性层面来说，这样的描述性短语应该是一个名词性短语，所以诸如www.xx.com/getUsers、/deleteUser?id=11之类URL都属于误用。</li>
+<li>很少使用除了200、404、500以外的状态码来描述响应状态。既然HTTP协议与应用数据属于同一个网络层次，如果HTTP中定义的状态码足以描述当前的状态，就应该优先使用它们，而不是使用自定义的状态。</li>
+</ol>
+<p>在这篇文章以前，自己已经阅读过HTTP状态码、首部等内容很多次了，但就是记不住。读一遍记不住，读十遍也就是那样。但是，自己这么完整的复写过一遍之后，对整个HTTP协议细节有了更深的认识，而且也能够勉强记住了。好记性不如烂笔头，确实是这么一个道理。虽然把人家书上的内容是照搬了过来，相当了又重复造了一遍轮子，但是对笔者来说却相当收益。技术提高没有什么捷径可走，要的就是更多地去实践，造轮子不失为一种技术提高的有效办法。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文是有关HTTP学习的第二篇的文章，主要介绍了HTTP协议中的报文，包括报文组成、语法结构、方法、状态码和详细的首部介绍。内容以《HTTP权威指南》为主，同时加入了自己的理解。在文章的末尾谈了谈阅读和写完本章内容之后的感想，以及对自己今后开发上可能的帮助。同时也反思一下自己本身的不足，要好好加油才是！本文历时了2个多星期才写完，不是因为时间不够，实在是懒癌症太厉害了。而且，工作上也不是很如意，有时候回家后啥都不想干。最后还是写完了，坚持就是胜利。Keep learning！</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/学习笔记/" rel="tag">#学习笔记</a>
+          
+            <a href="/tags/协议/" rel="tag">#协议</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/29/http-learn-booknote-1/" rel="next" title="《HTTP权威指南》学习笔记（1）-HTTP概述和URL">
+                <i class="fa fa-chevron-left"></i> 《HTTP权威指南》学习笔记（1）-HTTP概述和URL
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/01/migrate/" rel="prev" title="2016-3-1博客迁移">
+                2016-3-1博客迁移 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/01/19/http-learn-booknote-2/"
+     data-title="《HTTP权威指南》学习笔记（2）-HTTP报文"
+     data-content=""
+     data-url="http://hinylover.space/2016/01/19/http-learn-booknote-2/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/01/19/http-learn-booknote-2/"
+           data-title="《HTTP权威指南》学习笔记（2）-HTTP报文" data-url="http://hinylover.space/2016/01/19/http-learn-booknote-2/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP报文的语法"><span class="nav-number">1.</span> <span class="nav-text">HTTP报文的语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#语法结构"><span class="nav-number">1.1.</span> <span class="nav-text">语法结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP报文的组成部分"><span class="nav-number">2.</span> <span class="nav-text">HTTP报文的组成部分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#起始行-start-line"><span class="nav-number">2.1.</span> <span class="nav-text">起始行(start line)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#首部-header"><span class="nav-number">2.2.</span> <span class="nav-text">首部(header)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主体-body"><span class="nav-number">2.3.</span> <span class="nav-text">主体(body)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP方法"><span class="nav-number">3.</span> <span class="nav-text">HTTP方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP状态码"><span class="nav-number">4.</span> <span class="nav-text">HTTP状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP首部详解"><span class="nav-number">5.</span> <span class="nav-text">HTTP首部详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通用首部"><span class="nav-number">5.1.</span> <span class="nav-text">通用首部</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求首部"><span class="nav-number">5.2.</span> <span class="nav-text">请求首部</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#响应首部"><span class="nav-number">5.3.</span> <span class="nav-text">响应首部</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实体首部"><span class="nav-number">5.4.</span> <span class="nav-text">实体首部</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读后反省"><span class="nav-number">6.</span> <span class="nav-text">读后反省</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

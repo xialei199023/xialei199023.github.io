@@ -1,0 +1,838 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="学习笔记," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="读了《Effective Java》这本书，感触良多。它刷新了我对Java语言的认识，纠正了原来的许多编程坏习惯。感叹Java的世界原来是如此丰富，内功对于一名技术人员是多么重要！本文记录本书的第2条建议——用构建器（Builder）优雅、安全地构建对象。
+
+在Java中有多种方式可以创建对象，总结起来主要有下面的4种方式：
+
+正常创建。通过new 操作符
+反射创建。调用Class或java.l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Effective Java》学习心得——优雅而安全地构建Java对象">
+<meta property="og:url" content="http://hinylover.space/2015/05/02/effect-java-note-create-object/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="读了《Effective Java》这本书，感触良多。它刷新了我对Java语言的认识，纠正了原来的许多编程坏习惯。感叹Java的世界原来是如此丰富，内功对于一名技术人员是多么重要！本文记录本书的第2条建议——用构建器（Builder）优雅、安全地构建对象。
+
+在Java中有多种方式可以创建对象，总结起来主要有下面的4种方式：
+
+正常创建。通过new 操作符
+反射创建。调用Class或java.l">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.526Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Effective Java》学习心得——优雅而安全地构建Java对象">
+<meta name="twitter:description" content="读了《Effective Java》这本书，感触良多。它刷新了我对Java语言的认识，纠正了原来的许多编程坏习惯。感叹Java的世界原来是如此丰富，内功对于一名技术人员是多么重要！本文记录本书的第2条建议——用构建器（Builder）优雅、安全地构建对象。
+
+在Java中有多种方式可以创建对象，总结起来主要有下面的4种方式：
+
+正常创建。通过new 操作符
+反射创建。调用Class或java.l">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 《Effective Java》学习心得——优雅而安全地构建Java对象 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                《Effective Java》学习心得——优雅而安全地构建Java对象
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-05-02T21:01:58+08:00" content="2015-05-02">
+              2015-05-02
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/05/02/effect-java-note-create-object/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/05/02/effect-java-note-create-object/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><blockquote>
+<p>读了《Effective Java》这本书，感触良多。它刷新了我对Java语言的认识，纠正了原来的许多编程坏习惯。感叹Java的世界原来是如此丰富，内功对于一名技术人员是多么重要！本文记录本书的第2条建议——用构建器（Builder）优雅、安全地构建对象。</p>
+</blockquote>
+<p>在Java中有多种方式可以创建对象，总结起来主要有下面的4种方式：</p>
+<ol>
+<li>正常创建。通过new 操作符</li>
+<li>反射创建。调用Class或java.lang.reflect.Constructor的newInstance()方法</li>
+<li>克隆创建。调用现有对象的clone()方法</li>
+<li>发序列化。调用java.io.ObjectInputStream的getObject()方法反序列化</li>
+</ol>
+<p>Java对象的创建方式是其语法明确规定，用户不可能从外部改变的。本文仍然要使用上面的方式来创建对象，所以本文只能说是构建对象，而非创建对象也。</p>
+<p>假设有这样一个场景，现在要构建一个大型的对象，这个对象包含许多个参数的对象，有些参数有些是必填的，有些则是选填的。那么如何构建优雅、安全地构建这个对象呢？</p>
+<a id="more"></a>
+<h2 id="单一构造函数"><a href="#单一构造函数" class="headerlink" title="单一构造函数"></a><strong>单一构造函数</strong></h2><p>通常，我们第一反应能想到的就是单一构造函数方式。直接new的方式构建，通过构造函数来传递参数，见下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/***</span></div><div class="line">* 单一构造函数</div><div class="line">*/</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line"></div><div class="line">		<span class="comment">// 姓名（必填）</span></div><div class="line">		<span class="keyword">private</span> String name;</div><div class="line">		</div><div class="line">		<span class="comment">// 年龄（必填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line">		</div><div class="line">		<span class="comment">// 身高（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">int</span> height;</div><div class="line">		</div><div class="line">		<span class="comment">// 毕业学校（选填）</span></div><div class="line">		<span class="keyword">private</span> String school;</div><div class="line">		</div><div class="line">		<span class="comment">// 爱好（选填）</span></div><div class="line">		<span class="keyword">private</span> String hobby;</div><div class="line">		</div><div class="line">		<span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name, <span class="keyword">int</span> age, <span class="keyword">int</span> height, String school, String hobby)</span> </span>&#123;</div><div class="line">			<span class="keyword">this</span>.name = name;</div><div class="line">			<span class="keyword">this</span>.age = age;</div><div class="line">			<span class="keyword">this</span>.height = height;</div><div class="line">			<span class="keyword">this</span>.school = school;</div><div class="line">			<span class="keyword">this</span>.hobby = hobby;</div><div class="line">		&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的构建方式有下面的缺点：</p>
+<ol>
+<li>有些参数是可以选填的（如height, school），在构建Person的时候必须要传入可能并不需要的参数。</li>
+<li>现在上面才5个参数，构造函数就已经非常长了。如果是20个参数，构造函数都可以直接上天了！</li>
+<li>构建的这样的对象非常容易出错。客户端必须要对照Javadoc或者参数名来讲实参传入对应的位置。如果参数都是String类型的，一旦传错参数，编译是不会报错的，但是运行结果却是错误的。</li>
+</ol>
+<h2 id="多构造函数"><a href="#多构造函数" class="headerlink" title="多构造函数"></a><strong>多构造函数</strong></h2><p>对于第1个问题，我们可以通过构造函数重载来解决。见下面的代码：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/***</span></div><div class="line">* 多构造函数</div><div class="line">*/</div><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> Person &#123;</div><div class="line"></div><div class="line">		<span class="comment">// 姓名（必填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> name;</div><div class="line">		</div><div class="line">		<span class="comment">// 年龄（必填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line">		</div><div class="line">		<span class="comment">// 身高（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">int</span> <span class="built_in">height</span>;</div><div class="line">		</div><div class="line">		<span class="comment">// 毕业学校（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> school;</div><div class="line">		</div><div class="line">		<span class="comment">// 爱好（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> hobby;</div><div class="line">		</div><div class="line">		<span class="keyword">public</span> Person(<span class="keyword">String</span> name, <span class="keyword">int</span> age) &#123;</div><div class="line">			<span class="keyword">this</span>.name = name;</div><div class="line">			<span class="keyword">this</span>.age = age;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">public</span> Person(<span class="keyword">String</span> name,  <span class="keyword">int</span> age, <span class="keyword">int</span> <span class="built_in">height</span>) &#123;</div><div class="line">			<span class="keyword">this</span>.name = name;</div><div class="line">			<span class="keyword">this</span>.age = age;</div><div class="line">			<span class="keyword">this</span>.<span class="built_in">height</span> = <span class="built_in">height</span>;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">public</span> Person(<span class="keyword">String</span> name,  <span class="keyword">int</span> age, <span class="keyword">int</span> <span class="built_in">height</span>, <span class="keyword">String</span> school) &#123;</div><div class="line">			<span class="keyword">this</span>.name = name;</div><div class="line">			<span class="keyword">this</span>.age = age;</div><div class="line">			<span class="keyword">this</span>.<span class="built_in">height</span> = <span class="built_in">height</span>;</div><div class="line">			<span class="keyword">this</span>.school = school;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">public</span> Person(<span class="keyword">String</span> name,  <span class="keyword">int</span> age, <span class="keyword">String</span> hobby, <span class="keyword">String</span> school) &#123;</div><div class="line">			<span class="keyword">this</span>.name = name;</div><div class="line">			<span class="keyword">this</span>.age = age;</div><div class="line">			<span class="keyword">this</span>.hobby = hobby;</div><div class="line">			<span class="keyword">this</span>.school = school;</div><div class="line">		&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的方式确实能在一定程度上降低构造函数的长度，但是却有下面的缺陷：</p>
+<ol>
+<li>导致类过长。这种方式会使得Person类的构造函数成阶乘级增长。按理来说，应该要写的构造函数数是可选成员变量的组合数（实际并没有这么多，原因见第2点）。如果让我调用这样的类，绝对会在心里默念xx!!</li>
+<li>有些参数组合无法重构。因为Java中重载是有限制的，相同方法签名的方法不能构成重载，编译时无法通过。譬如包含（name, age, school）和(name, age, hobby)的构造函数是不能重载的，因为shcool和hobby同为String类型。Java只认变量的类型，管你变量是什么含义呢。 （看脸的社会唉）</li>
+</ol>
+<h2 id="JavaBean方式"><a href="#JavaBean方式" class="headerlink" title="JavaBean方式"></a><strong>JavaBean方式</strong></h2><p>上面的方法不行，莫急！还有法宝——JavaBean。一个对象的构建通过多个方法来完成。直接见下面的代码：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> Person &#123;</div><div class="line"></div><div class="line">		<span class="comment">// 姓名（必填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> name;</div><div class="line">		</div><div class="line">		<span class="comment">// 年龄（必填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line">		</div><div class="line">		<span class="comment">// 身高（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">int</span> <span class="built_in">height</span>;</div><div class="line">		</div><div class="line">		<span class="comment">// 毕业学校（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> school;</div><div class="line">		</div><div class="line">		<span class="comment">// 爱好（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> hobby;</div><div class="line">		</div><div class="line">		<span class="keyword">public</span> Person(<span class="keyword">String</span> name, <span class="keyword">int</span> age) &#123;</div><div class="line">			<span class="keyword">this</span>.name = name;</div><div class="line">			<span class="keyword">this</span>.age = age;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">public</span> <span class="keyword">void</span> setHeight(<span class="keyword">int</span> <span class="built_in">height</span>) &#123;</div><div class="line">			<span class="keyword">this</span>.<span class="built_in">height</span> = <span class="built_in">height</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">public</span> <span class="keyword">void</span> setSchool(<span class="keyword">String</span> school) &#123;</div><div class="line">			<span class="keyword">this</span>.school = school;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">public</span> <span class="keyword">void</span> setHobby(<span class="keyword">String</span> hobby) &#123;</div><div class="line">			<span class="keyword">this</span>.hobby = hobby;</div><div class="line">		&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端使用这个对象的代码如下：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="built_in">Client</span> &#123;</div><div class="line"></div><div class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) &#123;</div><div class="line">		Person person = <span class="keyword">new</span> Person(<span class="string">"james"</span>, <span class="number">12</span>);</div><div class="line">		person.setHeight(<span class="number">170</span>);</div><div class="line">		person.setHobby(<span class="string">"reading"</span>);</div><div class="line">		person.setSchool(<span class="string">"xxx university"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样看起来完美的解决了Person对象构建的问题，使用起来非常优雅便捷。确实，在单一线程的环境中这确实是一个非常好的构建对象的方法，但是如果是在多线程环境中仍有其致命缺陷。在多线程环境中，这个对象不能安全地被构建，因为它不是不可变对象。一旦Person对象被构建，我们随时可通过setXXX()方法改变对象的内部状态。假设有一个线程正在执行与Person对象相关的业务方法，另外一个线程改变了其内部状态，这样得到莫名其妙的结果。由于线程运行的无规律性，使得这问题有可能不能重现，这个时候真的就只能哭了。（程序员真苦逼。。。）</p>
+<h2 id="Builder方式"><a href="#Builder方式" class="headerlink" title="Builder方式"></a><strong>Builder方式</strong></h2><p>为了完美地解决这个问题，下面引出本文中的主角（等等等等！）。我们使用构建器（Builder）来优雅、安全地构建Person对象。废话不说，直接代码：</p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 待构建的对象。该对象的特点：</div><div class="line"> * &lt;ol&gt;</div><div class="line"> * &lt;li&gt;需要用户手动的传入多个参数，并且有多个参数是可选的、顺序随意&lt;/li&gt;</div><div class="line"> * &lt;li&gt;该对象是不可变的（所谓不可变，就是指对象一旦创建完成，其内部状态不可变，更通俗的说是其成员变量不可改变）。</div><div class="line"> * 不可变对象本质上是线程安全的。&lt;/li&gt;</div><div class="line"> * &lt;li&gt;对象所属的类不是为了继承而设计的。&lt;/li&gt;</div><div class="line"> * &lt;/ol&gt;</div><div class="line"> * 满足上面特点的对象的构建可是使用下面的Build方式构建。这样构建对象有下面的好处：</div><div class="line"> * &lt;ol&gt;</div><div class="line"> * &lt;li&gt;不需要写多个构造函数，使得对象的创建更加便捷&lt;/li&gt;</div><div class="line"> * &lt;li&gt;创建对象的过程是线程安全的&lt;/li&gt;</div><div class="line"> * &lt;/ol&gt;</div><div class="line"> * @author xialei</div><div class="line"> * @date 2015-5-2</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> class Person &#123;</div><div class="line"></div><div class="line">	<span class="comment">// 姓名（必填），final修饰name一旦被初始化就不能再改变，保证了对象的不可变性。</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span> name;</div><div class="line">	</div><div class="line">	<span class="comment">// 年龄（必填）</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="built_in">int</span> age;</div><div class="line">	</div><div class="line">	<span class="comment">// 身高（选填）</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="built_in">int</span> <span class="built_in">height</span>;</div><div class="line">	</div><div class="line">	<span class="comment">// 毕业学校（选填）</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span> school;</div><div class="line">	</div><div class="line">	<span class="comment">// 爱好（选填）</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span> hobby;</div><div class="line">	</div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 这个私有构造函数的作用：</div><div class="line">	 * &lt;ol&gt;</div><div class="line">	 * &lt;li&gt;成员变量的初始化。final类型的变量必须进行初始化，否则无法编译成功&lt;/li&gt;</div><div class="line">	 * &lt;li&gt;私有构造函数能够保证该对象无法从外部创建，并且Person类无法被继承&lt;/li&gt;</div><div class="line">	 * &lt;/ol&gt;</div><div class="line">	 */</div><div class="line">	<span class="keyword">private</span> Person(<span class="keyword">String</span> name, <span class="built_in">int</span> age, <span class="built_in">int</span> <span class="built_in">height</span>, <span class="keyword">String</span> school, <span class="keyword">String</span> hobby) &#123;</div><div class="line">		<span class="keyword">this</span>.name = name;</div><div class="line">		<span class="keyword">this</span>.age = age;</div><div class="line">		<span class="keyword">this</span>.<span class="built_in">height</span> = <span class="built_in">height</span>;</div><div class="line">		<span class="keyword">this</span>.school = school;</div><div class="line">		<span class="keyword">this</span>.hobby = hobby;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="comment">/**</span></div><div class="line">	* 要执行的动作</div><div class="line">	*/</div><div class="line">	<span class="keyword">public</span> <span class="keyword">void</span> doSomething() &#123;</div><div class="line">		<span class="comment">// TODO do what you want!!</span></div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 构建器。为什么Builder是内部静态类？</div><div class="line">	 * &lt;ol&gt;</div><div class="line">	 * &lt;li&gt;必须是Person的内部类。否则，由于Person的构造函数私有，不能通过new的方式创建Person对象&lt;/li&gt;</div><div class="line">	 * &lt;li&gt;必须是静态类。由于Person对象无法从外部创建，如果不是静态类，则外部无法引用Builder对象。&lt;/li&gt;</div><div class="line">	 * &lt;/ol&gt;</div><div class="line">	 * &lt;b&gt;注意&lt;/b&gt;：Builder内部成员变量要与Person的成员变量保持一致。</div><div class="line">	 * @author xialei</div><div class="line">	 *</div><div class="line">	 */</div><div class="line">	<span class="keyword">public</span> <span class="keyword">static</span> class Builder &#123;</div><div class="line">		<span class="comment">// 姓名（必填）。注意：这里不能是final的</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> name;</div><div class="line">		</div><div class="line">		<span class="comment">// 年龄（必填）</span></div><div class="line">		<span class="keyword">private</span> <span class="built_in">int</span> age;</div><div class="line">		</div><div class="line">		<span class="comment">// 身高（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="built_in">int</span> <span class="built_in">height</span>;</div><div class="line">		</div><div class="line">		<span class="comment">// 毕业学校（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> school;</div><div class="line">		</div><div class="line">		<span class="comment">// 爱好（选填）</span></div><div class="line">		<span class="keyword">private</span> <span class="keyword">String</span> hobby;</div><div class="line">		</div><div class="line">		<span class="keyword">public</span> Builder(<span class="keyword">String</span> name, <span class="built_in">int</span> age) &#123;</div><div class="line">			<span class="keyword">this</span>.name = name;</div><div class="line">			<span class="keyword">this</span>.age = age;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">public</span> Builder setHeight(<span class="built_in">int</span> <span class="built_in">height</span>) &#123;</div><div class="line">			<span class="keyword">this</span>.<span class="built_in">height</span> = <span class="built_in">height</span>;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">public</span> Builder setSchool(<span class="keyword">String</span> school) &#123;</div><div class="line">			<span class="keyword">this</span>.school = school;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">public</span> Builder setHobby(<span class="keyword">String</span> hobby) &#123;</div><div class="line">			<span class="keyword">this</span>.hobby = hobby;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="comment">/**</span></div><div class="line">		 * 构建对象</div><div class="line">		 * @return 返回待构建的对象本身</div><div class="line">		 */</div><div class="line">		<span class="keyword">public</span> Person build() &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">new</span> Person(name, age, <span class="built_in">height</span>, school, hobby);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端构建对象的方式见下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 使用Person对象的客户端</div><div class="line"> * <span class="doctag">@author</span> xialei</div><div class="line"> * <span class="doctag">@date</span> 2015-5-2</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		<span class="comment">/*</span></div><div class="line">		 * 通过链式调用的方式创建Person对象，非常优雅！</div><div class="line">		 */</div><div class="line">		Person person = <span class="keyword">new</span> Person.Builder(<span class="string">"james"</span>, <span class="number">12</span>)</div><div class="line">								  .setHeight(<span class="number">170</span>)</div><div class="line">								  .setHobby(<span class="string">"reading"</span>)</div><div class="line">								  .build();</div><div class="line">		person.doSomething();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果不想看代码，可看下面对于上面代码的总结：</p>
+<ol>
+<li>通过private Person(..)使得Person类不可被继承</li>
+<li>通过将Person类的成员变量设置为final类型，使得其不可变</li>
+<li>通过Person内部的static Builder类来构建Person对象</li>
+<li>通过将Builder类内部的setXXX()方法返回Builder类型本身，实现链式调用构建Person对象</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>至此，我们就相对完美地解决这一类型的对象创建问题！下面来总结一下本文的重点。待创建的对象特点：</p>
+<ul>
+<li>需要用户手动的传入多个参数，并且有多个参数是可选的、顺序任意</li>
+<li>对象不可变</li>
+<li>对象所属的类不是为了继承而设计的。即类不能被继承</li>
+</ul>
+<p>依次使用的对象构建方法：</p>
+<ol>
+<li>单一构造函数</li>
+<li>多构造函数</li>
+<li>JavaBean方式</li>
+<li>Builder方式</li>
+</ol>
+<p>最终，通过比较得出Builder方法最为合适的解决。</p>
+<hr>
+<h2 id="附注"><a href="#附注" class="headerlink" title="附注"></a><strong>附注</strong></h2><blockquote>
+<p>第一次写博客，现在才发现原来写博文真心是一件耗时耗力的事情。原来遇到问题都是第一时间搜索别人的博文，然后无偿窃取别人的劳动成果，觉得很惭愧！向那些将自己的研究成果无偿贡献给大众的牛人致敬！以后自己也要坚持地写下去！@2015-05-02注！</p>
+</blockquote>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/学习笔记/" rel="tag">#学习笔记</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/15/elasticsearch-1/" rel="prev" title="实时搜索引擎Elasticsearch（1）——基础概念、安装和运行">
+                实时搜索引擎Elasticsearch（1）——基础概念、安装和运行 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/05/02/effect-java-note-create-object/"
+     data-title="《Effective Java》学习心得——优雅而安全地构建Java对象"
+     data-content=""
+     data-url="http://hinylover.space/2015/05/02/effect-java-note-create-object/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/05/02/effect-java-note-create-object/"
+           data-title="《Effective Java》学习心得——优雅而安全地构建Java对象" data-url="http://hinylover.space/2015/05/02/effect-java-note-create-object/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#单一构造函数"><span class="nav-number">1.</span> <span class="nav-text">单一构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多构造函数"><span class="nav-number">2.</span> <span class="nav-text">多构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaBean方式"><span class="nav-number">3.</span> <span class="nav-text">JavaBean方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Builder方式"><span class="nav-number">4.</span> <span class="nav-text">Builder方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附注"><span class="nav-number">6.</span> <span class="nav-text">附注</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

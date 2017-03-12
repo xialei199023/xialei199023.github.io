@@ -1,0 +1,976 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="Java中的容器在开发过程必然会接触到的，也是作为一名合格的Java程序员必须要掌握的内容。各种面试、笔试中十有八九都会在容器上面做“文章”。由于每一类容器涉及的知识点都比较多，基于单一职责原则，本文并不会对特定容器做特别深入地介绍。文章在宏观层面上来研究一下Java中的容器体系，并比较各种容器之前的联系与区别，主要内容如下：
+
+Java容器的体系结构
+Collection体系
+Map体系">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重新认识Java——容器体系（Collection）">
+<meta property="og:url" content="http://hinylover.space/2016/07/23/relearn-java-collection/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="Java中的容器在开发过程必然会接触到的，也是作为一名合格的Java程序员必须要掌握的内容。各种面试、笔试中十有八九都会在容器上面做“文章”。由于每一类容器涉及的知识点都比较多，基于单一职责原则，本文并不会对特定容器做特别深入地介绍。文章在宏观层面上来研究一下Java中的容器体系，并比较各种容器之前的联系与区别，主要内容如下：
+
+Java容器的体系结构
+Collection体系
+Map体系">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-collectionCollection%20Structure.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-collectionMap%20Structure.png">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.547Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="重新认识Java——容器体系（Collection）">
+<meta name="twitter:description" content="Java中的容器在开发过程必然会接触到的，也是作为一名合格的Java程序员必须要掌握的内容。各种面试、笔试中十有八九都会在容器上面做“文章”。由于每一类容器涉及的知识点都比较多，基于单一职责原则，本文并不会对特定容器做特别深入地介绍。文章在宏观层面上来研究一下Java中的容器体系，并比较各种容器之前的联系与区别，主要内容如下：
+
+Java容器的体系结构
+Collection体系
+Map体系">
+<meta name="twitter:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-collectionCollection%20Structure.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 重新认识Java——容器体系（Collection） | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                重新认识Java——容器体系（Collection）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-07-23T11:28:49+08:00" content="2016-07-23">
+              2016-07-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/23/relearn-java-collection/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/23/relearn-java-collection/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>Java中的容器在开发过程必然会接触到的，也是作为一名合格的Java程序员必须要掌握的内容。各种面试、笔试中十有八九都会在容器上面做“文章”。由于每一类容器涉及的知识点都比较多，基于单一职责原则，本文并不会对特定容器做特别深入地介绍。文章在宏观层面上来研究一下Java中的容器体系，并比较各种容器之前的联系与区别，主要内容如下：</p>
+<ol>
+<li>Java容器的体系结构</li>
+<li>Collection体系</li>
+<li>Map体系</li>
+</ol>
+<a id="more"></a>
+<h2 id="容器的体系结构"><a href="#容器的体系结构" class="headerlink" title="容器的体系结构"></a>容器的体系结构</h2><p>Java中的容器主要有Collection和Map，它们都是顶层接口，都位于<code>java.util</code>包下，实际使用地容器都是基于这两个接口延伸出来的。下面来看看在实际开发过程中使用的主要类的类图（<font color="red">基于JDK1.8</font>），并简单地介绍它们的功能。</p>
+<p>下面是<code>Collection</code>接口的类图：</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-collectionCollection%20Structure.png" alt="Collection Structure"></p>
+<ol>
+<li><code>List</code>：是一种已知顺序的有序数据集，可容纳重复的元素。</li>
+<li><code>Set</code>：是一种数学意义上的集合，最大的特点是不可容纳重复元素。</li>
+<li><code>Queue</code>：即队列，与经典数据结构的队列一致。</li>
+</ol>
+<p>下面是<code>Map</code>接口的类图：</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/relearn-java-collectionMap%20Structure.png" alt="Map Structure"></p>
+<ol>
+<li><code>HashMap</code>：即哈希表，与经典数据结构中哈希表一致，主要用于快速查找。</li>
+<li><code>HashTable</code>：与<code>HashMap</code>功能基本一致，不过是线程安全的。</li>
+<li><code>SortedMap</code>：经过排序的Map。</li>
+<li><code>ConcurrentMap</code>：并发Map，主要用于多线程并发环境下。</li>
+</ol>
+<h2 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h2><p><code>Collection</code>实现了<code>Iterable</code>（迭代器）接口，意味着其子类都可以利用迭代器模式来访问其中的元素。所以，我们可以用<code>for…each…</code>方式要顺序读取<code>Collection</code>中的元素，类似下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">	Collection&lt;String&gt; c = <span class="keyword">new</span> ArrayList&lt;String&gt;();</div><div class="line">	c.add(<span class="string">"1"</span>);</div><div class="line">	<span class="keyword">for</span> (String s : c) &#123;</div><div class="line">		System.out.println(s);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这种写法实际上不属于Java的原生语法，而是一种语法糖。它最终编译后的字节码主体部分为：</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public static void main(java.lang.<span class="keyword">String</span>[]);</div><div class="line">   descriptor: ([Ljava/lang/<span class="keyword">String</span>;)V</div><div class="line">   flags: ACC_PUBLIC, ACC_STATIC</div><div class="line">   <span class="built_in">Code</span>:</div><div class="line">     stack=<span class="number">2</span>, locals=<span class="number">4</span>, args_size=<span class="number">1</span></div><div class="line">        <span class="number">0</span>: <span class="keyword">new</span>           <span class="meta">#16                 <span class="comment">// class java/util/ArrayList</span></span></div><div class="line">        <span class="number">3</span>: dup</div><div class="line">        <span class="number">4</span>: invokespecial <span class="meta">#18                 <span class="comment">// Method java/util/ArrayList."&lt;init&gt;":()V</span></span></div><div class="line">        <span class="number">7</span>: astore_1</div><div class="line">        <span class="number">8</span>: aload_1</div><div class="line">        <span class="number">9</span>: ldc           <span class="meta">#19                 <span class="comment">// String 1</span></span></div><div class="line">       <span class="number">11</span>: invokeinterface <span class="meta">#21,  2           <span class="comment">// InterfaceMethod java/util/Collection.add:(Ljava/lang/Object;)Z</span></span></div><div class="line">       <span class="number">16</span>: <span class="keyword">pop</span></div><div class="line">       <span class="number">17</span>: aload_1</div><div class="line">       <span class="number">18</span>: invokeinterface <span class="meta">#27,  1           <span class="comment">// InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;</span></span></div><div class="line">       <span class="number">23</span>: astore_3</div><div class="line">       <span class="number">24</span>: <span class="keyword">goto</span>          <span class="number">44</span></div><div class="line">       <span class="number">27</span>: aload_3</div><div class="line">       <span class="number">28</span>: invokeinterface <span class="meta">#31,  1           <span class="comment">// InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;</span></span></div><div class="line">       <span class="number">33</span>: checkcast     <span class="meta">#37                 <span class="comment">// class java/lang/String</span></span></div><div class="line">       <span class="number">36</span>: astore_2</div><div class="line">       <span class="number">37</span>: getstatic     <span class="meta">#39                 <span class="comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span></span></div><div class="line">       <span class="number">40</span>: aload_2</div><div class="line">       <span class="number">41</span>: invokevirtual <span class="meta">#45                 <span class="comment">// Method java/io/PrintStream.println:(Ljava/lang/String;)V</span></span></div><div class="line">       <span class="number">44</span>: aload_3</div><div class="line">       <span class="number">45</span>: invokeinterface <span class="meta">#51,  1           <span class="comment">// InterfaceMethod java/util/Iterator.hasNext:()Z</span></span></div><div class="line">       <span class="number">50</span>: ifne          <span class="number">27</span></div><div class="line">       <span class="number">53</span>: <span class="keyword">return</span></div></pre></td></tr></table></figure>
+<p>看上面字节码中的第15行，它调用了<code>Iterator</code>接口中定义的<code>iterator()</code>方法来获取一个<code>Iterator</code>的实例。然后分别用<code>next()</code>和<code>hasNext()</code>来进行循环来读取<code>Collection</code>中保存的元素，这是Java中迭代器的典型用法。</p>
+<p>所有实现Collection接口的类都必须提供两个标准的 构造函数：</p>
+<ol>
+<li>无参数的构造函数用于创建一个空的Collection。</li>
+<li>有一个Collection参数的构造函数用于创建一个新的Collection，这个新的Collection与传入的Collection有相同的元素。</li>
+</ol>
+<h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><p><code>List</code>是一类顺序已知的数据集，元素存放的逻辑顺序完全由调用者控制，并且可以存放重复元素（<code>equals</code>比较后返回<code>true</code>的元素）和<code>null</code>元素。调用者能够使用索引（元素在List中的位置，类似于数组下标）来访问<code>List</code>中的元素，这类似于Java的数组。</p>
+<p><code>List</code>除了可以利用<code>iterator()</code>返回一个<code>Iterator</code>示例外，还定义了<code>listIterator()</code>方法来返回一个<code>ListIterator</code>实例。<code>ListIterator</code>接口继承了<code>Iterator</code>接口，它定义删除、添加和向前索引元素等方法。</p>
+<p><code>List</code>接口的主要子（孙）类有：<code>ArryList</code>、<code>LinkedList</code>和<code>Vector</code>，他们主要的区别如下表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">List</th>
+<th style="text-align:center">线程安全性</th>
+<th style="text-align:center">扩容时是否需要复制</th>
+<th style="text-align:center">是否可以指定初始容量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">ArrayList</td>
+<td style="text-align:center">非线程安全</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">是</td>
+</tr>
+<tr>
+<td style="text-align:center">LinkedList</td>
+<td style="text-align:center">非线程安全</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">Vector</td>
+<td style="text-align:center">线程安全</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">是</td>
+</tr>
+</tbody>
+</table>
+<p><code>Vector</code>已经很少被用到了，下面仅比较<code>ArryList</code>和<code>LinkedList</code>的各种操作效率，然后介绍其使用场景。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">List</th>
+<th style="text-align:center">add</th>
+<th style="text-align:center">get</th>
+<th style="text-align:center">remove</th>
+<th style="text-align:center">占用空间</th>
+<th style="text-align:center">内存空间是否连续</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">ArrayList</td>
+<td style="text-align:center">时间复杂度：O(n)</td>
+<td style="text-align:center">时间复杂度：O(1)</td>
+<td style="text-align:center">时间复杂度：O(n)</td>
+<td style="text-align:center">元素占用空间和</td>
+<td style="text-align:center">连续</td>
+</tr>
+<tr>
+<td style="text-align:center">LinkedList</td>
+<td style="text-align:center">时间复杂度：O(1)</td>
+<td style="text-align:center">时间复杂度：O(n)</td>
+<td style="text-align:center">时间复杂度：O(n)</td>
+<td style="text-align:center">元素占用空间和+指针空间</td>
+<td style="text-align:center">可以不连续</td>
+</tr>
+</tbody>
+</table>
+<p>从上面可以看出，<code>ArryList</code>和<code>LinkedList</code>各自有其优势和劣势，他们的使用场景可以总结为：</p>
+<ul>
+<li>如果待容纳的元素总量确定，则优先使用<code>ArryList</code>；</li>
+<li>如果读操作大于写操作，则使用<code>ArryList</code>；反之，则使用<code>LinkedList</code>。</li>
+</ul>
+<h3 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h3><p><code>Set</code>表示数学意义上的集合，它不允许重复的元素，即任意的两个元素e1和e2都有<code>e1.equals(e2)</code>为<code>false</code>。<code>Set</code>最多允许一个<code>null</code>元素，<code>Set</code>的构造函数有一个约束条件，传入的<code>Collection</code>实例不能包含重复的元素。实际使用较多的子类有：<code>HashSet</code>和<code>TreeSet</code>。</p>
+<p><code>Set</code>的实现类基本上都是基于<code>Map</code>来实现的，它巧妙地利用了<code>Map</code>中的key不会重复的特性。<code>HashSet</code>是基于<code>HashMap</code>实现的，而<code>TreeSet</code>默认是基于<code>TreeSet</code>实现的。它们的区别如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Set</th>
+<th style="text-align:center">元素有序性</th>
+<th style="text-align:center">是否支持排序</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">HashSet</td>
+<td style="text-align:center">无序</td>
+<td style="text-align:center">不支持排序</td>
+</tr>
+<tr>
+<td style="text-align:center">TreeSet</td>
+<td style="text-align:center">有序</td>
+<td style="text-align:center">支持排序</td>
+</tr>
+</tbody>
+</table>
+<p>如果无需保证取出的元素序列与插入的元素序列顺序完全一致，则使用<code>HashSet</code>；反之，则应该使用<code>TreeSet</code>。</p>
+<h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><p>队列是一种先进先出的数据结构．它有两个基本操作：在队列尾部加人一个元素，从队列头部移除一个元素。由于笔者在实际开发过程极少会用到这种数据结构，或者会使用额外的消息队列来替代，所以暂时将这部分内容先放一放。<code>LinkedBlockingQueue</code>、<code>ArrayBlockingQueue</code>等阻塞式队列广泛用于Java并发库中，在学习j.u.c包时再深入地研究。</p>
+<h2 id="Map体系"><a href="#Map体系" class="headerlink" title="Map体系"></a>Map体系</h2><p><code>Map</code>是一种把键和值进行映射的集合，其中的每个元素都是<code>Map.Entry</code>实例。<code>Map</code>的主要功能是通过键（key）快速查找出值（value）。主要有两种方法对<code>Map</code>进行遍历：</p>
+<p>第一种，先获取<code>entrySet</code>，然后利用迭代器遍历这个对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Map map = <span class="keyword">new</span> HashMap();</div><div class="line">Iterator iter = map.entrySet().iterator();</div><div class="line"><span class="keyword">while</span> (iter.hasNext()) &#123;</div><div class="line">	Map.Entry entry = (Map.Entry) iter.next();</div><div class="line">	Object key = entry.getKey();</div><div class="line">	Object val = entry.getValue();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第二种，先获取<code>Map</code>的迭代器，每次取出一个key，然后查找每个key所对应的value。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Map map = <span class="keyword">new</span> HashMap();</div><div class="line">Iterator iter = map.keySet().iterator();</div><div class="line"><span class="keyword">while</span> (iter.hasNext()) &#123;</div><div class="line">    Object key = iter.next();</div><div class="line">    Object val = map.get(key);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>很显然，第一种遍历方式效率更高，推荐使用。</p>
+<p><code>Map</code>的子类非常多，使用频率较高的是下面4个：</p>
+<ul>
+<li>HashMap：最接近数据结构中的哈希表的实现，采用拉链法解决key冲突。前面的<code>HashSet</code>即使基于这个类来实现的。</li>
+<li>HashTable：线程安全版的HashMap。</li>
+<li>LinkedHashMap：HashMap的子类，利用链表解决HashMap中遍历时，输出的元素顺序与插入顺序不一致的问题。</li>
+<li>TreeMap：与<code>TreeSet</code>的特点类似，可以对key进行排序。</li>
+</ul>
+<p><code>Map</code>是Java中的非常重要的数据结构，上面的几种实现各有侧重，通过下面的表格来看看它们各自的特点：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Map</th>
+<th style="text-align:center">线程安全</th>
+<th style="text-align:center">达到容量上限时内存拷贝</th>
+<th style="text-align:center">是否允许null key</th>
+<th style="text-align:center">遍历顺序</th>
+<th style="text-align:center">是否可排序</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">HashMap</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">需要</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">无序</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">HashTable</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">需要</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">无序</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">LinkedHashMap</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">需要</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">与输入顺序一致</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">TreeMap</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">不需要</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">与输入顺序一致</td>
+<td style="text-align:center">是</td>
+</tr>
+</tbody>
+</table>
+<p>在这4个类中，<code>HashMap</code>和<code>TreeMap</code>2中场景，下面介绍不同场景下该使用哪种Map。</p>
+<ul>
+<li>HashMap：插入、删除和定位元素的平均时间复杂度为O(N)，是一个常数时间。如果没有排序需求，则应该优先使用<code>HashMap</code>。 </li>
+<li>Treemap：插入、删除和定位元素的平均时间复杂度为O(log(n))适用于按自然顺序或自定义顺序遍历键(key)。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文简单地介绍了Java中的主要容器体系，内容非常浅。深入了解Java各个容器的内部原理和实现方式是Java程序员进阶的必经之路。在今后的学习中，笔者会研读这些容器类的源代码，并将学习笔记发布上来。</p>
+<hr>
+<p>本文由<a href="http://hinylover.space">xialei</a>原创，转载请说明出处<a href="http://hinylover.space/2016/07/23/relearn-java-collection/">http://hinylover.space/2016/07/23/relearn-java-collection/</a>。</p>
+<hr>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/系列/" rel="tag">#系列</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/10/relearn-java-string/" rel="next" title="重新认识Java——字符串（String）">
+                <i class="fa fa-chevron-left"></i> 重新认识Java——字符串（String）
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/17/relearn-java-thread/" rel="prev" title="重新认识java——线程（Thread）">
+                重新认识java——线程（Thread） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/23/relearn-java-collection/"
+     data-title="重新认识Java——容器体系（Collection）"
+     data-content=""
+     data-url="http://hinylover.space/2016/07/23/relearn-java-collection/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/23/relearn-java-collection/"
+           data-title="重新认识Java——容器体系（Collection）" data-url="http://hinylover.space/2016/07/23/relearn-java-collection/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#容器的体系结构"><span class="nav-number">1.</span> <span class="nav-text">容器的体系结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Collection"><span class="nav-number">2.</span> <span class="nav-text">Collection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#List"><span class="nav-number">2.1.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Set"><span class="nav-number">2.2.</span> <span class="nav-text">Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Queue"><span class="nav-number">2.3.</span> <span class="nav-text">Queue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map体系"><span class="nav-number">3.</span> <span class="nav-text">Map体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

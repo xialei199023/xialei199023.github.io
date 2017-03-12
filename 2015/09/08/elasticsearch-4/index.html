@@ -1,0 +1,1032 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="教程,系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="上一篇博客介绍了ES中的简单查询API的使用，本篇将介绍ES提供的聚合API的使用。ES提供的聚合功能可以用来进行简单的数据分析。本文仍然以上一篇提供的数据为例来讲解。数据如下：
+
+
+
+studentNo
+name
+male
+age
+birthday
+classNo
+address
+isLeader
+
+
+
+
+1
+刘备
+男
+24
+1985-02-03
+1
+湖南省长沙市
+true
+
+
+2
+关羽
+男
+2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实时搜索引擎Elasticsearch（4）——Aggregations （聚合）API的使用">
+<meta property="og:url" content="http://hinylover.space/2015/09/08/elasticsearch-4/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="上一篇博客介绍了ES中的简单查询API的使用，本篇将介绍ES提供的聚合API的使用。ES提供的聚合功能可以用来进行简单的数据分析。本文仍然以上一篇提供的数据为例来讲解。数据如下：
+
+
+
+studentNo
+name
+male
+age
+birthday
+classNo
+address
+isLeader
+
+
+
+
+1
+刘备
+男
+24
+1985-02-03
+1
+湖南省长沙市
+true
+
+
+2
+关羽
+男
+2">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="实时搜索引擎Elasticsearch（4）——Aggregations （聚合）API的使用">
+<meta name="twitter:description" content="上一篇博客介绍了ES中的简单查询API的使用，本篇将介绍ES提供的聚合API的使用。ES提供的聚合功能可以用来进行简单的数据分析。本文仍然以上一篇提供的数据为例来讲解。数据如下：
+
+
+
+studentNo
+name
+male
+age
+birthday
+classNo
+address
+isLeader
+
+
+
+
+1
+刘备
+男
+24
+1985-02-03
+1
+湖南省长沙市
+true
+
+
+2
+关羽
+男
+2">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 实时搜索引擎Elasticsearch（4）——Aggregations （聚合）API的使用 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                实时搜索引擎Elasticsearch（4）——Aggregations （聚合）API的使用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-09-08T21:52:38+08:00" content="2015-09-08">
+              2015-09-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index">
+                    <span itemprop="name">elasticsearch</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/09/08/elasticsearch-4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/08/elasticsearch-4/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p><a href="/2015/09/05/elasticsearch-3">上一篇</a>博客介绍了ES中的简单查询API的使用，本篇将介绍ES提供的聚合API的使用。ES提供的聚合功能可以用来进行简单的数据分析。本文仍然以上一篇提供的数据为例来讲解。数据如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">studentNo</th>
+<th style="text-align:left">name</th>
+<th style="text-align:left">male</th>
+<th style="text-align:left">age</th>
+<th style="text-align:left">birthday</th>
+<th style="text-align:left">classNo</th>
+<th style="text-align:left">address</th>
+<th style="text-align:left">isLeader</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">刘备</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">24</td>
+<td style="text-align:left">1985-02-03</td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">湖南省长沙市</td>
+<td style="text-align:left">true</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left">关羽</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">22</td>
+<td style="text-align:left">1987-08-23</td>
+<td style="text-align:left">2</td>
+<td style="text-align:left">四川省成都市</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td style="text-align:left">糜夫人</td>
+<td style="text-align:left">女</td>
+<td style="text-align:left">19</td>
+<td style="text-align:left">1990-06-12</td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">上海市</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td style="text-align:left">张飞</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">20</td>
+<td style="text-align:left">1989-07-30</td>
+<td style="text-align:left">3</td>
+<td style="text-align:left">北京市</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td style="text-align:left">诸葛亮</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">18</td>
+<td style="text-align:left">1992-04-27</td>
+<td style="text-align:left">2</td>
+<td style="text-align:left">江苏省南京市</td>
+<td style="text-align:left">true</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td style="text-align:left">孙尚香</td>
+<td style="text-align:left">女</td>
+<td style="text-align:left">16</td>
+<td style="text-align:left">1994-05-21</td>
+<td style="text-align:left">3</td>
+<td style="text-align:left"></td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td style="text-align:left">马超</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">19</td>
+<td style="text-align:left">1991-10-20</td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">黑龙江省哈尔滨市</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">8</td>
+<td style="text-align:left">赵云</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">23</td>
+<td style="text-align:left">1986-10-26</td>
+<td style="text-align:left">2</td>
+<td style="text-align:left">浙江省杭州市</td>
+<td style="text-align:left">false</td>
+</tr>
+</tbody>
+</table>
+<p>本文的主要内容有：</p>
+<ol>
+<li>metric API的使用</li>
+<li>bucketing API的使用</li>
+<li>两类API的嵌套使用</li>
+</ol>
+<a id="more"></a>
+<h3 id="1-聚合API"><a href="#1-聚合API" class="headerlink" title="1. 聚合API"></a><strong>1. 聚合API</strong></h3><p>ES中的Aggregations API是从<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-facets.html" target="_blank" rel="external">Facets</a>功能基础上发展而来，官网正在进行替换计划，建议用户使用Aggregations API，而不是Facets  API。ES中的聚合上可以分为下面两类：</p>
+<ol>
+<li><strong>metric</strong>（度量）聚合：度量类型聚合主要针对的number类型的数据，需要ES做比较多的计算工作</li>
+<li><strong>bucketing</strong>（桶）聚合：划分不同的“桶”，将数据分配到不同的“桶”里。非常类似sql中的group语句的含义。</li>
+</ol>
+<p>metric既可以作用在整个数据集上，也可以作为bucketing的子聚合作用在每一个“桶”中的数据集上。当然，我们可以把整个数据集合看做一个大“桶”，所有的数据都分配到这个大“桶”中。</p>
+<p>ES中的聚合API的调用格式如下：</p>
+<figure class="highlight fsharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="string">"aggregations"</span> : &#123;                  <span class="comment">// 表示聚合操作，可以使用aggs替代</span></div><div class="line">    <span class="string">"&lt;aggregation_name&gt;"</span> : &#123;        <span class="comment">// 聚合名，可以是任意的字符串。用做响应的key，便于快速取得正确的响应数据。</span></div><div class="line">        <span class="string">"&lt;aggregation_type&gt;"</span> : &#123;    <span class="comment">// 聚合类别，就是各种类型的聚合，如min等</span></div><div class="line">            &lt;aggregation_body&gt;      <span class="comment">// 聚合体，不同的聚合有不同的body</span></div><div class="line">        &#125;</div><div class="line">        [,<span class="string">"aggregations"</span> : &#123; <span class="meta">[&lt;sub_aggregation&gt;]</span>+ &#125; ]? <span class="comment">// 嵌套的子聚合，可以有0或多个</span></div><div class="line">    &#125;</div><div class="line">    [,<span class="string">"&lt;aggregation_name_2&gt;"</span> : &#123; ... &#125; ]* <span class="comment">// 另外的聚合，可以有0或多个</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="1-1-度量类型（metric）聚合"><a href="#1-1-度量类型（metric）聚合" class="headerlink" title="1.1 度量类型（metric）聚合"></a><strong>1.1 度量类型（metric）聚合</strong></h4><p>（1）Min Aggregation</p>
+<p>最小值查询，作用于number类型字段上。查询2班最小的年龄值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;         // 可以先使用query查询得到需要的数据集</div><div class="line">    &quot;term&quot;: &#123;</div><div class="line">      &quot;classNo&quot;: &quot;2&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;min_age&quot;: &#123;</div><div class="line">      &quot;min&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;age&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>查询结果为：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="string">"took"</span>: <span class="number">19</span>,                     <span class="comment">// 前面部分数据与普通的查询数据相同</span></div><div class="line">  <span class="string">"timed_out"</span>: <span class="literal">false</span>,</div><div class="line">  <span class="string">"_shards"</span>: &#123;</div><div class="line">    <span class="string">"total"</span>: <span class="number">5</span>,</div><div class="line">    <span class="string">"successful"</span>: <span class="number">5</span>,</div><div class="line">    <span class="string">"failed"</span>: <span class="number">0</span></div><div class="line">  &#125;,</div><div class="line">  <span class="string">"hits"</span>: &#123;</div><div class="line">    <span class="string">"total"</span>: <span class="number">3</span>,</div><div class="line">    <span class="string">"max_score"</span>: <span class="number">1.4054651</span>,</div><div class="line">    <span class="string">"hits"</span>: [</div><div class="line">      &#123;</div><div class="line">        <span class="string">"_index"</span>: <span class="string">"student"</span>,</div><div class="line">        <span class="string">"_type"</span>: <span class="string">"student"</span>,</div><div class="line">        <span class="string">"_id"</span>: <span class="string">"2"</span>,</div><div class="line">        <span class="string">"_score"</span>: <span class="number">1.4054651</span>,</div><div class="line">        <span class="string">"_source"</span>: &#123;</div><div class="line">          <span class="string">"studentNo"</span>: <span class="string">"2"</span>,</div><div class="line">          <span class="string">"name"</span>: <span class="string">"关羽"</span>,</div><div class="line">          <span class="string">"male"</span>: <span class="string">"男"</span>,</div><div class="line">          <span class="string">"age"</span>: <span class="string">"22"</span>,</div><div class="line">          <span class="string">"birthday"</span>: <span class="string">"1987-08-23"</span>,</div><div class="line">          <span class="string">"classNo"</span>: <span class="string">"2"</span>,</div><div class="line">          <span class="string">"isLeader"</span>: <span class="string">"false"</span></div><div class="line">        &#125;</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        <span class="string">"_index"</span>: <span class="string">"student"</span>,</div><div class="line">        <span class="string">"_type"</span>: <span class="string">"student"</span>,</div><div class="line">        <span class="string">"_id"</span>: <span class="string">"8"</span>,</div><div class="line">        <span class="string">"_score"</span>: <span class="number">1</span>,</div><div class="line">        <span class="string">"_source"</span>: &#123;</div><div class="line">          <span class="string">"studentNo"</span>: <span class="string">"8"</span>,</div><div class="line">          <span class="string">"name"</span>: <span class="string">"赵云"</span>,</div><div class="line">          <span class="string">"male"</span>: <span class="string">"男"</span>,</div><div class="line">          <span class="string">"age"</span>: <span class="string">"23"</span>,</div><div class="line">          <span class="string">"birthday"</span>: <span class="string">"1986-10-26"</span>,</div><div class="line">          <span class="string">"classNo"</span>: <span class="string">"2"</span>,</div><div class="line">          <span class="string">"isLeader"</span>: <span class="string">"false"</span></div><div class="line">        &#125;</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        <span class="string">"_index"</span>: <span class="string">"student"</span>,</div><div class="line">        <span class="string">"_type"</span>: <span class="string">"student"</span>,</div><div class="line">        <span class="string">"_id"</span>: <span class="string">"5"</span>,</div><div class="line">        <span class="string">"_score"</span>: <span class="number">0.30685282</span>,</div><div class="line">        <span class="string">"_source"</span>: &#123;</div><div class="line">          <span class="string">"studentNo"</span>: <span class="string">"5"</span>,</div><div class="line">          <span class="string">"name"</span>: <span class="string">"诸葛亮"</span>,</div><div class="line">          <span class="string">"male"</span>: <span class="string">"男"</span>,</div><div class="line">          <span class="string">"age"</span>: <span class="string">"18"</span>,</div><div class="line">          <span class="string">"birthday"</span>: <span class="string">"1992-04-27"</span>,</div><div class="line">          <span class="string">"classNo"</span>: <span class="string">"2"</span>,</div><div class="line">          <span class="string">"isLeader"</span>: <span class="string">"true"</span></div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    ]</div><div class="line">  &#125;,</div><div class="line">  <span class="string">"aggregations"</span>: &#123;                    <span class="comment">// 聚合结果</span></div><div class="line">    <span class="string">"min_age"</span>: &#123;                       <span class="comment">// 前面输入的聚合名</span></div><div class="line">      <span class="string">"value"</span>: <span class="number">18</span>,                     <span class="comment">// 聚合后的数据</span></div><div class="line">      <span class="string">"value_as_string"</span>: <span class="string">"18.0"</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的聚合查询有两个要注意的点：</p>
+<ol>
+<li>可以通过query先过滤数据</li>
+<li>返回的结果会包含聚合操作所作用的数据全集</li>
+</ol>
+<p>有时候我们对作用的数据全集并不太敢兴趣，我们仅仅需要最终的聚合结果。可以通过查询类型（search_type）参数来实现这个需求。下面查询出来的数据量会大大减少，ES内部也会在查询时减少一些耗时的步骤，所以查询效率会提高。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d     // 注意这里的search_type=count</div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;             // 可以先使用query查询得到需要的数据集</div><div class="line">    &quot;term&quot;: &#123;</div><div class="line">      &quot;classNo&quot;: &quot;2&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;min_age&quot;: &#123;</div><div class="line">      &quot;min&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;age&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>本次的查询结果为：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">...</div><div class="line"></div><div class="line"><span class="string">"aggregations"</span>: &#123;                    <span class="comment">// 聚合结果</span></div><div class="line">    <span class="string">"min_age"</span>: &#123;                       <span class="comment">// 前面输入的聚合名</span></div><div class="line">      <span class="string">"value"</span>: <span class="number">18</span>,                     <span class="comment">// 聚合后的数据</span></div><div class="line">      <span class="string">"value_as_string"</span>: <span class="string">"18.0"</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>（2）Max Aggregation</p>
+<p> 最大值查询。下面查询2班最大的年龄值，查询结果为23。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;term&quot;: &#123;</div><div class="line">      &quot;classNo&quot;: &quot;2&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;max_age&quot;: &#123;</div><div class="line">      &quot;max&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;age&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（3）Sum Aggregation</p>
+<p>数值求和。下面统计查询2班的年龄总和，查询结果为63。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;term&quot;: &#123;</div><div class="line">      &quot;classNo&quot;: &quot;2&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;sum_age&quot;: &#123;</div><div class="line">      &quot;sum&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;age&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（4）Avg Aggregation</p>
+<p>计算平均值。下面计算查询2班的年龄平均值，结果为21。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;term&quot;: &#123;</div><div class="line">      &quot;classNo&quot;: &quot;2&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;avg_age&quot;: &#123;</div><div class="line">      &quot;avg&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;age&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（5）Stats Aggregation</p>
+<p>统计查询，一次性统计出某个字段上的常用统计值。下面对整个学校的学生进行简单地统计。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;stats_age&quot;: &#123;</div><div class="line">      &quot;stats&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;age&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>查询结果为：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  ...                     <span class="comment">// 次要数据省略</span></div><div class="line"></div><div class="line">  <span class="string">"aggregations"</span>: &#123;</div><div class="line">    <span class="string">"stats_age"</span>: &#123;</div><div class="line">      <span class="string">"count"</span>: <span class="number">8</span>,        <span class="comment">// 含有年龄数据的学生计数</span></div><div class="line">      <span class="string">"min"</span>: <span class="number">16</span>,         <span class="comment">// 年龄最小值</span></div><div class="line">      <span class="string">"max"</span>: <span class="number">24</span>,         <span class="comment">// 年龄最大值</span></div><div class="line">      <span class="string">"avg"</span>: <span class="number">20.125</span>,     <span class="comment">// 年龄平均值</span></div><div class="line">      <span class="string">"sum"</span>: <span class="number">161</span>,        <span class="comment">// 年龄总和</span></div><div class="line">      <span class="string">"min_as_string"</span>: <span class="string">"16.0"</span>,</div><div class="line">      <span class="string">"max_as_string"</span>: <span class="string">"24.0"</span>,</div><div class="line">      <span class="string">"avg_as_string"</span>: <span class="string">"20.125"</span>,</div><div class="line">      <span class="string">"sum_as_string"</span>: <span class="string">"161.0"</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>（6）Top hits Aggregation</p>
+<p>取符合条件的前n条数据记录。下面查询全校年龄排在前2位的学生，仅需返回学生姓名和年龄。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&#123;</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;top_age&quot;: &#123;</div><div class="line">      &quot;top_hits&quot;: &#123;</div><div class="line">        &quot;sort&quot;: [               // 排序</div><div class="line">          &#123;</div><div class="line">            &quot;age&quot;: &#123;            // 按年龄降序</div><div class="line">              &quot;order&quot;: &quot;desc&quot;</div><div class="line">            &#125;</div><div class="line">          &#125;</div><div class="line">        ],</div><div class="line">        &quot;_source&quot;: &#123;</div><div class="line">          &quot;include&quot;: [           // 指定返回字段</div><div class="line">            &quot;name&quot;,</div><div class="line">            &quot;age&quot;</div><div class="line">          ]</div><div class="line">        &#125;,</div><div class="line">        &quot;size&quot;: 2                 // 取前2条数据</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>返回结果为：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  ...</div><div class="line"></div><div class="line">  <span class="string">"aggregations"</span>: &#123;</div><div class="line">    <span class="string">"top_age"</span>: &#123;</div><div class="line">      <span class="string">"hits"</span>: &#123;</div><div class="line">        <span class="string">"total"</span>: <span class="number">9</span>,</div><div class="line">        <span class="string">"max_score"</span>: <span class="literal">null</span>,</div><div class="line">        <span class="string">"hits"</span>: [</div><div class="line">          &#123;</div><div class="line">            <span class="string">"_index"</span>: <span class="string">"student"</span>,</div><div class="line">            <span class="string">"_type"</span>: <span class="string">"student"</span>,</div><div class="line">            <span class="string">"_id"</span>: <span class="string">"1"</span>,</div><div class="line">            <span class="string">"_score"</span>: <span class="literal">null</span>,</div><div class="line">            <span class="string">"_source"</span>: &#123;</div><div class="line">              <span class="string">"name"</span>: <span class="string">"刘备"</span>,</div><div class="line">              <span class="string">"age"</span>: <span class="string">"24"</span></div><div class="line">            &#125;,</div><div class="line">            <span class="string">"sort"</span>: [</div><div class="line">              <span class="number">24</span></div><div class="line">            ]</div><div class="line">          &#125;,</div><div class="line">          &#123;</div><div class="line">            <span class="string">"_index"</span>: <span class="string">"student"</span>,</div><div class="line">            <span class="string">"_type"</span>: <span class="string">"student"</span>,</div><div class="line">            <span class="string">"_id"</span>: <span class="string">"8"</span>,</div><div class="line">            <span class="string">"_score"</span>: <span class="literal">null</span>,</div><div class="line">            <span class="string">"_source"</span>: &#123;</div><div class="line">              <span class="string">"name"</span>: <span class="string">"赵云"</span>,</div><div class="line">              <span class="string">"age"</span>: <span class="string">"23"</span></div><div class="line">            &#125;,</div><div class="line">            <span class="string">"sort"</span>: [</div><div class="line">              <span class="number">23</span></div><div class="line">            ]</div><div class="line">          &#125;</div><div class="line">        ]</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="1-2-桶类型（bucketing）聚合"><a href="#1-2-桶类型（bucketing）聚合" class="headerlink" title="1.2 桶类型（bucketing）聚合"></a><strong>1.2 桶类型（bucketing）聚合</strong></h4><p>（1）Terms Aggregation</p>
+<p>按照指定的1或多个字段将数据划分成若干个小的区间，计算落在每一个区间上记录数量，并按指定顺序进行排序。下面统计每个班的学生数，并按学生数从大到小排序，取学生数靠前的2个班级。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;terms_classNo&quot;: &#123;</div><div class="line">      &quot;terms&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;classNo&quot;,            // 按照班号进行分组</div><div class="line">        &quot;order&quot;: &#123;                     // 按学生数从大到小排序</div><div class="line">          &quot;_count&quot;: &quot;desc&quot;</div><div class="line">        &#125;,</div><div class="line">        &quot;size&quot;: 2                      // 取前两名</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>值得注意的，取得的前2名的学生数实际上是一个近似值，ES的实现方式参见<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html" target="_blank" rel="external">这里</a>。如果想要取得精确值，可以不指定size值，使其进行一次全排序，然后在程序中自行去取前2条记录。当然，这样做会使得ES做大量的排序运算工作，效率比较差。</p>
+<p>（2）Range Aggregation</p>
+<p>自定义区间范围的聚合，我们可以自己手动地划分区间，ES会根据划分出来的区间将数据分配不同的区间上去。下面将全校学生按照年龄划分为5个区间段：16岁以下、16~18、19~21、22~24、24岁以上，要求统计每一个年龄段内的学生数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;range_age&quot;: &#123;</div><div class="line">      &quot;range&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;age&quot;,</div><div class="line">        &quot;ranges&quot;: [</div><div class="line">          &#123;</div><div class="line">            &quot;to&quot;: 15</div><div class="line">          &#125;,</div><div class="line">          &#123;</div><div class="line">            &quot;from&quot;: &quot;16&quot;,</div><div class="line">            &quot;to&quot;: &quot;18&quot;</div><div class="line">          &#125;,</div><div class="line">          &#123;</div><div class="line">            &quot;from&quot;: &quot;19&quot;,</div><div class="line">            &quot;to&quot;: &quot;21&quot;</div><div class="line">          &#125;,</div><div class="line"></div><div class="line">          &#123;</div><div class="line">            &quot;from&quot;: &quot;22&quot;,</div><div class="line">            &quot;to&quot;: &quot;24&quot;</div><div class="line">          &#125;,</div><div class="line">          &#123;</div><div class="line">            &quot;from&quot;: &quot;25&quot;</div><div class="line">          &#125;</div><div class="line">        ]</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（3）Date Range Aggregation</p>
+<p>时间区间聚合专门针对date类型的字段，它与Range Aggregation的主要区别是其可以使用时间运算表达式。主要包括+（加法）运算、-（减法）运算和/（四舍五入）运算，每种运算都可以作用在不同的时间域上面，下面是一些时间运算表达式示例。</p>
+<ul>
+<li>now+10y：表示从现在开始的第10年。</li>
+<li>now+10M：表示从现在开始的第10个月。</li>
+<li>1990-01-10||+20y：表示从1990-01-01开始后的第20年，即2010-01-01。</li>
+<li>now/y：表示在年位上做舍入运算。今天是2015-09-06，则这个表达式计算结果为：2015-01-01。说好的rounding运算呢？结果是做的flooring运算，不知道为啥，估计是我理解错了-_-!!</li>
+</ul>
+<p>下面查询25年前及更早出生的学生数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;range_age&quot;: &#123;</div><div class="line">      &quot;date_range&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;birthday&quot;,</div><div class="line">        &quot;ranges&quot;: [</div><div class="line">          &#123;</div><div class="line">            &quot;to&quot;: &quot;now-25y&quot;</div><div class="line">          &#125;</div><div class="line">        ]</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（4）Histogram Aggregation</p>
+<p>直方图聚合，它将某个number类型字段等分成n份，统计落在每一个区间内的记录数。它与前面介绍的Range聚合非常像，只不过Range可以任意划分区间，而Histogram做等间距划分。既然是等间距划分，那么参数里面必然有距离参数，就是interval参数。下面按学生年龄统计各个年龄段内的学生数量，分隔距离为2岁。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;histogram_age&quot;: &#123;</div><div class="line">      &quot;histogram&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;age&quot;,</div><div class="line">        &quot;interval&quot;: 2,               // 距离为2</div><div class="line">        &quot;min_doc_count&quot;: 1           // 只返回记录数量大于等于1的区间</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（5）Date Histogram Aggregation</p>
+<p>时间直方图聚合，专门对时间类型的字段做直方图聚合。这种需求是比较常用见得的，我们在统计时，通常就会按照固定的时间断（1个月或1年等）来做统计。下面统计学校中同一年出生的学生数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;data_histogram_birthday&quot;: &#123;</div><div class="line">      &quot;date_histogram&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;birthday&quot;,</div><div class="line">        &quot;interval&quot;: &quot;year&quot;,              // 按年统计</div><div class="line">        &quot;format&quot;: &quot;yyyy&quot;                 // 返回结果的key的格式</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>返回结果如下，可以看到由于上面的”format”: “yyyy”，所以返回的key_as_string只返回年的信息。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="string">"buckets"</span>: [</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key_as_string"</span>: <span class="string">"1985"</span>,</div><div class="line">      <span class="string">"key"</span>: <span class="number">473385600000</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span></div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key_as_string"</span>: <span class="string">"1986"</span>,</div><div class="line">      <span class="string">"key"</span>: <span class="number">504921600000</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span></div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key_as_string"</span>: <span class="string">"1987"</span>,</div><div class="line">      <span class="string">"key"</span>: <span class="number">536457600000</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span></div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key_as_string"</span>: <span class="string">"1989"</span>,</div><div class="line">      <span class="string">"key"</span>: <span class="number">599616000000</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span></div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key_as_string"</span>: <span class="string">"1990"</span>,</div><div class="line">      <span class="string">"key"</span>: <span class="number">631152000000</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span></div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key_as_string"</span>: <span class="string">"1991"</span>,</div><div class="line">      <span class="string">"key"</span>: <span class="number">662688000000</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span></div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key_as_string"</span>: <span class="string">"1992"</span>,</div><div class="line">      <span class="string">"key"</span>: <span class="number">694224000000</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span></div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key_as_string"</span>: <span class="string">"1994"</span>,</div><div class="line">      <span class="string">"key"</span>: <span class="number">757382400000</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span></div><div class="line">    &#125;</div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>（6）Missing Aggregation</p>
+<p>值缺损聚合，它是一类单桶聚合，也就是最终只会产生一个“桶”。下面统计学生信息中地址栏缺损的记录数量。由于只有学号为6的孙尚香的地址缺损，所以统计值为1。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search?search_type=count&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;aggs&quot;: &#123;</div><div class="line">    &quot;missing_address&quot;: &#123;</div><div class="line">      &quot;missing&quot;: &#123;</div><div class="line">        &quot;field&quot;: &quot;address&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<h4 id="1-3-嵌套使用"><a href="#1-3-嵌套使用" class="headerlink" title="1.3 嵌套使用"></a><strong>1.3 嵌套使用</strong></h4><p>前面已经说过，聚合操作是可以嵌套使用的。通过嵌套，可以使得metric类型的聚合操作作用在每一“桶”上。我们可以使用ES的嵌套聚合操作来完成稍微复杂一点的统计功能。下面统计每一个班里最大的年龄值。</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">curl -XPOST <span class="string">"192.168.1.101:9200/student/student/_search?search_type=count"</span> -<span class="built_in">d</span></div><div class="line">'</div><div class="line">&#123;</div><div class="line">  <span class="string">"aggs"</span>: &#123;</div><div class="line">    <span class="string">"missing_address"</span>: &#123;</div><div class="line">      <span class="string">"terms"</span>: &#123;</div><div class="line">        <span class="string">"field"</span>: <span class="string">"classNo"</span></div><div class="line">      &#125;,</div><div class="line">      <span class="string">"aggs"</span>: &#123;                 <span class="comment">// 在这里嵌套新的子聚合</span></div><div class="line">        <span class="string">"max_age"</span>: &#123;</div><div class="line">          <span class="string">"max"</span>: &#123;              <span class="comment">// 使用max聚合</span></div><div class="line">            <span class="string">"field"</span>: <span class="string">"age"</span></div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">'</div></pre></td></tr></table></figure>
+<p>返回结果如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="string">"buckets"</span>: [</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key"</span>: <span class="string">"1"</span>,               <span class="comment">// key是班级号</span></div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">3</span>,           <span class="comment">// 每个班级内的人数</span></div><div class="line">      <span class="string">"max_age"</span>: &#123;              <span class="comment">// 这里是我们指定的子聚合名</span></div><div class="line">        <span class="string">"value"</span>: <span class="number">24</span>,            <span class="comment">// 每班的年龄值</span></div><div class="line">        <span class="string">"value_as_string"</span>: <span class="string">"24.0"</span></div><div class="line">      &#125;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key"</span>: <span class="string">"2"</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">3</span>,</div><div class="line">      <span class="string">"max_age"</span>: &#123;</div><div class="line">        <span class="string">"value"</span>: <span class="number">23</span>,</div><div class="line">        <span class="string">"value_as_string"</span>: <span class="string">"23.0"</span></div><div class="line">      &#125;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key"</span>: <span class="string">"3"</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span>,</div><div class="line">      <span class="string">"max_age"</span>: &#123;</div><div class="line">        <span class="string">"value"</span>: <span class="number">20</span>,</div><div class="line">        <span class="string">"value_as_string"</span>: <span class="string">"20.0"</span></div><div class="line">      &#125;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">      <span class="string">"key"</span>: <span class="string">"4"</span>,</div><div class="line">      <span class="string">"doc_count"</span>: <span class="number">1</span>,</div><div class="line">      <span class="string">"max_age"</span>: &#123;</div><div class="line">        <span class="string">"value"</span>: <span class="number">16</span>,</div><div class="line">        <span class="string">"value_as_string"</span>: <span class="string">"16.0"</span></div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-总结"><a href="#2-总结" class="headerlink" title="2. 总结"></a><strong>2. 总结</strong></h3><p>本文介绍了ES中的一些常用的聚合API的使用，包括metric、bucketing以及它们的嵌套使用方法。掌握了这些API就可以完成简单的数据统计功能，更多的API详见<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html" target="_blank" rel="external">官方文档</a>。前面的博客中都是介绍了ES的Rest API，接下来的文章中将会介绍Java API的使用，使用Java API可以实现前面介绍的所有API的功能。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/教程/" rel="tag">#教程</a>
+          
+            <a href="/tags/系列/" rel="tag">#系列</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/09/05/elasticsearch-3/" rel="next" title="实时搜索引擎Elasticsearch（3）——查询API的使用">
+                <i class="fa fa-chevron-left"></i> 实时搜索引擎Elasticsearch（3）——查询API的使用
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/09/12/summary-and-plan/" rel="prev" title="2015-09-12总结与学习计划">
+                2015-09-12总结与学习计划 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/09/08/elasticsearch-4/"
+     data-title="实时搜索引擎Elasticsearch（4）——Aggregations （聚合）API的使用"
+     data-content=""
+     data-url="http://hinylover.space/2015/09/08/elasticsearch-4/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/09/08/elasticsearch-4/"
+           data-title="实时搜索引擎Elasticsearch（4）——Aggregations （聚合）API的使用" data-url="http://hinylover.space/2015/09/08/elasticsearch-4/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-聚合API"><span class="nav-number">1.</span> <span class="nav-text">1. 聚合API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-度量类型（metric）聚合"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 度量类型（metric）聚合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-桶类型（bucketing）聚合"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 桶类型（bucketing）聚合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-嵌套使用"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 嵌套使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-总结"><span class="nav-number">2.</span> <span class="nav-text">2. 总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>

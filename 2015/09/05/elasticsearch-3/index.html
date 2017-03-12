@@ -1,0 +1,1044 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="教程,系列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="上一篇文章介绍了ES中的Rest API，本章将重点介绍ES中的查询API的使用。由于笔者在实际项目仅仅将ES用作索引数据库，并没有深入研究过ES的搜索功能。而且鉴于笔者的搜索引擎知识有限，本文将仅仅介绍ES简单（非全文）的查询API。
+
+笔者原本打算在本文中介绍聚合API的内容，但是写着写着发现文章有点过长，不便于阅读，故将聚合API的内容移至下一篇博客中。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实时搜索引擎Elasticsearch（3）——查询API的使用">
+<meta property="og:url" content="http://hinylover.space/2015/09/05/elasticsearch-3/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="上一篇文章介绍了ES中的Rest API，本章将重点介绍ES中的查询API的使用。由于笔者在实际项目仅仅将ES用作索引数据库，并没有深入研究过ES的搜索功能。而且鉴于笔者的搜索引擎知识有限，本文将仅仅介绍ES简单（非全文）的查询API。
+
+笔者原本打算在本文中介绍聚合API的内容，但是写着写着发现文章有点过长，不便于阅读，故将聚合API的内容移至下一篇博客中。">
+<meta property="og:updated_time" content="2017-03-12T04:00:33.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="实时搜索引擎Elasticsearch（3）——查询API的使用">
+<meta name="twitter:description" content="上一篇文章介绍了ES中的Rest API，本章将重点介绍ES中的查询API的使用。由于笔者在实际项目仅仅将ES用作索引数据库，并没有深入研究过ES的搜索功能。而且鉴于笔者的搜索引擎知识有限，本文将仅仅介绍ES简单（非全文）的查询API。
+
+笔者原本打算在本文中介绍聚合API的内容，但是写着写着发现文章有点过长，不便于阅读，故将聚合API的内容移至下一篇博客中。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 实时搜索引擎Elasticsearch（3）——查询API的使用 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xialei的个人小站</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">逆水行舟，不进则退</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'YRtFSaSYVH3kcysmCM1-','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                实时搜索引擎Elasticsearch（3）——查询API的使用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-09-05T21:52:34+08:00" content="2015-09-05">
+              2015-09-05
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index">
+                    <span itemprop="name">elasticsearch</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/09/05/elasticsearch-3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/05/elasticsearch-3/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p><a href="/2015/08/29/elasticsearch-2">上一篇</a>文章介绍了ES中的Rest API，本章将重点介绍ES中的查询API的使用。由于笔者在实际项目仅仅将ES用作索引数据库，并没有深入研究过ES的搜索功能。而且鉴于笔者的搜索引擎知识有限，本文将仅仅介绍ES简单（非全文）的查询API。</p>
+<blockquote>
+<p>笔者原本打算在本文中介绍聚合API的内容，但是写着写着发现文章有点过长，不便于阅读，故将聚合API的内容移至下一篇博客中。</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a><strong>引言</strong></h3><p>单单介绍理论和API是乏味和低效率的，本文将结合一个实际的例子来介绍这些API。下表是本文数据表的表结构，表名（type）为“student”。注意，studentNo是本表的id，也就是_id字段的值与studentNo的值保持一致。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">字段名</th>
+<th style="text-align:left">字段含义</th>
+<th style="text-align:left">类型</th>
+<th style="text-align:left">是否能被索引</th>
+<th style="text-align:left">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">studentNo</td>
+<td style="text-align:left">学号</td>
+<td style="text-align:left">string</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left">id</td>
+</tr>
+<tr>
+<td style="text-align:left">name</td>
+<td style="text-align:left">姓名</td>
+<td style="text-align:left">string</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">sex</td>
+<td style="text-align:left">性别</td>
+<td style="text-align:left">string</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">age</td>
+<td style="text-align:left">年龄</td>
+<td style="text-align:left">integer</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">birthday</td>
+<td style="text-align:left">出生年月</td>
+<td style="text-align:left">date</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">address</td>
+<td style="text-align:left">家庭住址</td>
+<td style="text-align:left">string</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">classNo</td>
+<td style="text-align:left">班级</td>
+<td style="text-align:left">string</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">isLeader</td>
+<td style="text-align:left">是否为班干部</td>
+<td style="text-align:left">boolean</td>
+<td style="text-align:left">是</td>
+</tr>
+</tbody>
+</table>
+<p>上面的表结构所对应的mapping如下，将数据保存在索引名为“student”的索引中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="string">"student"</span>: &#123;</div><div class="line">    <span class="string">"properties"</span>: &#123;</div><div class="line">      <span class="string">"studentNo"</span>: &#123;</div><div class="line">        <span class="string">"type"</span>: <span class="string">"string"</span>,</div><div class="line">        <span class="string">"index"</span>: <span class="string">"not_analyzed"</span></div><div class="line">      &#125;,</div><div class="line">      <span class="string">"name"</span>: &#123;</div><div class="line">        <span class="string">"type"</span>: <span class="string">"string"</span>,</div><div class="line">        <span class="string">"index"</span>: <span class="string">"not_analyzed"</span></div><div class="line">      &#125;,</div><div class="line">      <span class="string">"male"</span>: &#123;</div><div class="line">        <span class="string">"type"</span>: <span class="string">"string"</span>,</div><div class="line">        <span class="string">"index"</span>: <span class="string">"not_analyzed"</span></div><div class="line">      &#125;,</div><div class="line">      <span class="string">"age"</span>: &#123;</div><div class="line">        <span class="string">"type"</span>: <span class="string">"integer"</span></div><div class="line">      &#125;,</div><div class="line">      <span class="string">"birthday"</span>: &#123;</div><div class="line">        <span class="string">"type"</span>: <span class="string">"date"</span>,</div><div class="line">        <span class="string">"format"</span>: <span class="string">"yyyy-MM-dd"</span></div><div class="line">      &#125;,</div><div class="line">	  <span class="string">"address"</span>: &#123;</div><div class="line">        <span class="string">"type"</span>: <span class="string">"string"</span>,</div><div class="line">        <span class="string">"index"</span>: <span class="string">"not_analyzed"</span></div><div class="line">      &#125;,</div><div class="line">      <span class="string">"classNo"</span>: &#123;</div><div class="line">        <span class="string">"type"</span>: <span class="string">"string"</span>,</div><div class="line">        <span class="string">"index"</span>: <span class="string">"not_analyzed "</span></div><div class="line">      &#125;,</div><div class="line">      <span class="string">"isLeader"</span>: &#123;</div><div class="line">        <span class="string">"type"</span>: <span class="string">"boolean"</span></div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>索引中保存的数据如下，下面介绍的所有API都将基于这个数据表。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">studentNo</th>
+<th style="text-align:left">name</th>
+<th style="text-align:left">male</th>
+<th style="text-align:left">age</th>
+<th style="text-align:left">birthday</th>
+<th style="text-align:left">classNo</th>
+<th style="text-align:left">address</th>
+<th style="text-align:left">isLeader</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">刘备</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">24</td>
+<td style="text-align:left">1985-02-03</td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">湖南省长沙市</td>
+<td style="text-align:left">true</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left">关羽</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">22</td>
+<td style="text-align:left">1987-08-23</td>
+<td style="text-align:left">2</td>
+<td style="text-align:left">四川省成都市</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td style="text-align:left">糜夫人</td>
+<td style="text-align:left">女</td>
+<td style="text-align:left">19</td>
+<td style="text-align:left">1990-06-12</td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">上海市</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td style="text-align:left">张飞</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">20</td>
+<td style="text-align:left">1989-07-30</td>
+<td style="text-align:left">3</td>
+<td style="text-align:left">北京市</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td style="text-align:left">诸葛亮</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">18</td>
+<td style="text-align:left">1992-04-27</td>
+<td style="text-align:left">2</td>
+<td style="text-align:left">江苏省南京市</td>
+<td style="text-align:left">true</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td style="text-align:left">孙尚香</td>
+<td style="text-align:left">女</td>
+<td style="text-align:left">16</td>
+<td style="text-align:left">1994-05-21</td>
+<td style="text-align:left">3</td>
+<td style="text-align:left"></td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td style="text-align:left">马超</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">19</td>
+<td style="text-align:left">1991-10-20</td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">黑龙江省哈尔滨市</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">8</td>
+<td style="text-align:left">赵云</td>
+<td style="text-align:left">男</td>
+<td style="text-align:left">23</td>
+<td style="text-align:left">1986-10-26</td>
+<td style="text-align:left">2</td>
+<td style="text-align:left">浙江省杭州市</td>
+<td style="text-align:left">false</td>
+</tr>
+</tbody>
+</table>
+<h3 id="查询API"><a href="#查询API" class="headerlink" title="查询API"></a><strong>查询API</strong></h3><p>ES中的查询非常灵活，为用户提供了非常方便而强大的API。个人觉得ES的调用接口设计得非常好，所有接口合理且风格一致，值得好好研究！</p>
+<h4 id="Query和Filter"><a href="#Query和Filter" class="headerlink" title="Query和Filter"></a><strong>Query和Filter</strong></h4><p>ES为用户提供两类查询API，一类是在查询阶段就进行条件过滤的query查询，另一类是在query查询出来的数据基础上再进行过滤的filter查询。这两类查询的区别是：</p>
+<ul>
+<li>query方法会计算查询条件与待查询数据之间的相关性，计算结果写入一个score字段，类似于搜索引擎。filter仅仅做字符串匹配，不会计算相关性，类似于一般的数据查询，所以filter得查询速度比query快。</li>
+<li>filter查询出来的数据会自动被缓存，而query不能。</li>
+</ul>
+<p>query和filter可以单独使用，也可以相互嵌套使用，非常灵活。</p>
+<h4 id="Query查询"><a href="#Query查询" class="headerlink" title="Query查询"></a><strong>Query查询</strong></h4><p>下面的情况下适合使用query查询：</p>
+<ul>
+<li>需要进行全文搜索。</li>
+<li>查询结果依赖于相关性，即需要计算查询串和数据的相关性。</li>
+</ul>
+<p>（1）Match All Query</p>
+<p>查询所有的数据，相当于不带条件查询。下面的代码是一个典型的match_all查询的调用方式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;match_all&quot;: &#123;&#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>查询结果如下。其他所有的查询都是返回这种格式的数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="string">"took"</span>: <span class="number">156</span>,					<span class="comment">// 查询耗时（毫秒）</span></div><div class="line">  <span class="string">"timed_out"</span>: <span class="literal">false</span>,			<span class="comment">// 是否超时</span></div><div class="line">  <span class="string">"_shards"</span>: &#123;</div><div class="line">    <span class="string">"total"</span>: <span class="number">5</span>,					<span class="comment">// 总共查询的分片数</span></div><div class="line">    <span class="string">"successful"</span>: <span class="number">5</span>,			<span class="comment">// 查询成功的分片数</span></div><div class="line">    <span class="string">"failed"</span>: <span class="number">0</span>                 <span class="comment">// 查询失败的分片数</span></div><div class="line">  &#125;,</div><div class="line">  <span class="string">"hits"</span>: &#123;</div><div class="line">    <span class="string">"total"</span>: <span class="number">8</span>,					<span class="comment">// 本次查询的记录数</span></div><div class="line">    <span class="string">"max_score"</span>: <span class="number">1</span>,				<span class="comment">// 查询所有数据中的最大score</span></div><div class="line">    <span class="string">"hits"</span>: [					<span class="comment">// 数据列表</span></div><div class="line">      &#123;</div><div class="line">        <span class="string">"_index"</span>: <span class="string">"student"</span>,	<span class="comment">// 数据所属的索引名</span></div><div class="line">        <span class="string">"_type"</span>: <span class="string">"student"</span>,		<span class="comment">// 数据所属的type</span></div><div class="line">        <span class="string">"_id"</span>: <span class="string">"4"</span>,				<span class="comment">// 数据的id值</span></div><div class="line">        <span class="string">"_score"</span>: <span class="number">1</span>,			<span class="comment">// 该记录的score</span></div><div class="line">        <span class="string">"_source"</span>: &#123;			<span class="comment">// ES将原始数据保存到_source字段中</span></div><div class="line">          <span class="string">"studentNo"</span>: <span class="string">"4"</span>,</div><div class="line">          <span class="string">"name"</span>: <span class="string">"张飞"</span>,</div><div class="line">          <span class="string">"male"</span>: <span class="string">"男"</span>,</div><div class="line">          <span class="string">"age"</span>: <span class="string">"20"</span>,</div><div class="line">          <span class="string">"birthday"</span>: <span class="string">"1989-07-30"</span>,</div><div class="line">          <span class="string">"classNo"</span>: <span class="string">"3"</span>,</div><div class="line">          <span class="string">"isLeader"</span>: <span class="string">"F"</span></div><div class="line">        &#125;</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">         …… 					<span class="comment">// 其他的数据格式相同，就不列出来了</span></div><div class="line">      &#125;</div><div class="line">    ]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>查询时，你会发现无论数据量有多大，每次最多只能查到10条数据。这是因为ES服务端默认对查询结果做了分页处理，每页默认的大小为10。如果想自己指定查询的数据，可使用from和size字段，并且按指定的字段排序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;match_all&quot;: &#123;&#125;</div><div class="line">  &#125;,</div><div class="line">  &quot;from&quot;: 2,		// 从2条记录开始取</div><div class="line">  &quot;size&quot;: 4,		// 取4条数据</div><div class="line">  &quot;sort&quot;: &#123;</div><div class="line">    &quot;studentNo&quot;: &#123;  // 按studentNo字段升序</div><div class="line">      &quot;order&quot;: &quot;asc&quot;// 降序为desc</div><div class="line">    &#125;</div><div class="line">  &#125;	</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：不要把from设得过大（超过10000），否则会导致ES服务端因频繁GC而无法正常提供服务。其实实际项目中也没有谁会翻那么多页，但是为了ES的可用性，务必要对分页查询的页码做一定的限制。</p>
+</blockquote>
+<p>（2）term query</p>
+<p>词语查询，如果是对未分词的字段进行查询，则表示精确查询。查找名为“诸葛亮”的学生，查询结果为学号为5的记录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;term&quot;: &#123;</div><div class="line">      &quot;name&quot;: &quot;诸葛亮&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（3）Bool Query</p>
+<p>Bool（布尔）查询是一种复合型查询，它可以结合多个其他的查询条件。主要有3类逻辑查询：</p>
+<ul>
+<li>must：查询结果必须符合该查询条件（列表）。</li>
+<li>should：类似于in的查询条件。如果bool查询中不包含must查询，那么should默认表示必须符合查询列表中的一个或多个查询条件。</li>
+<li>must_not：查询结果必须不符合查询条件（列表）。</li>
+</ul>
+<p>查找2班的班干部，查询结果为学号为5的记录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;classNo&quot;: &quot;2&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;isLeader&quot;: &quot;true&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（4）Ids Query</p>
+<p>id字段查询。查询数据id值为1和2的同学，由于id的值与studentNo相同，故查询结果为学号为1和2的学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;ids&quot;: &#123;</div><div class="line">      &quot;type&quot;: &quot;student&quot;,</div><div class="line">      &quot;values&quot;: [</div><div class="line">        &quot;1&quot;,</div><div class="line">        &quot;2&quot;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（5）Prefix Query</p>
+<p>前缀查询。查找姓【赵】的同学，查询结果是学号为8的赵云。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;prefix&quot;: &#123;</div><div class="line">      &quot;name&quot;: &quot;赵&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（6）Range Query</p>
+<p>范围查询，针对date和number类型的数据。查找年龄到18~20岁的同学，查询结果是学号为3、4、5、7的记录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;range&quot;: &#123;</div><div class="line">      &quot;age&quot;: &#123;</div><div class="line">        &quot;gte&quot;: &quot;18&quot;,     // 表示&gt;=</div><div class="line">        &quot;lte&quot;: &quot;20&quot;      // 表示&lt;=</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>实际上，对于date类型的数据，ES中以其时间戳（长整形）的形式存放的。</p>
+</blockquote>
+<p>（7）Terms Query</p>
+<p>多词语查询，查找符合词语列表的数据。如果要查询的字段索引为not_analyzed类型，则terms查询非常类似于关系型数据库中的in查询。下面查找学号为1，3的学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;terms&quot;: &#123;</div><div class="line">      &quot;studentNo&quot;: [</div><div class="line">        &quot;1&quot;,</div><div class="line">        &quot;3&quot;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（8）Wildcard Query</p>
+<p>通配符查询，是简化的正则表达式查询，包括下面两类通配符：</p>
+<ul>
+<li>* 代表任意（包括0个）多个字符</li>
+<li>? 代表任意一个字符</li>
+</ul>
+<p>查找名字的最后一个字是“亮”的同学，查询结果是学号为5的诸葛亮。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;wildcard&quot;: &#123;</div><div class="line">      &quot;name&quot;: &quot;*亮&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（9）Regexp Query同学</p>
+<p>正则表达式查询，这是最灵活的字符串类型字段查询方式。查找家住长沙市的学生，查询结果为学号为1的学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;query&quot;: &#123;</div><div class="line">    &quot;regexp&quot;: &#123;</div><div class="line">      &quot;address&quot;: &quot;.*长沙市.*&quot;  // 这里的.号表示任意一个字符</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<h4 id="Filter查询"><a href="#Filter查询" class="headerlink" title="Filter查询"></a><strong>Filter查询</strong></h4><p>下面的情况下适合使用filter查询：</p>
+<ul>
+<li>yes/no的二元查询</li>
+<li>针对精确值进行查询 </li>
+</ul>
+<p>filter和query的查询方式有不少是重叠的，所以本节仅仅介绍API的调用，一些通用的注意的事项就不再重复了。</p>
+<p>（1）Term Filter</p>
+<p>词语查询，如果是对未分词的字段进行查询，则表示精确查询。查找名为“诸葛亮”的学生，查询结果为学号为5的记录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;				</div><div class="line">    &quot;term&quot;: &#123;</div><div class="line">      &quot;name&quot;: &quot;诸葛亮&quot;,</div><div class="line">      &quot;_cache&quot; : true // 与query主要是这里的区别，可以设置数据缓存</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>filter查询方式都可以通过设置_cache为true来缓存数据。如果下一次恰好以相同的查询条件进行查询并且该缓存没有过期，就可以直接从缓存中读取数据，这样就大大加快的查询速度。</p>
+<p>（2）Bool Filter</p>
+<p>查找2班的班干部，查询结果为学号为5的记录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">    &quot;bool&quot;: &#123;</div><div class="line">      &quot;must&quot;: [</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;classNo&quot;: &quot;2&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;isLeader&quot;: &quot;true&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（3）And Filter</p>
+<p>And逻辑连接查询，连接1个或1个以上查询条件。它与bool查询中的must查询非常相似。实际上，and查询可以转化为对应的bool查询。查找2班的班干部，查询结果为学号为5的学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">      &quot;and&quot;: [</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;classNo&quot;: &quot;2&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;isLeader&quot;: &quot;true&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ]</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（4）Or Filter</p>
+<p>Or连接查询，表示逻辑或。。查找2班或者是班干部的学生名单，查询结果为学号为1、2、5、8的学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">      &quot;or&quot;: [</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;classNo&quot;: &quot;2&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">          &quot;term&quot;: &#123;</div><div class="line">            &quot;isLeader&quot;: &quot;true&quot;</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">      ]</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（5）Exists Filter</p>
+<p>存在查询，查询指定字段至少包含一个非null值的数据。如果字段索引为not_analyzed类型，则查询sql中的is not null查询方式。查询地址存在学生，查询结果为除了6之外的所有学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">    &quot;exists&quot;: &#123;</div><div class="line">      &quot;field&quot;: &quot;address&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（6）Missing Filter</p>
+<p>缺失值查询，与Exists查询正好相反。查询地址不存在的学生，查询结果为学号为6的学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">    &quot;missing&quot;: &#123;</div><div class="line">      &quot;field&quot;: &quot;address&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（7）Prefix Filter</p>
+<p>前缀查询。查找姓【赵】的同学，查询结果是学号为8的赵云。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">    &quot;prefix&quot;: &#123;</div><div class="line">      &quot;name&quot;: &quot;赵&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（8）Range Filter</p>
+<p>范围查询，针对date和number类型的数据。查找年龄到18~20岁的同学，查询结果是学号为3、4、5、7的记录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">    &quot;range&quot;: &#123;</div><div class="line">      &quot;age&quot;: &#123;</div><div class="line">        &quot;gte&quot;: &quot;18&quot;,</div><div class="line">        &quot;lte&quot;: &quot;20&quot;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（9）Terms Filter</p>
+<p>多词语查询，查找符合词语列表的数据。如果要查询的字段索引为not_analyzed类型，则terms查询非常类似于关系型数据库中的in查询。下面查找学号为1，3的学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">    &quot;terms&quot;: &#123;</div><div class="line">      &quot;studentNo&quot;: [</div><div class="line">        &quot;1&quot;,</div><div class="line">        &quot;3&quot;</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<p>（10）Regexp Filter</p>
+<p>正则表达式查询，是最灵活的字符串类型字段查询方式。查找家住长沙市的学生，查询结果为学号为1的学生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">curl -XPOST &quot;192.168.1.101:9200/student/student/_search&quot; -d </div><div class="line">&apos;</div><div class="line">&#123;</div><div class="line">  &quot;filter&quot;: &#123;</div><div class="line">    &quot;regexp&quot;: &#123;</div><div class="line">      &quot;address&quot;: &quot;.*长沙市.*&quot;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">&apos;</div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>本文介绍了ES中的部分查询API，这些API是一些常用的简单API，如果需要使用更加复杂一点的API，请查阅<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html" target="_blank" rel="external">官网文档</a>。下一篇文章准备介绍ES中的聚合API的使用。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/教程/" rel="tag">#教程</a>
+          
+            <a href="/tags/系列/" rel="tag">#系列</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/29/elasticsearch-2/" rel="next" title="实时搜索引擎Elasticsearch（2）——Rest API的使用">
+                <i class="fa fa-chevron-left"></i> 实时搜索引擎Elasticsearch（2）——Rest API的使用
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/09/08/elasticsearch-4/" rel="prev" title="实时搜索引擎Elasticsearch（4）——Aggregations （聚合）API的使用">
+                实时搜索引擎Elasticsearch（4）——Aggregations （聚合）API的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/09/05/elasticsearch-3/"
+     data-title="实时搜索引擎Elasticsearch（3）——查询API的使用"
+     data-content=""
+     data-url="http://hinylover.space/2015/09/05/elasticsearch-3/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/09/05/elasticsearch-3/"
+           data-title="实时搜索引擎Elasticsearch（3）——查询API的使用" data-url="http://hinylover.space/2015/09/05/elasticsearch-3/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/portrait.jpg" alt="xialei" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xialei</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> CSDN
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+            <p class="site-author-name">友情链接</p>
+            
+              <span class="links-of-author-item">
+                <a href="https://segmentfault.com/" target="_blank">Segmentfault</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.oschina.net/" target="_blank">开源中国</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://coding.net/" target="_blank">码市</a>
+              </span>
+            
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询API"><span class="nav-number">2.</span> <span class="nav-text">查询API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Query和Filter"><span class="nav-number">2.1.</span> <span class="nav-text">Query和Filter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Query查询"><span class="nav-number">2.2.</span> <span class="nav-text">Query查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Filter查询"><span class="nav-number">2.3.</span> <span class="nav-text">Filter查询</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+</body>
+</html>
