@@ -356,7 +356,7 @@
 <p>2、在Windows Shell中输入<code>apidoc -v</code>命令，如果出现如下图所示的界面，则表示apidoc已安装成功。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocapidoc-install-check.png" alt="apidoc-install-check"></p>
 <h3 id="初步使用"><a href="#初步使用" class="headerlink" title="初步使用"></a>初步使用</h3><p>下面通过一些简单的demo来介绍如何利用apidoc生成一份在线接口文档。</p>
 <h4 id="命令行"><a href="#命令行" class="headerlink" title="命令行"></a>命令行</h4><p>在正式开始之前，先介绍一下apidoc中的重要命令和参数。apidoc的命令格式如下：</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">apidoc</span> 参数</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apidoc 参数</div></pre></td></tr></table></figure>
 <p>一些重要的参数如下表所示：</p>
 <table>
 <thead>
@@ -477,7 +477,7 @@
 <h4 id="api"><a href="#api" class="headerlink" title="@api"></a>@api</h4><p><code>@api</code>定义一个特定的接口。如果一个注释块既不包含<code>@apiDefine</code>又没有包含<code>@api</code>参数，则apidoc会直接忽略这个注释块。这个参数在界面上表示一个接口区域块如下:</p>
 <p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoc%40api.png" alt="@api"></p>
 <p><code>@api</code>的书写格式为：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@<span class="keyword">api</span> &#123;<span class="selector-tag">method</span>&#125; <span class="selector-tag">path</span> <span class="selector-attr">[title]</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@api &#123;method&#125; path [title]</div></pre></td></tr></table></figure>
 <p>注意，[xxx]表示一个可选的参数，下同。</p>
 <p>下表介绍了<code>@api</code>中的参数含义。</p>
 <table>
@@ -505,7 +505,7 @@
 <p>更多的配置项请参考<a href="http://apidocjs.com/#params" target="_blank" rel="external">apidoc官方文档站点</a>。</p>
 <h4 id="apiDefine"><a href="#apiDefine" class="headerlink" title="@apiDefine"></a>@apiDefine</h4><p><code>@apiDefine</code>表示定义一个变量，该变量可以指代任意值（字符串、参数块），这个参数并且写在独立的代码块中。可以使用<code>@apiUse</code>来使用其定义的变量。</p>
 <p><code>@apiDefine</code>的书写格式为：</p>
-<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiDefine name <span class="string">[title]</span> <span class="string">[description]</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiDefine name [title] [description]</div></pre></td></tr></table></figure>
 <p>下表介绍了<code>@apiDefine</code>中的参数含义。</p>
 <table>
 <thead>
@@ -533,26 +533,26 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@apiDefine</span> MyError</div><div class="line"> * <span class="doctag">@apiError</span> UserNotFound The &lt;code&gt;id&lt;/code&gt; of the User was not found.</div><div class="line"> */</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id</div><div class="line"> * <span class="doctag">@apiUse</span> MyError</div><div class="line"> */</div></pre></td></tr></table></figure>
 <h4 id="apiDescription"><a href="#apiDescription" class="headerlink" title="@apiDescription"></a>@apiDescription</h4><p>用于<code>@api</code>代码块中，用于详尽地描述接口的功能。</p>
 <p><code>@apiDescription</code>的书写格式为：</p>
-<figure class="highlight mel"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiDescription <span class="keyword">text</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiDescription text</div></pre></td></tr></table></figure>
 <p>text就是具体的描述内容，可以直接使用Markdown语法，这极大地丰富了其表现形式。</p>
 <h4 id="apiGroup"><a href="#apiGroup" class="headerlink" title="@apiGroup"></a>@apiGroup</h4><p>表示接口所属的组，最直接的体现就是在侧边导航中将接口分在对用的组中。</p>
 <p><code>@apiGroup</code>的书写格式为：</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiGroup <span class="built_in">name</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiGroup name</div></pre></td></tr></table></figure>
 <p>name表示组名，可以是任意字符串。值得注意的是，name不支持中文，一旦输入中文，apidoc就会忽略这些中文字符。如果需要在界面中显示中文接口组名，只需要使用<code>@apiDefine</code>定义一个中文字符串，然后name用变量名替换即可。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@apiDefine</span> group 测试</div><div class="line"> */</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id Request User information</div><div class="line"> * <span class="doctag">@apiName</span> GetUser</div><div class="line"> * <span class="doctag">@apiGroup</span> group</div><div class="line"> */</div></pre></td></tr></table></figure>
 <h4 id="apiName"><a href="#apiName" class="headerlink" title="@apiName"></a>@apiName</h4><p>表示接口的名字，应该在每个@api块中使用。可以生成一个Web锚点，快速定位接口位置。可以看到锚点（url的#后面的字符串）通常由groupName-apiName构成。</p>
 <p><code>@apiName</code>的书写格式为：</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiName <span class="built_in">name</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiName name</div></pre></td></tr></table></figure>
 <h4 id="apiUse"><a href="#apiUse" class="headerlink" title="@apiUse"></a>@apiUse</h4><p>表示引用一个@apiDefine定义的值或块，相当于直接替换变量的值。</p>
 <p><code>@apiUse</code>的书写格式为：</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiUse <span class="built_in">name</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiUse name</div></pre></td></tr></table></figure>
 <p>name是一个已定义的@apiDefine中的name，如果输入的name不存在，则会抛出类似下面的异常信息。</p>
-<figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123; <span class="attribute">File</span>: <span class="string">'src\\Demo1.java'</span>,</div><div class="line">  <span class="attribute">Block</span>: <span class="number">4</span>,</div><div class="line">  <span class="attribute">Element</span>: <span class="string">'@apiUse'</span>,</div><div class="line">  <span class="attribute">Groupname</span>: <span class="string">'test'</span>,</div><div class="line">  <span class="attribute">Definition</span>: <span class="string">'@apiUse group'</span>,</div><div class="line">  <span class="attribute">Example</span>: <span class="string">'@apiDefine MyValidGroup Some title\n@apiUse MyValidGroup'</span> &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123; File: &apos;src\\Demo1.java&apos;,</div><div class="line">  Block: 4,</div><div class="line">  Element: &apos;@apiUse&apos;,</div><div class="line">  Groupname: &apos;test&apos;,</div><div class="line">  Definition: &apos;@apiUse group&apos;,</div><div class="line">  Example: &apos;@apiDefine MyValidGroup Some title\n@apiUse MyValidGroup&apos; &#125;</div></pre></td></tr></table></figure>
 <p>下面是一个示例：</p>
-<figure class="highlight puppet"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @apiDefine test</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;Number&#125; <span class="keyword">id</span> <span class="keyword">Users</span> <span class="keyword">unique</span> <span class="keyword">ID</span>.</div><div class="line"> */</div><div class="line"></div><div class="line">/**</div><div class="line"> * @apiUse test</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;Number&#125; <span class="keyword">name</span> <span class="keyword">name</span>.</div><div class="line"> */</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @apiDefine test</div><div class="line"> * @apiParam &#123;Number&#125; id Users unique ID.</div><div class="line"> */</div><div class="line"></div><div class="line">/**</div><div class="line"> * @apiUse test</div><div class="line"> * @apiParam &#123;Number&#125; name name.</div><div class="line"> */</div></pre></td></tr></table></figure>
 <h4 id="apiParam"><a href="#apiParam" class="headerlink" title="@apiParam"></a>@apiParam</h4><p>表示一个请求参数。</p>
 <p><code>@apiParam</code>的书写格式为：</p>
-<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiParam <span class="string">[(group)]</span> <span class="string">[&#123;type&#125;]</span> <span class="string">[field=defaultValue]</span> <span class="string">[description]</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiParam [(group)] [&#123;type&#125;] [field=defaultValue] [description]</div></pre></td></tr></table></figure>
 <p>下表介绍了<code>@apiParam</code>中的参数含义。</p>
 <table>
 <thead>
@@ -589,19 +589,19 @@
 </tbody>
 </table>
 <p>下面是一个简单的示例：</p>
-<figure class="highlight puppet"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @<span class="keyword">api</span> &#123;get&#125; /user/:id</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;Number&#125; <span class="keyword">id</span> <span class="keyword">Users</span> <span class="keyword">unique</span> <span class="keyword">ID</span>.</div><div class="line"> */</div><div class="line"></div><div class="line">/**</div><div class="line"> * @<span class="keyword">api</span> &#123;post&#125; /user/</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;String&#125; [firstname]  用户名（非必填）.</div><div class="line"> * @<span class="keyword">apiParam</span> &#123;String&#125; <span class="keyword">lastname</span>     用户姓（必填）.</div><div class="line"> */</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @api &#123;get&#125; /user/:id</div><div class="line"> * @apiParam &#123;Number&#125; id Users unique ID.</div><div class="line"> */</div><div class="line"></div><div class="line">/**</div><div class="line"> * @api &#123;post&#125; /user/</div><div class="line"> * @apiParam &#123;String&#125; [firstname]  用户名（非必填）.</div><div class="line"> * @apiParam &#123;String&#125; lastname     用户姓（必填）.</div><div class="line"> */</div></pre></td></tr></table></figure>
 <p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidoc%40apiParam.png" alt="@apiParam"></p>
 <h4 id="apiSuccess"><a href="#apiSuccess" class="headerlink" title="@apiSuccess"></a>@apiSuccess</h4><p>表示请求成功时的一个返回字段。</p>
 <p><code>@apiSuccess</code>的书写格式为：</p>
-<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiSuccess <span class="string">[(group)]</span> <span class="string">[&#123;type&#125;]</span> field <span class="string">[description]</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiSuccess [(group)] [&#123;type&#125;] field [description]</div></pre></td></tr></table></figure>
 <p>@apiSuccess的参数含义与@apiParam一致，这里就不再做说明了。</p>
 <h4 id="apiError"><a href="#apiError" class="headerlink" title="@apiError"></a>@apiError</h4><p>表示请求失败时的一个返回字段。</p>
 <p><code>@apiError</code>的书写格式为：</p>
-<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiError <span class="string">[(group)]</span> <span class="string">[&#123;type&#125;]</span> field <span class="string">[description]</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiError [(group)] [&#123;type&#125;] field [description]</div></pre></td></tr></table></figure>
 <p>与apiSuccess的参数含义完全一致。</p>
 <h4 id="apiParamExample"><a href="#apiParamExample" class="headerlink" title="@apiParamExample"></a>@apiParamExample</h4><p>表示一个请求范例。</p>
 <p><code>@apiParamExample</code>的书写格式为：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@<span class="keyword">apiParamExample</span> [&#123;<span class="selector-tag">type</span>&#125;] <span class="selector-attr">[title]</span> <span class="selector-tag">example</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiParamExample [&#123;type&#125;] [title] example</div></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr>
@@ -629,7 +629,7 @@
 <h4 id="apiSuccessExample"><a href="#apiSuccessExample" class="headerlink" title="@apiSuccessExample"></a>@apiSuccessExample</h4><p>表示一个响应范例。其书写格式和参数含义与@apiParamExample完全一样。</p>
 <h4 id="apiSampleRequest"><a href="#apiSampleRequest" class="headerlink" title="@apiSampleRequest"></a>@apiSampleRequest</h4><p>表示一个接口测试块，可以根据定义的请求参数来生成一个表单，用来进行接口测试。</p>
 <p><code>@apiSampleRequest</code>的书写格式为：</p>
-<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@apiSampleRequest</span> url</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@apiSampleRequest url</div></pre></td></tr></table></figure>
 <p>url可以与配置文件（apidoc.json）中的sampleUrl以及@api定义的path连接成一个完整的测试url。例如：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id</div><div class="line"> * <span class="doctag">@apiParam</span> &#123;Number&#125; id Users unique ID.</div><div class="line"> * <span class="doctag">@apiSampleRequest</span> /test</div><div class="line"> */</div></pre></td></tr></table></figure>
 <p>生成的界面截图如下：</p>
@@ -639,7 +639,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@api</span> &#123;get&#125; /user/:id</div><div class="line"> * <span class="doctag">@apiParam</span> &#123;String&#125; rule </div><div class="line"> *</div><div class="line"> * - 规则1：不能使用小数</div><div class="line"> * - 规则2：不能相加</div><div class="line"> */</div></pre></td></tr></table></figure>
 <p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocmarkdown-support.png" alt="markdown-support"></p>
 <h4 id="对象类型的参数"><a href="#对象类型的参数" class="headerlink" title="对象类型的参数"></a>对象类型的参数</h4><p>如果请求的参数是一个对象，那此时因为如果书写呢？比如需要Post一个Person对象，Person中包括name、age字段，那么可以这样书写。</p>
-<figure class="highlight julia"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * <span class="meta">@api</span> &#123;post&#125; /user</div><div class="line"> * <span class="meta">@apiName</span> obj</div><div class="line"> * <span class="meta">@apiParam</span> &#123;Object&#125; person </div><div class="line"> * <span class="meta">@apiParam</span> &#123;<span class="built_in">String</span>&#125; person.name  姓名 </div><div class="line"> * <span class="meta">@apiParam</span> &#123;<span class="built_in">Integer</span>&#125; person.age 年龄 </div><div class="line"> */</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @api &#123;post&#125; /user</div><div class="line"> * @apiName obj</div><div class="line"> * @apiParam &#123;Object&#125; person </div><div class="line"> * @apiParam &#123;String&#125; person.name  姓名 </div><div class="line"> * @apiParam &#123;Integer&#125; person.age 年龄 </div><div class="line"> */</div></pre></td></tr></table></figure>
 <p>从下图中可以看到name和age字段的前面有些缩进，而且字段显示名为name和age。</p>
 <p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/create-online-document-use-apidocparam-object.png" alt="param-object"></p>
 <hr>
