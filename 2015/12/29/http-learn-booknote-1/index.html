@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="xialei的个人小站">
 <meta property="og:description" content="引言HTTP协议，一个熟悉又陌生的应用协议。熟悉的是它在各种计算机网络教材中必然会被提及的应用层协议，稍微有点计算机知识的人基本上都会听过这个协议。它是互联网的基础，可以这么说，没有HTTP协议，就没有当前互联网的蓬勃发展。然而，笔者对它又是陌生的。因为虽然参与开发了不少Web应用，但很少直接与HTTP协议直接打交道，因为Web容器隐藏了很多HTTP协议的细节（譬如：请求协议头的解析，响应报文的生">
 <meta property="og:image" content="http://img.blog.csdn.net/20151230000553865">
-<meta property="og:updated_time" content="2017-03-12T04:00:33.542Z">
+<meta property="og:updated_time" content="2017-05-16T01:26:43.100Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《HTTP权威指南》学习笔记（1）-HTTP概述和URL">
 <meta name="twitter:description" content="引言HTTP协议，一个熟悉又陌生的应用协议。熟悉的是它在各种计算机网络教材中必然会被提及的应用层协议，稍微有点计算机知识的人基本上都会听过这个协议。它是互联网的基础，可以这么说，没有HTTP协议，就没有当前互联网的蓬勃发展。然而，笔者对它又是陌生的。因为虽然参与开发了不少Web应用，但很少直接与HTTP协议直接打交道，因为Web容器隐藏了很多HTTP协议的细节（譬如：请求协议头的解析，响应报文的生">
@@ -476,7 +476,7 @@
 <h4 id="相对URL"><a href="#相对URL" class="headerlink" title="相对URL"></a>相对URL</h4><p>绝对URL和相对URL是URL的两种不同的表现形式，前面所有的URL示例都是绝对URL，绝对URL包含访问资源所需的全部资源。下面是一个简单的HTML页面代码，其中的<code><a href="./page1.html">page1</a></code>就是一个包含相对URL的链接。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">title</span>&gt;</span>page2<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"./page1.html"</span>&gt;</span>page1<span class="tag">&lt;/<span class="name">a</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>相对URL是不完整的，要获取资源的全部信息，还要依赖称为基础（base）的URL。基础URL通常来自以下地方：</p>
-<p>第一，在资源中显示提供。在HTML文档中，可以由&lt;base&gt;标签定义一个基础URL。下面的代码定义了<code>&lt;base href=”<a href="http://www.demo.com/base/&quot;&gt;&lt;/base&amp;gt" target="_blank" rel="external">http://www.demo.com/base/&quot;&gt;&lt;/base&amp;gt</a>;</code>，于是，page2实际的绝对地址就是：<code><a href="http://www.demo.com/base/page2.html" target="_blank" rel="external">http://www.demo.com/base/page2.html</a></code>。</p>
+<p>第一，在资源中显示提供。在HTML文档中，可以由&lt;base&gt;标签定义一个基础URL。下面的代码定义了<code>&lt;base href=”<a href="http://www.demo.com/base/" target="_blank" rel="external">http://www.demo.com/base/</a>“ &gt;&lt;/base&gt; </code>，于是，page2实际的绝对地址就是：<code><a href="http://www.demo.com/base/page2.html" target="_blank" rel="external">http://www.demo.com/base/page2.html</a></code>。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">title</span>&gt;</span>page1<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">base</span> <span class="attr">href</span>=<span class="string">"www.demo.com/base/"</span>&gt;</span><span class="tag">&lt;/<span class="name">base</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"./page2.html"</span>&gt;</span>page2<span class="tag">&lt;/<span class="name">a</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>第二，所属资源的URL作为基础URL。还是以上面的代码为例。假定page1.html的绝对URL是<code><a href="http://www.demo.com/page1.html" target="_blank" rel="external">http://www.demo.com/page1.html</a></code>，那么page1.html属于<code><a href="http://www.demo.com/" target="_blank" rel="external">http://www.demo.com/</a></code>资源下的。直接用这个地址作为基础URL，则page2的绝对URL是：<code><a href="http://www.demo.com/page2.html" target="_blank" rel="external">http://www.demo.com/page2.html</a></code>。</p>
 <p>第三，没有基础URL。注：这里没有看懂，先列在这里……</p>
@@ -585,34 +585,12 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2015/12/29/http-learn-booknote-1/"
-     data-title="《HTTP权威指南》学习笔记（1）-HTTP概述和URL"
-     data-content=""
-     data-url="http://hinylover.space/2015/12/29/http-learn-booknote-1/">
-  <div class="ds-share-inline">
-    <ul  class="ds-share-icons-16">
-
-      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
-      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
-      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
-      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
-      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
-
-    </ul>
-    <div class="ds-share-icons-more">
-    </div>
-  </div>
-</div>
-      
     </div>
   </div>
 
 
           </div>
           
-
-  <p>热评文章</p>
-  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
 
 
           
@@ -668,7 +646,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-count">29</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -679,7 +657,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -690,7 +668,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

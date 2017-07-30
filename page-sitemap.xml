@@ -7,7 +7,7 @@
     </url>
     
     <url>
-        <loc>http://hinylover.space/about/</loc>
+        <loc>http://hinylover.space/tags/</loc>
         <lastmod>2017-03-12T04:00:33.551Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -21,7 +21,7 @@
     </url>
     
     <url>
-        <loc>http://hinylover.space/tags/</loc>
+        <loc>http://hinylover.space/about/</loc>
         <lastmod>2017-03-12T04:00:33.551Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>

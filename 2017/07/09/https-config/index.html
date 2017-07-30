@@ -1,0 +1,1070 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Web,实操," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="距离上一次提笔写博客已经过去5个月了！工作固然是比较忙，但更多地其实是自己变成越来越懒惰了。人都是有惰性的，由懒惰到勤奋难，由勤奋到懒惰却是非常简单。笔者时常提醒自己不忘初心，毕业3年就已经差不多忘了自己从何出发、为何出发、终点在哪里！对于自己的定位仍然是一名程序员，目标仍然是成为优秀的架构师！
+言归正传，本篇文章主要是介绍如果配置一套基于的Https的web环境，文章以实际操作为重点，并附带罗列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Https配置">
+<meta property="og:url" content="http://hinylover.space/2017/07/09/https-config/index.html">
+<meta property="og:site_name" content="xialei的个人小站">
+<meta property="og:description" content="距离上一次提笔写博客已经过去5个月了！工作固然是比较忙，但更多地其实是自己变成越来越懒惰了。人都是有惰性的，由懒惰到勤奋难，由勤奋到懒惰却是非常简单。笔者时常提醒自己不忘初心，毕业3年就已经差不多忘了自己从何出发、为何出发、终点在哪里！对于自己的定位仍然是一名程序员，目标仍然是成为优秀的架构师！
+言归正传，本篇文章主要是介绍如果配置一套基于的Https的web环境，文章以实际操作为重点，并附带罗列">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p1.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p2.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p3.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p4.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/tomcat-ssl1.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/tomcat-ssl2.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p4.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/brower-ssl1.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/brower-ssl2.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/brower-ssl3.png">
+<meta property="og:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/brower-ssl4.png">
+<meta property="og:updated_time" content="2017-07-15T04:40:50.619Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Https配置">
+<meta name="twitter:description" content="距离上一次提笔写博客已经过去5个月了！工作固然是比较忙，但更多地其实是自己变成越来越懒惰了。人都是有惰性的，由懒惰到勤奋难，由勤奋到懒惰却是非常简单。笔者时常提醒自己不忘初心，毕业3年就已经差不多忘了自己从何出发、为何出发、终点在哪里！对于自己的定位仍然是一名程序员，目标仍然是成为优秀的架构师！
+言归正传，本篇文章主要是介绍如果配置一套基于的Https的web环境，文章以实际操作为重点，并附带罗列">
+<meta name="twitter:image" content="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hinylover.space/2017/07/09/https-config/"/>
+
+
+
+
+
+  <title> Https配置 | xialei的个人小站 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">xialei的个人小站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">逆水行舟，不进则退</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://hinylover.space/2017/07/09/https-config/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xialei">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/portrait.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xialei的个人小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Https配置
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-09T17:30:18+08:00">
+                2017-07-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/http-https/" itemprop="url" rel="index">
+                    <span itemprop="name">http/https</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/09/https-config/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/07/09/https-config/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>距离上一次提笔写博客已经过去5个月了！工作固然是比较忙，但更多地其实是自己变成越来越懒惰了。人都是有惰性的，由懒惰到勤奋难，由勤奋到懒惰却是非常简单。笔者时常提醒自己不忘初心，毕业3年就已经差不多忘了自己从何出发、为何出发、终点在哪里！对于自己的定位仍然是一名程序员，目标仍然是成为优秀的架构师！</p>
+<p>言归正传，本篇文章主要是介绍如果配置一套基于的<code>Https</code>的<code>web</code>环境，文章以实际操作为重点，并附带罗列一些理论基础，所以并不是从零开始。在阅读本篇文章之前，读者需要具备以下知识：</p>
+<ol>
+<li>TLS/SSL协议</li>
+<li>tomcat</li>
+<li>数字证书和CA</li>
+</ol>
+<p>本文的主要内容包括：</p>
+<ol>
+<li>Https概要介绍</li>
+<li>自签名证书</li>
+<li>tomcat中配置https</li>
+</ol>
+<a id="more"></a>
+<h2 id="Https基础"><a href="#Https基础" class="headerlink" title="Https基础"></a>Https基础</h2><p>HTTPS（全称：Hyper Text Transfer Protocol over Secure Socket Layer），是以安全为目标的HTTP通道，简单讲是HTTP的安全版。（来自<a href="http://baike.baidu.com/link?url=UWmGqTemGEp3lJ1UFTBcQVqfjo-1VQqTE3i8Sq9Asrcc2SqfyCXaIeTE-DHm9Wsg8pghd4pKx1AhiHOFQUrf6K" target="_blank" rel="external">百度百科</a>）</p>
+<h3 id="为什么需要Https"><a href="#为什么需要Https" class="headerlink" title="为什么需要Https"></a>为什么需要Https</h3><p>在讲为什么需要https之前，应该讲讲http协议本身有什么缺陷。</p>
+<ol>
+<li>http协议是不安全的。http协议报文在网络传输过程中全部都是明文。用户上网浏览过、提交过的内容，所有在后台工作的人，比如路由器的所有者、网线途径路线的不明意图者、省市运营商、运营商骨干网、跨运营商网关等都能够查看。</li>
+<li>http协议没有提供身份认证机制，其无法保证用户访问能直达目标网站，而没有被中间人攻击和劫持。</li>
+</ol>
+<p>https协议主要就是为了解决这些问题而诞生的。https主要有以下特性：</p>
+<ol>
+<li>传输数据加密。使用https协议传输的报文都是经过加密的，就是报文被中间人拦截，如果不知道加密算法和密钥也无法知晓数据内容。</li>
+<li>身份认证。使用https协议的站点都需要申请数字证书，这个证书就是站点的“身份证”，如果服务站点没有出示有效的证书，那么浏览器就会对用户发出警告。当然，除了服务端认证之外，服务端也可以反向认证用户的合法性，也可以同时进行这两种认证，称为双向认证。</li>
+</ol>
+<h3 id="SSL数字证书"><a href="#SSL数字证书" class="headerlink" title="SSL数字证书"></a>SSL数字证书</h3><p>SSL(Secure Sockets Layer 安全套接层)，及其继任者传输层安全（Transport Layer Security，TLS）是为网络通信提供安全及数据完整性的一种安全协议。TLS与SSL在传输层对网络连接进行加密。SSL是由Netscape公司研发，用以保障在Internet上数据传输之安全，利用数据加密(Encryption)技术，可确保数据在网络上之传输过程中不会被截取及窃听。</p>
+<p>SSL证书是数字证书的一种，类似于驾驶证、护照和营业执照的电子副本。正常的SSL证书都是由受认证的证书颁发机构——我们称之为CA（Certificate Authority）机构来颁发，针对企业与个人的不同，可申请的证书的类型也不同，价格也不同。</p>
+<h2 id="Https配置"><a href="#Https配置" class="headerlink" title="Https配置"></a>Https配置</h2><p>虽然诸如google等互联网大佬都在呼吁摒弃不安全的http协议，直接使用https协议。不过，由于历史原因，目前绝大多少的站点仍然在使用http协议，也并没有想要拥抱https的意思。为了迎合市场需求，目前几乎所有的Web容器默认使用的仍然是http协议。不过，较高版本的Web容器都是支持https协议的，但是都需要做一些额外的配置（包括开启https、配置证书等）</p>
+<h3 id="自签名证书"><a href="#自签名证书" class="headerlink" title="自签名证书"></a>自签名证书</h3><p>之前的章节中已经简要地介绍了SSL数字证书，要合法地使用https服务，必须要在Web容器中配置数字证书。商用数字证书需要花钱购买（目前市面也有免费商用证书，可以在各大云供应商免费购买）。如果是实验用途，使用自签名证书就足够了。下面以Windows操作系统（Linux等其他操作系统类似）为例，介绍如何利用keytool工具生成SSL证书。</p>
+<p>keytool是一个Java中的密钥和证书管理工具。它使用户能够管理自己的公钥/私钥对及相关证书，用于（通过数字签名）自我认证（用户向别的用户/服务认证自己）或数据完整性以及认证服务。它还允许用户储存他们的通信对等者的公钥（以证书形式）。【转自<a href="http://baike.baidu.com/link?url=IVLm0xW3ymXjF-XRe9PO0KcO5aPD3PBIi2IdSFQADFFcs8mhSV0uc7aB1jLZfuBTvYEtJAfL0pYTZYoCg2fAQa" target="_blank" rel="external">百度百科</a>】</p>
+<p>在使用keytool之前，要确保操作机器上已安装并配置好了java环境。本文的重点并不在环境的搭建上，如果还未安装java环境，请参考<a href="http://hinylover.space/2016/03/23/install-and-config-java/">从零开始搭建Java环境</a>。</p>
+<p>keytool常用参数说明：</p>
+<ul>
+<li>-genkey 在用户主目录中创建一个默认文件”.keystore”,还会产生一个mykey的别名，mykey中包含用户的公钥、私钥和证书(在没有指定生成位置的情况下,keystore会存在用户系统默认目录)</li>
+<li>-alias 产生别名 每个keystore都关联这一个独一无二的alias，这个alias通常不区分大小写</li>
+<li>-keystore 指定密钥库的名称(产生的各类信息将不在.keystore文件中)</li>
+<li>-keyalg 指定密钥的算法 (如 RSA DSA，默认值为：DSA)</li>
+<li>-validity 指定创建的证书有效期多少天(默认 90)</li>
+<li>-keysize 指定密钥长度 （默认 1024）</li>
+<li>-storepass 指定密钥库的密码(获取keystore信息所需的密码)</li>
+<li>-keypass 指定别名条目的密码(私钥的密码)</li>
+<li>-dname 指定证书发行者信息 其中： “CN=名字与姓氏,OU=组织单位名称,O=组织名称,L=城市或区域名 称,ST=州或省份名称,C=单位的两字母国家代码”</li>
+<li>-list 显示密钥库中的证书信息 keytool -list -v -keystore 指定keystore -storepass 密码</li>
+<li>-v 显示密钥库中的证书详细信息</li>
+<li>-export 将别名指定的证书导出到文件 keytool -export -alias 需要导出的别名 -keystore 指定keystore -file 指定导出的证书位置及证书名称 - - - -storepass 密码</li>
+<li>-file 参数指定导出到文件的文件名</li>
+<li>-delete 删除密钥库中某条目 keytool -delete -alias 指定需删除的别 - -keystore 指定keystore – storepass 密码</li>
+<li>-printcert 查看导出的证书信息 keytool -printcert -file g:\sso\michael.crt</li>
+<li>-keypasswd 修改密钥库中指定条目口令 keytool -keypasswd -alias 需修改的别名 -keypass 旧密码 -new 新密码 -storepass keystore密码 - - - - -keystore sage</li>
+<li>-storepasswd 修改keystore口令 keytool -storepasswd -keystore g:\sso\michael.keystore(需修改口令的keystore) -storepass pwdold(原始密码) -new pwdnew(新密码)</li>
+<li><p>-import 将已签名数字证书导入密钥库 keytool -import -alias 指定导入条目的别名 -keystore 指定keystore -file 需导入的证书</p>
+<p>下面介绍如何利用<code>keytool</code>生成自签名证书。</p>
+<p>同时按下<code>win+R</code>快捷组合键，在弹出的运行窗口，输入<code>cmd </code>并回车，打开命令行窗户，输入如下命令：</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">keytool -genkey -alias tomcat -keyalg RSA -keystore D:xialei.keystore</div></pre></td></tr></table></figure>
+<p><code>-keystore D:xialei.keystore</code>参数指定生成的证书文件名和位置，可根据实际情况更改。</p>
+<p>执行结果如下图所示。系统提示需要输入查看证书的密码（至少6个字符），请务必记住自己输入的密码，否则无法查看生成keystore信息，也无法做进一步的处理。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p1.png" alt="keytool-p1"></p>
+<p>接下来需要填写证书信息。在【您的名字与姓氏是什么】处填写将要使用本证书的网站的hostname，可以是域名或者IP地址。例如：由于笔者需要在本机上部署https服务并且使用本次生成的证书，所有在这一栏中填写了<code>127.0.0.1</code>，在访问站点时也使用这个IP地址。</p>
+<p>其他信息可以随意填写，由于证书是自己生成的，不存在审核的问题，随意填写其他信息并不会影响证书的正常使用。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p2.png" alt="keytool-p2"></p>
+<p>全部执行完毕之后，可以看到在<code>D</code>盘下已经生成了<code>xialei.keystore</code>证书文件。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p3.png" alt="keytool-p3"></p>
+<p>我们可以使用<code>keytool -list -v -keystore D:xialei.keystore</code>命令来查看证书信息。执行完毕后提示需要输入密码，输入第1步中设置的密码即可。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p4.png" alt="keytool-p4"></p>
+<h3 id="tomcat配置"><a href="#tomcat配置" class="headerlink" title="tomcat配置"></a>tomcat配置</h3><p>在tomcat中只需要简单地配置一下就可以开启https服务，下面以tomcat 1.7.x版本为例介绍配置方式。打开<code>${TOMCAT_HOME}/conf/server.xml</code>，插入下面的代码。注意：<code>keystoreFile</code>要配置正确的<code>.keystore</code>文件路径，<code>keystorePass</code>配置在生成证书文件时输入的密码。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">Connector</span> <span class="attr">port</span>=<span class="string">"443"</span> <span class="attr">protocol</span>=<span class="string">"HTTP/1.1"</span> <span class="attr">SSLEnabled</span>=<span class="string">"true"</span></span></div><div class="line">            <span class="attr">maxThreads</span>=<span class="string">"150"</span> <span class="attr">scheme</span>=<span class="string">"https"</span> <span class="attr">secure</span>=<span class="string">"true"</span></div><div class="line">            <span class="attr">keystoreFile</span>=<span class="string">"D:\ProgramFiles\apache-tomcat-7.0.40\conf\xialei.keystore"</span> <span class="attr">keystorePass</span>=<span class="string">"123456"</span></div><div class="line">            <span class="attr">clientAuth</span>=<span class="string">"false"</span> <span class="attr">sslProtocol</span>=<span class="string">"TLS"</span> /&gt;</div></pre></td></tr></table></figure>
+<p>启动tomcat服务，在浏览器中输入<code><a href="https://127.0.0.1" target="_blank" rel="external">https://127.0.0.1</a></code>就可以打开https网站了。<br><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/tomcat-ssl1.png" alt="tomcat-ssl1"></p>
+<p>然后，当使用chrome浏览器打开站点时，出现的却是警告界面，页面提示【您的连接不是私密连接】。接下来依次点击【高级】，【继续前往127.0.0.1（不安全）】按钮后，可以跳转到到正确的页面，不过地址栏中仍然显示如下图所示的“不安全锁”。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/tomcat-ssl2.png" alt="tomcat-ssl2"></p>
+<p>明明已经安装好了数字证书，为何还是完全正确地使用https服务呢。原因就是给这个站点颁发证书的“认证中心”（其实就是我们自己）并不被浏览器客户端认可，那么其颁发的证书自然不是有效的证书。接下来需要在浏览器中配置。</p>
+<h3 id="浏览器配置"><a href="#浏览器配置" class="headerlink" title="浏览器配置"></a>浏览器配置</h3><p>之前生成<code>.keystore</code>文中包含两种数据：</p>
+<ol>
+<li>密钥实体（Key entity）—— 密钥（secret key）又或者是私钥和配对公钥。</li>
+<li>自签名证书实体（trusted certificate entries）—— 只包含公钥</li>
+</ol>
+<p>下面需要从<code>.keystore</code>文件中导出证书文件。 </p>
+<p>执行下面的命令，就可以在<code>D</code>盘下找到生成的<code>xialei.crt</code>证书文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">keytool -export -alias tomcat -keystore D:xialei.keystore -file D:xialei.crt</div></pre></td></tr></table></figure>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/keytool-p4.png" alt="keytool-p5"></p>
+<p>一般情况下，<code>.crt</code>文件在windows操作系统中可以用默认关联程序打开的。直接运行生成的<code>xialei.crt</code>证书文件，按照windows程序的惯用操作即可完成证书安装操作。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/brower-ssl1.png" alt="brower-ssl1"></p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/brower-ssl2.png" alt="brower-ssl2"></p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/brower-ssl3.png" alt="brower-ssl3"></p>
+<p>操作完毕后，重新打开浏览器，访问相同的网址后，可以看到地址栏中出现的绿色小锁，这表明https已配置成功。</p>
+<p><img src="http://7xs7kk.com1.z0.glb.clouddn.com/blog/https-config/brower-ssl4.png" alt="brower-ssl4"></p>
+<hr>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a href="http://www.micmiu.com/lang/java/keytool-start-guide/" target="_blank" rel="external">java keytool证书工具使用小结</a></p>
+<p><a href="http://www.cnblogs.com/youxia/p/java002.html" target="_blank" rel="external">JDK 中的证书生成和管理工具 keytool</a></p>
+<hr>
+<p>本文由<a href="http://hinylover.space">xialei</a>原创，转载请说明出处<a href="http://hinylover.space/2017/07/09/https-config/">http://hinylover.space/2017/07/09/https-config/</a>。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Web/" rel="tag"># Web</a>
+          
+            <a href="/tags/实操/" rel="tag"># 实操</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/25/2016-final-summary/" rel="next" title="2016年年终总结">
+                <i class="fa fa-chevron-left"></i> 2016年年终总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/15/java-i-self-increament/" rel="prev" title="全面解析Java中的i++、++i指令">
+                全面解析Java中的i++、++i指令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/07/09/https-config/"
+           data-title="Https配置" data-url="http://hinylover.space/2017/07/09/https-config/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/portrait.jpg"
+               alt="xialei" />
+          <p class="site-author-name" itemprop="name">xialei</p>
+           
+              <p class="site-description motion-element" itemprop="description">学而不思则罔，思而不学则殆</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xialei199023" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/xialei199023/article/" target="_blank" title="CSDN">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  CSDN
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://segmentfault.com/" title="Segmentfault" target="_blank">Segmentfault</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.oschina.net/" title="开源中国" target="_blank">开源中国</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://coding.net/" title="码市" target="_blank">码市</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Https基础"><span class="nav-number">1.</span> <span class="nav-text">Https基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么需要Https"><span class="nav-number">1.1.</span> <span class="nav-text">为什么需要Https</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSL数字证书"><span class="nav-number">1.2.</span> <span class="nav-text">SSL数字证书</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Https配置"><span class="nav-number">2.</span> <span class="nav-text">Https配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自签名证书"><span class="nav-number">2.1.</span> <span class="nav-text">自签名证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tomcat配置"><span class="nav-number">2.2.</span> <span class="nav-text">tomcat配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#浏览器配置"><span class="nav-number">2.3.</span> <span class="nav-text">浏览器配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文章"><span class="nav-number">2.4.</span> <span class="nav-text">参考文章</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xialei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hinyLover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

@@ -110,7 +110,7 @@ HTTP首部（Header）详解
 <meta property="og:image" content="http://img.blog.csdn.net/20160119230511726">
 <meta property="og:image" content="http://img.blog.csdn.net/20160119230421756">
 <meta property="og:image" content="http://img.blog.csdn.net/20160119230637509">
-<meta property="og:updated_time" content="2017-03-12T04:00:33.542Z">
+<meta property="og:updated_time" content="2017-05-16T01:26:43.100Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《HTTP权威指南》学习笔记（2）-HTTP报文">
 <meta name="twitter:description" content="上一篇文章写了HTTP协议中的基本概念和URL，这一篇要来讲一下HTTP协议中的报文本身。如果说HTTP是Internet的信使，那么HTTP报文就是它用来搬东西的包裹了。本文包含以下内容：
@@ -446,7 +446,7 @@ HTTP首部（Header）详解
 <h4 id="语法结构"><a href="#语法结构" class="headerlink" title="语法结构"></a>语法结构</h4><p>请求报文和响应报文的基本结构非常类似，下面是请求报文的语法结构：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">method</span>&gt;</span> <span class="tag">&lt;<span class="name">request-url</span>&gt;</span> <span class="tag">&lt;<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">headers</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">entity-body</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>下面是响应报文的语法结构：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">version</span>&gt;</span> <span class="tag">&lt;<span class="name">status-code</span>&gt;</span> <span class="tag">&lt;<span class="name">reason-phrase</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">headers</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">entity-body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">headers</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">entity-body</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">version</span>&gt;</span> <span class="tag">&lt;<span class="name">status-code</span>&gt;</span> <span class="tag">&lt;<span class="name">reason-phrase</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">headers</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">entity-body</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>可以看出，请求报文和响应报文的语法仅仅在起始行（第一行）处有所不同。下面对报文的各个部分做简要描述。</p>
 <p><strong>方法（method）</strong>：表示客户端对资源执行的动作，是一个单独的动词，比如GET、POST等。<br><strong>请求资源的URL（request-url）</strong>：表示请求的资源的URL，关于URL的知识已经在上一篇文章中介绍了。<br><strong>协议版本（version）</strong>：表示所使用的HTTP的协议版本，其格式为：HTTP/<major>.<minor>，其中major表示主版本号，minor表示次版本号。<br><strong>状态码（status-code）</strong>：表示请求过程中所发生的情况，是一组三位数的数字。关于状态码会在接下来的内容介绍。<br><strong>原因短语（reason-phrase）</strong>：状态码的可读版本，是对状态码的解释，对人类来说是可读的。<br><strong>首部（header）</strong>：表示请求或响应中的附加信息，可以有零个或多个首部，每个首部项都是形如<code>name: value</code>的字符串，每个首部项后面都以CRLF（回车+换行）结束。<br><strong>实体的主体部分（entity-body）</strong>：包含任意格式的数据块，是Web应用的主体内容。</minor></major></p>
 <h3 id="HTTP报文的组成部分"><a href="#HTTP报文的组成部分" class="headerlink" title="HTTP报文的组成部分"></a>HTTP报文的组成部分</h3><p>HTTP报文包括请求报文和响应报文，由起始行（start line）、首部（header）和主体(body)三个部分组成，其中起始行和首部是必有的，主体部分是可选的。</p>
@@ -1234,34 +1234,12 @@ HTTP首部（Header）详解
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/01/19/http-learn-booknote-2/"
-     data-title="《HTTP权威指南》学习笔记（2）-HTTP报文"
-     data-content=""
-     data-url="http://hinylover.space/2016/01/19/http-learn-booknote-2/">
-  <div class="ds-share-inline">
-    <ul  class="ds-share-icons-16">
-
-      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
-      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
-      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
-      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
-      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
-
-    </ul>
-    <div class="ds-share-icons-more">
-    </div>
-  </div>
-</div>
-      
     </div>
   </div>
 
 
           </div>
           
-
-  <p>热评文章</p>
-  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
 
 
           
@@ -1317,7 +1295,7 @@ HTTP首部（Header）详解
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-count">29</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1328,7 +1306,7 @@ HTTP首部（Header）详解
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1339,7 +1317,7 @@ HTTP首部（Header）详解
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
