@@ -2,13 +2,6 @@
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
     <url>
-        <loc>http://hinylover.space/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
-        <lastmod>2017-03-12T04:00:33.542Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://hinylover.space/tags/%E6%BA%90%E7%A0%81%E7%A0%94%E7%A9%B6/</loc>
         <lastmod>2017-03-12T04:00:33.542Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -17,6 +10,13 @@
 
     <url>
         <loc>http://hinylover.space/tags/jdk/</loc>
+        <lastmod>2017-03-12T04:00:33.542Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://hinylover.space/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
         <lastmod>2017-03-12T04:00:33.542Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
@@ -115,7 +115,7 @@
 
     <url>
         <loc>http://hinylover.space/tags/java/</loc>
-        <lastmod>2017-07-30T06:32:44.346Z</lastmod>
+        <lastmod>2017-07-30T06:35:55.172Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
